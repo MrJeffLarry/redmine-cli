@@ -9,31 +9,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-/**
-	"id":354,
-	"project":{"id":79,"name":"PWDL (Personal Wireless Device Locator)"},
-	"tracker":{"id":7,"name":"Task"},
-	"status":{"id":2,"name":"In Progress","is_closed":false},
-	"priority":{"id":3,"name":"High"},
-	"author":{"id":5,"name":"Jeff Hägerman"},
-	"assigned_to":{"id":5,"name":"Jeff Hägerman"},
-	"fixed_version":{"id":90,"name":"v1.0"},
-	"subject":"ECO-ESP-LIB struktur och bas",
-	"description":"Strukturera ett basiskt behov av funktioner och komponenter för kunna lägga enkelt på en PWDL exempelvis eller dylikt i framtiden",
-	"start_date":"2022-06-03",
-	"due_date":null,
-	"done_ratio":20,
-	"is_private":false,
-	"estimated_hours":null,
-	"total_estimated_hours":null,
-	"spent_hours":0.0,
-	"total_spent_hours":0.0,
-	"created_on":"2022-06-03T15:43:14Z",
-	"updated_on":"2022-06-03T15:55:20Z",
-	"closed_on":null
-}
-*/
-
 type issues struct {
 	Issues []issue `json:"issues,omitempty"`
 }
@@ -52,6 +27,14 @@ type issue struct {
 	StartDate    string      `json:"start_date,omitempty"`
 	DueDate      string      `json:"due_date,omitempty"`
 	DoneRatio    int         `json:"done_ratio,omitempty"`
+	IsPrivate    bool        `json:"is_private,omitempty"`
+	//	EstimatedHours
+	//	TotalEstimatedHours
+	SpentHours      int    `json:"spent_hours,omitempty"`
+	TotalSpentHours int    `json:"total_spent_hours,omitempty"`
+	CreatedOn       string `json:"created_on,omitempty"`
+	UpdatedOn       string `json:"updated_on,omitempty"`
+	//	ClosedOn
 }
 
 type issueIdName struct {
