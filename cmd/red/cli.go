@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/issues"
+	"github.com/MrJeffLarry/redmine-cli/internal/cmd/users"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
 	"github.com/spf13/cobra"
 )
@@ -39,8 +40,8 @@ func CmdInit(Version string) error {
 		Short: "Redmine CLI",
 		Long:  `Redmine CLI for integration with Redmine API`,
 
-		SilenceErrors: true,
-		SilenceUsage:  true,
+		SilenceErrors: false,
+		SilenceUsage:  false,
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("Hello World")
 		},
@@ -61,6 +62,7 @@ func CmdInit(Version string) error {
 
 	cmd.AddCommand(NewCmdVersion(Version))
 	cmd.AddCommand(issues.NewCmdIssues(r))
+	cmd.AddCommand(users.NewCmdUsers(r))
 
 	cmd.Execute()
 
