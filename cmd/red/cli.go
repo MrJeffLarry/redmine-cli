@@ -11,17 +11,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewCmdVersion(Version string) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "version",
-		Short: "Print the version",
-		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("Redmine CLI (red) v" + Version)
-		},
-	}
-	return cmd
-}
-
 func IsAuthCmd(cmd *cobra.Command) bool {
 	switch cmd.Name() {
 	case "help":
@@ -39,10 +28,10 @@ func CmdInit(Version string) error {
 	r := config.InitConfig()
 
 	cmd := &cobra.Command{
-		Use:   "red <command> <subcommand> [flags]",
-		Short: "Redmine CLI",
-		Long:  `Redmine CLI for integration with Redmine API`,
-
+		Use:           "red <command> <subcommand> [flags]",
+		Short:         "Redmine CLI",
+		Long:          `Redmine CLI for integration with Redmine API`,
+		Version:       Version,
 		SilenceErrors: true,
 		SilenceUsage:  true,
 		Run:           func(cmd *cobra.Command, args []string) { cmd.Help() },
@@ -61,7 +50,7 @@ func CmdInit(Version string) error {
 		return nil
 	}
 
-	cmd.AddCommand(NewCmdVersion(Version))
+	//	cmd.AddCommand(NewCmdVersion(Version))
 	cmd.AddCommand(issues.NewCmdIssues(r))
 	cmd.AddCommand(users.NewCmdUsers(r))
 	cmd.AddCommand(login.NewCmdLogin(r))
