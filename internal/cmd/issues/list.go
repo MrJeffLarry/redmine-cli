@@ -52,6 +52,14 @@ type issueStatus struct {
 	IsClosed bool   `json:"is_closed,omitempty"`
 }
 
+const (
+	FLAG_ORDER     = "order"
+	FLAG_ORDER_ASC = "asc"
+	FLAG_ORDER_DES = "des"
+
+	FLAG_LIMIT = "limit"
+)
+
 func countDigi(i int64) (count int) {
 	for i > 0 {
 		i = i / 10
@@ -60,7 +68,12 @@ func countDigi(i int64) (count int) {
 	return
 }
 
-func displayListGET(r *config.Red_t, path string) {
+func parseFlags(cmd *cobra.Command, path string) string {
+	//	order, err := cmd.Flags().GetString(FLAG_ORDER)
+	return path
+}
+
+func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	var err error
 	var body []byte
 	var status int
@@ -69,12 +82,12 @@ func displayListGET(r *config.Red_t, path string) {
 	//	var subjectLen int
 	issues := issues{}
 
+	path = parseFlags(cmd, path)
+
 	if body, status, err = api.ClientGET(r, path); err != nil {
 		fmt.Println(status, "Could not get response from client", err)
 		return
 	}
-
-	//	fmt.Println(status, string(body))
 
 	if err := json.Unmarshal(body, &issues); err != nil {
 		fmt.Println(err)
@@ -112,7 +125,7 @@ func cmdIssuesList(r *config.Red_t) *cobra.Command {
 		Short: "List issues",
 		Long:  "List all issues",
 		Run: func(cmd *cobra.Command, args []string) {
-			displayListGET(r, "/issues.json")
+			displayListGET(r, cmd, "/issues.json?")
 		},
 	}
 
@@ -122,7 +135,7 @@ func cmdIssuesList(r *config.Red_t) *cobra.Command {
 		Short: "List all issues",
 		Long:  "List all issues",
 		Run: func(cmd *cobra.Command, args []string) {
-			displayListGET(r, "/issues.json")
+			displayListGET(r, cmd, "/issues.json?")
 		},
 	})
 
@@ -132,8 +145,12 @@ func cmdIssuesList(r *config.Red_t) *cobra.Command {
 		Short: "List all my issues",
 		Long:  "List all my issues",
 		Run: func(cmd *cobra.Command, args []string) {
-			displayListGET(r, "/issues.json?assigned_to_id=me")
+			displayListGET(r, cmd, "/issues.json?assigned_to_id=me")
 		},
 	})
+
+	cmd.PersistentFlags().String("order", "", "Order on id_ASC or id_DES")
+	cmd.PersistentFlags().String("sort", "", "")
+
 	return cmd
 }

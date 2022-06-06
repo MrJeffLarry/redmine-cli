@@ -25,14 +25,15 @@ issue - A hash of the issue attributes:
 
 func NewCmdIssues(r *config.Red_t) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "issues",
-		Short:   "issues",
-		Long:    "issues",
+		Use:     "issue",
+		Short:   "issue",
+		Long:    "issue",
 		Aliases: []string{"i"},
 		Run:     func(cmd *cobra.Command, args []string) { cmd.Help() },
 	}
 
 	cmd.AddCommand(cmdIssuesList(r))
+	cmd.AddCommand(cmdIssuesIssue(r))
 
 	return cmd
 }
