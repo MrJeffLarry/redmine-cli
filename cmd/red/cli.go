@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/issues"
+	"github.com/MrJeffLarry/redmine-cli/internal/cmd/login"
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/users"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
 	"github.com/spf13/cobra"
@@ -27,6 +28,8 @@ func IsAuthCmd(cmd *cobra.Command) bool {
 		return false
 	case "version":
 		return false
+	case "login":
+		return false
 	}
 	return true
 }
@@ -40,11 +43,9 @@ func CmdInit(Version string) error {
 		Short: "Redmine CLI",
 		Long:  `Redmine CLI for integration with Redmine API`,
 
-		SilenceErrors: false,
-		SilenceUsage:  false,
-		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("Hello World")
-		},
+		SilenceErrors: true,
+		SilenceUsage:  true,
+		Run:           func(cmd *cobra.Command, args []string) { cmd.Help() },
 	}
 
 	cmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
@@ -63,6 +64,7 @@ func CmdInit(Version string) error {
 	cmd.AddCommand(NewCmdVersion(Version))
 	cmd.AddCommand(issues.NewCmdIssues(r))
 	cmd.AddCommand(users.NewCmdUsers(r))
+	cmd.AddCommand(login.NewCmdLogin(r))
 
 	cmd.Execute()
 
