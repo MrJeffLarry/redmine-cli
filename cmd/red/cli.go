@@ -53,7 +53,7 @@ func CmdInit(Version string) error {
 		return nil
 	}
 
-	cmd.PersistentFlags().Bool(config.DEBUG_FLAG, false, "Show debug info and raw response")
+	cmd.PersistentFlags().BoolP(config.DEBUG_FLAG, config.DEBUG_FLAG_S, false, "Show debug info and raw response")
 
 	//	cmd.AddCommand(NewCmdVersion(Version))
 	cmd.AddCommand(issues.NewCmdIssues(r))

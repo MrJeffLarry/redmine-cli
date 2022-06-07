@@ -18,7 +18,8 @@ const (
 	CONFIG_FILE            = "config.json"
 	CONFIG_FOLDER          = ".red"
 
-	DEBUG_FLAG = "debug"
+	DEBUG_FLAG   = "debug"
+	DEBUG_FLAG_S = "d"
 )
 
 type Red_t struct {

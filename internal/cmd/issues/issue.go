@@ -12,9 +12,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type viewIssue struct {
-	Issue issue `json:"issue,omitempty"`
-}
+const (
+	FLAG_JOURNALS   = "journals"
+	FLAG_JOURNALS_S = "j"
+)
 
 func displayProgressBar(ratio int) string {
 	done := (ratio / 10)
@@ -45,9 +46,8 @@ func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	}
 
 	if err := json.Unmarshal(body, &viewIssue); err != nil {
-		fmt.Println(body)
-		fmt.Println(err)
-		fmt.Println(status, "Could not parse and read response from server")
+		print.PrintDebug(r, status, err.Error())
+		fmt.Println("Could not parse and read response from server")
 		return
 	}
 
@@ -60,22 +60,19 @@ func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
 
 	sid := strconv.FormatInt(issue.ID, 10)
 
-	fmt.Printf("\n"+
-		"%s #%d %s [%s]\n"+
-		"---------------------------------\n"+
-		"Start Date: %s\n"+
-		"Due Date: %s\n"+
-		"Done: %s %d%%\n\n"+
-		"Assigned: %s\n"+
-		"Created: %s\n"+
-		"Project: %s\n"+
-		"Version: %s\n"+
-		"Status: %s\n"+
-		"Priority: %s\n"+
-		"---------------------------------\n"+
-		"\n%s\n\n"+
-		"---------------------------------\n"+
-		"View issue: %s\n",
+	fmt.Printf(
+		"------------ %s #%d - %s [%s] ---------\n"+
+			"Start Date: %s\n"+
+			"Due Date: %s\n"+
+			"Done: %s %d%%\n\n"+
+			"Assigned: %s\n"+
+			"Created: %s\n"+
+			"Project: %s\n"+
+			"Version: %s\n"+
+			"Status: %s\n"+
+			"Priority: %s\n"+
+			"------------ Description ---------\n"+
+			"\n%s\n\n",
 		issue.Tracker.Name,
 		issue.ID,
 		issue.Subject,
@@ -91,8 +88,35 @@ func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
 		issue.Status.Name,
 		issue.Priority.Name,
 		issue.Description,
-		r.RedmineURL+"/issues/"+sid,
 	)
+
+	if journals, _ := cmd.Flags().GetBool(FLAG_JOURNALS); journals {
+		for _, journal := range issue.Journals {
+			status := ""
+			notes := ""
+			for _, detail := range journal.Details {
+				status += "| "
+				status += detail.Name + " changed from "
+				status += detail.OldValue + " to "
+				status += detail.NewValue + "\n"
+			}
+			if len(journal.Notes) > 0 {
+				notes = "| Notes: "
+				notes += journal.Notes + "\n"
+			}
+
+			fmt.Printf("-------------  #%d - %s -------------\n"+
+				"%s"+
+				"%s\n",
+				journal.ID,
+				journal.User.Name,
+				notes,
+				status,
+			)
+		}
+	}
+	fmt.Println("\n----------------------------------")
+	fmt.Printf("View issue: %s\n", r.RedmineURL+"/issues/"+sid)
 }
 
 func cmdIssuesIssue(r *config.Red_t) *cobra.Command {
@@ -108,9 +132,11 @@ func cmdIssuesIssue(r *config.Red_t) *cobra.Command {
 				return
 			}
 
-			displayIssueGET(r, cmd, "/issues/"+id+".json")
+			displayIssueGET(r, cmd, "/issues/"+id+".json?include=journals")
 		},
 	}
+
+	cmd.PersistentFlags().BoolP(FLAG_JOURNALS, FLAG_JOURNALS_S, false, "Display journals")
 
 	return cmd
 }
