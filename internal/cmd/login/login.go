@@ -6,6 +6,7 @@ import (
 
 	"github.com/MrJeffLarry/redmine-cli/internal/api"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
+	"github.com/MrJeffLarry/redmine-cli/internal/print"
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ssh/terminal"
 )
@@ -58,6 +59,8 @@ func loginApiKey(r *config.Red_t, cmd *cobra.Command, server, apikey string) {
 		return
 	}
 
+	print.PrintDebug(r, status, string(res))
+
 	if !loginCheckStatus(status, "Incorrect apikey, get (API access key) from: "+server+"/my/account") {
 		return
 	}
@@ -94,6 +97,9 @@ func loginPassword(r *config.Red_t, cmd *cobra.Command, server, username string)
 		fmt.Println(err)
 		return
 	}
+
+	print.PrintDebug(r, status, string(res))
+
 	fmt.Println("")
 
 	if !loginCheckStatus(status, "Wrong username or password") {

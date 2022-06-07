@@ -7,6 +7,7 @@ import (
 
 	"github.com/MrJeffLarry/redmine-cli/internal/api"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
+	"github.com/MrJeffLarry/redmine-cli/internal/print"
 	"github.com/spf13/cobra"
 )
 
@@ -88,6 +89,8 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 		fmt.Println(status, "Could not get response from client", err)
 		return
 	}
+
+	print.PrintDebug(r, status, string(body))
 
 	if err := json.Unmarshal(body, &issues); err != nil {
 		fmt.Println(err)

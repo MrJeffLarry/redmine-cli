@@ -38,6 +38,9 @@ func CmdInit(Version string) error {
 	}
 
 	cmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		// Debug flag check for more info
+		r.Debug, _ = cmd.Flags().GetBool(config.DEBUG_FLAG)
+
 		// require that the user is authenticated before running most commands
 		if IsAuthCmd(cmd) && r.IsConfigBad() {
 			fmt.Println("Redmine CLI (red) v" + Version)
@@ -50,12 +53,16 @@ func CmdInit(Version string) error {
 		return nil
 	}
 
+	cmd.PersistentFlags().Bool(config.DEBUG_FLAG, false, "Show debug info and raw response")
+
 	//	cmd.AddCommand(NewCmdVersion(Version))
 	cmd.AddCommand(issues.NewCmdIssues(r))
 	cmd.AddCommand(users.NewCmdUsers(r))
 	cmd.AddCommand(login.NewCmdLogin(r))
 
-	cmd.Execute()
+	if err := cmd.Execute(); err != nil {
+		fmt.Println(err)
+	}
 
 	return nil
 }

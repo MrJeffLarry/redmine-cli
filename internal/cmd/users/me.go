@@ -6,6 +6,7 @@ import (
 
 	"github.com/MrJeffLarry/redmine-cli/internal/api"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
+	"github.com/MrJeffLarry/redmine-cli/internal/print"
 	"github.com/spf13/cobra"
 )
 
@@ -39,7 +40,7 @@ func displayMeGET(r *config.Red_t, path string) {
 		return
 	}
 
-	//	fmt.Println(status, string(body))
+	print.PrintDebug(r, status, string(body))
 
 	if err := json.Unmarshal(body, &user); err != nil {
 		fmt.Println(err)

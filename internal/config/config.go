@@ -17,11 +17,14 @@ const (
 	CONFIG_REDMINE_API_KEY = "apiKey"
 	CONFIG_FILE            = "config.json"
 	CONFIG_FOLDER          = ".red"
+
+	DEBUG_FLAG = "debug"
 )
 
 type Red_t struct {
 	RedmineURL    string
 	RedmineApiKey string
+	Debug         bool
 }
 
 //
