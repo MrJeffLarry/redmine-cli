@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/MrJeffLarry/redmine-cli/internal/cmd/issues"
+	"github.com/MrJeffLarry/redmine-cli/internal/cmd/issue"
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/login"
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/users"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
@@ -56,7 +56,7 @@ func CmdInit(Version string) error {
 	cmd.PersistentFlags().BoolP(config.DEBUG_FLAG, config.DEBUG_FLAG_S, false, "Show debug info and raw response")
 
 	//	cmd.AddCommand(NewCmdVersion(Version))
-	cmd.AddCommand(issues.NewCmdIssues(r))
+	cmd.AddCommand(issue.NewCmdIssue(r))
 	cmd.AddCommand(users.NewCmdUsers(r))
 	cmd.AddCommand(login.NewCmdLogin(r))
 

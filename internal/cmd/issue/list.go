@@ -1,4 +1,4 @@
-package issues
+package issue
 
 import (
 	"encoding/json"
@@ -107,7 +107,7 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	)
 }
 
-func cmdIssuesList(r *config.Red_t) *cobra.Command {
+func cmdIssueList(r *config.Red_t) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "list",
 		Short: "List issues",

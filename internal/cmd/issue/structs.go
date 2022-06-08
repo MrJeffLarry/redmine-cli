@@ -1,4 +1,4 @@
-package issues
+package issue
 
 type viewIssue struct {
 	Issue issue `json:"issue,omitempty"`

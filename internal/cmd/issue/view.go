@@ -1,4 +1,4 @@
-package issues
+package issue
 
 import (
 	"encoding/json"
@@ -120,7 +120,7 @@ func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	fmt.Println(text.FgBlack.Sprintf("View issue: %s", r.RedmineURL+"/issues/"+sid))
 }
 
-func cmdIssuesView(r *config.Red_t) *cobra.Command {
+func cmdIssueView(r *config.Red_t) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "view [id]",
 		Short: "View issue",
