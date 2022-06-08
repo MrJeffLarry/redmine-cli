@@ -9,6 +9,7 @@ import (
 	"github.com/MrJeffLarry/redmine-cli/internal/api"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
+	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 )
 
@@ -52,29 +53,29 @@ func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	}
 
 	issue := viewIssue.Issue
-	closed := "OPEN"
+	closed := text.FgGreen.Sprint("OPEN")
 
 	if issue.Status.IsClosed {
-		closed = "CLOSED"
+		closed = text.FgRed.Sprint("CLOSED")
 	}
 
 	sid := strconv.FormatInt(issue.ID, 10)
 
 	fmt.Printf(
-		"------------ %s #%d - %s [%s] ---------\n"+
-			"Start Date: %s\n"+
-			"Due Date: %s\n"+
-			"Done: %s %d%%\n\n"+
-			"Assigned: %s\n"+
-			"Created: %s\n"+
-			"Project: %s\n"+
-			"Version: %s\n"+
-			"Status: %s\n"+
-			"Priority: %s\n"+
+		"------------ %s %s - %s [%s] ---------\n"+
+			text.Bold.Sprint("Start Date:")+" %s\n"+
+			text.Bold.Sprint("Due Date:")+" %s\n"+
+			text.Bold.Sprint("Done:")+" %s %d%%\n\n"+
+			text.Bold.Sprint("Assigned:")+" %s\n"+
+			text.Bold.Sprint("Created:")+" %s\n"+
+			text.Bold.Sprint("Project:")+" %s\n"+
+			text.Bold.Sprint("Version:")+" %s\n"+
+			text.Bold.Sprint("Status:")+" %s\n"+
+			text.Bold.Sprint("Priority:")+" %s\n"+
 			"------------ Description ---------\n"+
 			"\n%s\n\n",
-		issue.Tracker.Name,
-		issue.ID,
+		text.FgYellow.Sprint(issue.Tracker.Name),
+		print.PrintID(issue.ID),
 		issue.Subject,
 		closed,
 		issue.StartDate,
@@ -115,24 +116,29 @@ func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
 			)
 		}
 	}
-	fmt.Println("\n----------------------------------")
-	fmt.Printf("View issue: %s\n", r.RedmineURL+"/issues/"+sid)
+
+	fmt.Println(text.FgBlack.Sprintf("View issue: %s", r.RedmineURL+"/issues/"+sid))
 }
 
-func cmdIssuesIssue(r *config.Red_t) *cobra.Command {
+func cmdIssuesView(r *config.Red_t) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "view [id]",
 		Short: "View issue",
 		Long:  "View issue information and details",
 		Run: func(cmd *cobra.Command, args []string) {
 			id := cmd.Flags().Arg(0)
+			include := "?include=allowed_statuses"
 
 			if len(id) <= 0 {
 				fmt.Println("Please specify what issue you would like to view, usage: view [id]")
 				return
 			}
 
-			displayIssueGET(r, cmd, "/issues/"+id+".json?include=journals")
+			if journals, _ := cmd.Flags().GetBool(FLAG_JOURNALS); journals {
+				include += ",journals"
+			}
+
+			displayIssueGET(r, cmd, "/issues/"+id+".json"+include)
 		},
 	}
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
+	"github.com/jedib0t/go-pretty/text"
 )
 
 func PrintDebug(r *config.Red_t, status int, body string) {
@@ -21,4 +22,12 @@ func PrintRowHead(r *config.Red_t, format string, a ...any) {
 
 func PrintRow(r *config.Red_t, format string, a ...any) {
 	fmt.Printf(format, a...)
+}
+
+func PrintID(id int64) string {
+	return text.FgGreen.Sprint("#", id)
+}
+
+func PrintTimeAgo(ago string) string {
+	return ago
 }

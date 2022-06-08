@@ -33,6 +33,7 @@ type issue struct {
 	CreatedOn           string         `json:"created_on,omitempty"`
 	UpdatedOn           string         `json:"updated_on,omitempty"`
 	Journals            []issueJournal `json:"journals,omitempty"`
+	AllowedStatuses     []issueStatus  `json:"allowed_statuses,omitempty"`
 }
 
 type issueJournal struct {

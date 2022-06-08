@@ -83,7 +83,7 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	}
 
 	fmt.Printf("%s  %s  %s  %s\n",
-		"ID"+strings.Repeat(" ", int(math.Abs(float64(idLen-len("ID"))))),
+		"ID "+strings.Repeat(" ", int(math.Abs(float64(idLen-len("ID"))))),
 		"STATUS"+strings.Repeat(" ", int(math.Abs(float64(statusLen-len("STATUS"))))),
 		"PROJECT"+strings.Repeat(" ", int(math.Abs(float64(projectLen-len("PROJECT"))))),
 		"SUBJECT",
@@ -98,7 +98,7 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 		idPad := strings.Repeat(" ", iLeft)
 		project := issue.Project.Name + strings.Repeat(" ", proLeft)
 
-		fmt.Printf("%d%s  %s  %s  %s\n", issue.ID, idPad, status, project, issue.Subject)
+		fmt.Printf("%s%s  %s  %s  %s\n", print.PrintID(issue.ID), idPad, status, project, issue.Subject)
 	}
 	fmt.Printf("--- Issues %d to %d (Total %d) ----\n",
 		issues.Offset,

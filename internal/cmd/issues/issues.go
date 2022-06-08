@@ -15,7 +15,7 @@ func NewCmdIssues(r *config.Red_t) *cobra.Command {
 	}
 
 	cmd.AddCommand(cmdIssuesList(r))
-	cmd.AddCommand(cmdIssuesIssue(r))
+	cmd.AddCommand(cmdIssuesView(r))
 
 	return cmd
 }
