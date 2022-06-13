@@ -1,4 +1,4 @@
-package login
+package auth
 
 import (
 	"encoding/json"
@@ -10,27 +10,6 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/crypto/ssh/terminal"
 )
-
-const (
-	FLAG_SERVER   = "server"
-	FLAG_USERNAME = "username"
-	FLAG_APIKEY   = "apikey"
-)
-
-type user struct {
-	User userInfo `json:"user,omitempty"`
-}
-
-type userInfo struct {
-	ID          int64  `json:"id,omitempty"`
-	Login       string `json:"login,omitempty"`
-	Admin       bool   `json:"admin,omitempty"`
-	FirstName   string `json:"firstname,omitempty"`
-	LastName    string `json:"lastname,omitempty"`
-	AvatarUrl   string `json:"avatar_url,omitempty"`
-	TwofaScheme string `json:"twofa_scheme,omitempty"`
-	ApiKey      string `json:"api_key,omitempty"`
-}
 
 func loginCheckStatus(status int, badAuth string) bool {
 	switch status {
@@ -119,10 +98,10 @@ func loginPassword(r *config.Red_t, cmd *cobra.Command, server, username string)
 		return
 	}
 
-	fmt.Println("Login done!")
+	fmt.Println("Login success!")
 }
 
-func login(r *config.Red_t, cmd *cobra.Command) {
+func displayLogin(r *config.Red_t, cmd *cobra.Command) {
 	var server string
 	var username string
 	var apikey string
@@ -151,19 +130,14 @@ func login(r *config.Red_t, cmd *cobra.Command) {
 	}
 }
 
-func NewCmdLogin(r *config.Red_t) *cobra.Command {
+func cmdAuthLogin(r *config.Red_t) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "login",
-		Short: "Login to Redmine",
+		Short: "login to Redmine",
 		Long:  "Authenticate to Redmine server",
 		Run: func(cmd *cobra.Command, args []string) {
-			login(r, cmd)
+			displayLogin(r, cmd)
 		},
 	}
-
-	cmd.PersistentFlags().String(FLAG_SERVER, "", "URL to redmine server")
-	cmd.PersistentFlags().String(FLAG_USERNAME, "", "Username to redmine")
-	cmd.PersistentFlags().String(FLAG_APIKEY, "", "Use ApiKey instead of username and password")
-
 	return cmd
 }

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/MrJeffLarry/redmine-cli/internal/cmd/auth"
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/issue"
-	"github.com/MrJeffLarry/redmine-cli/internal/cmd/login"
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/project"
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/users"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
@@ -46,7 +46,7 @@ func CmdInit(Version string) error {
 		if IsAuthCmd(cmd) && r.IsConfigBad() {
 			fmt.Println("Redmine CLI (red) v" + Version)
 			fmt.Println("")
-			fmt.Println("You are not logged in, Please run `red login`")
+			fmt.Println("You are not logged in, Please run `red auth login`")
 			fmt.Println("")
 			return errors.New("Not authenticated")
 		}
@@ -56,11 +56,10 @@ func CmdInit(Version string) error {
 
 	cmd.PersistentFlags().BoolP(config.DEBUG_FLAG, config.DEBUG_FLAG_S, false, "Show debug info and raw response")
 
-	//	cmd.AddCommand(NewCmdVersion(Version))
 	cmd.AddCommand(issue.NewCmdIssue(r))
 	cmd.AddCommand(project.NewCmdProject(r))
 	cmd.AddCommand(users.NewCmdUsers(r))
-	cmd.AddCommand(login.NewCmdLogin(r))
+	cmd.AddCommand(auth.NewCmdAuth(r))
 
 	if err := cmd.Execute(); err != nil {
 		fmt.Println(err)
