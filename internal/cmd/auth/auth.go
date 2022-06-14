@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"fmt"
+
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
 	"github.com/spf13/cobra"
 )
@@ -17,7 +19,9 @@ func NewCmdAuth(r *config.Red_t) *cobra.Command {
 		Short: "auth to Redmine",
 		Long:  "Authenticate to Redmine server",
 		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Help()
+			if err := cmd.Help(); err != nil {
+				fmt.Println("Could not get usage info, abort..")
+			}
 		},
 	}
 

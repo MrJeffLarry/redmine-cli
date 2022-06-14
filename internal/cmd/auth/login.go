@@ -8,7 +8,7 @@ import (
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
 	"github.com/spf13/cobra"
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 )
 
 func loginCheckStatus(status int, badAuth string) bool {
@@ -66,7 +66,7 @@ func loginPassword(r *config.Red_t, cmd *cobra.Command, server, username string)
 	var err error
 
 	fmt.Print("Password: ")
-	if bytePassword, err = terminal.ReadPassword(0); err != nil {
+	if bytePassword, err = term.ReadPassword(0); err != nil {
 		fmt.Println(err)
 		return
 	}
