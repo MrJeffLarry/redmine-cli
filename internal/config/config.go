@@ -92,29 +92,80 @@ func (r *Red_t) SetApiKey(apiKey string) {
 	r.RedmineApiKey = apiKey
 }
 
-//
-//
-//
-func (r *Red_t) Save() error {
+func createFolderPath(path string) error {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		if err := os.Mkdir(path, os.ModePerm); err != nil {
+			if os.IsPermission(err) {
+				return errors.New("Could not create folder")
+			}
+			return err
+		}
+	}
+	return nil
+}
+
+func ConfigPath() (string, error) {
 	sep := string(os.PathSeparator)
 
 	// Find home directory.
 	home, err := homedir.Dir()
 	if err != nil {
-		fmt.Println(err)
-		return errors.New("Can't find home directory")
+		return "", errors.New("Can't find home directory")
+	}
+	if err := createFolderPath(home + sep + CONFIG_FOLDER); err != nil {
+		return "", errors.New("Could not create config folder")
 	}
 
-	if _, err := os.Stat(home + sep + CONFIG_FOLDER); os.IsNotExist(err) {
-		if err := os.Mkdir(home+sep+CONFIG_FOLDER, os.ModePerm); err != nil {
-			if os.IsPermission(err) {
-				fmt.Println("Could not create config folder", err)
-			}
-			fmt.Println(err)
-			return err
-		}
+	return home + sep + CONFIG_FOLDER + sep, nil
+}
+
+func TmpPath() (string, error) {
+	var path string
+	var err error
+
+	if path, err = ConfigPath(); err != nil {
+		return "", err
 	}
-	filePath := home + sep + CONFIG_FOLDER + sep + CONFIG_FILE
+
+	if err = createFolderPath(path + "tmp"); err != nil {
+		return "", err
+	}
+
+	return path + "tmp", nil
+}
+
+func CreateTmpFile(body string) (string, error) {
+	var path string
+	var err error
+
+	if path, err = TmpPath(); err != nil {
+		return "", err
+	}
+
+	f, err := os.CreateTemp(path, "tmp-*.md")
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	if _, err := f.Write([]byte(body)); err != nil {
+		return "", err
+	}
+	return f.Name(), nil
+}
+
+//
+//
+//
+func (r *Red_t) Save() error {
+	var homePath string
+	var err error
+
+	if homePath, err = ConfigPath(); err != nil {
+		return err
+	}
+
+	filePath := homePath + CONFIG_FILE
 
 	//	viper.SetConfigName(CONFIG_FILE)
 	viper.SetConfigFile(filePath)

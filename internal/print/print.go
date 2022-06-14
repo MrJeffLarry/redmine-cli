@@ -31,3 +31,15 @@ func PrintID(id int64) string {
 func PrintTimeAgo(ago string) string {
 	return ago
 }
+
+func Error(format string, a ...any) {
+	fmt.Println(text.FgRed.Sprintf(format, a...))
+}
+
+func OK(format string, a ...any) {
+	fmt.Println(text.FgGreen.Sprintf(format, a...))
+}
+
+func Info(format string, a ...any) {
+	fmt.Printf(format, a...)
+}

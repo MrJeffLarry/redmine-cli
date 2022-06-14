@@ -4,8 +4,11 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
+	"github.com/MrJeffLarry/redmine-cli/internal/editor"
+	"github.com/MrJeffLarry/redmine-cli/internal/print"
 	"github.com/spf13/cobra"
 )
 
@@ -19,6 +22,7 @@ func writeLine(pre string) string {
 func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 	var projectID int16
 	var err error
+	hold := true
 	issue := issue{}
 
 	if projectID, err = cmd.Flags().GetInt16("project"); err != nil || projectID < 0 {
@@ -29,7 +33,17 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 	fmt.Print("Create new issue\n\n")
 
 	issue.Subject = writeLine("Subject")
-	issue.Description = writeLine("Description")
+	for hold {
+		writeBody := writeLine("Write body? y/n")
+		if strings.Contains(writeBody, "y") {
+			issue.Description = editor.StartEdit("")
+			hold = false
+		} else if strings.Contains(writeBody, "n") {
+			hold = false
+		} else {
+			print.Error("%s: %s", "No valid input", writeBody)
+		}
+	}
 
 	fmt.Printf("Subject %s\nDescription: %s\n", issue.Subject, issue.Description)
 }
