@@ -9,6 +9,7 @@ import (
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
 	"github.com/MrJeffLarry/redmine-cli/internal/editor"
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
+	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 )
 
@@ -20,28 +21,36 @@ func writeLine(pre string) string {
 }
 
 func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
-	var projectID int16
-	var err error
+	var projectIde string
 	hold := true
 	issue := issue{}
 
-	if projectID, err = cmd.Flags().GetInt16("project"); err != nil || projectID < 0 {
-		fmt.Println("Project id is missing, please use `--project 2` for project 2")
+	if len(r.RedmineProject) > 0 {
+		projectIde = r.RedmineProject
+	}
+
+	if proIde, _ := cmd.Flags().GetString("project"); len(proIde) > 0 {
+		projectIde = proIde
+	}
+
+	if len(projectIde) == 0 {
+		fmt.Println("Project identity is missing, please use `--project project-identity` or use local .red/config.json")
 		return
 	}
 
-	fmt.Print("Create new issue\n\n")
+	fmt.Printf("Create new issue in project %s\n\n", text.FgGreen.Sprint(projectIde))
 
 	issue.Subject = writeLine("Subject")
+
 	for hold {
-		writeBody := writeLine("Write body? y/n")
+		writeBody := writeLine("Write body? (y/n)")
 		if strings.Contains(writeBody, "y") {
 			issue.Description = editor.StartEdit("")
 			hold = false
 		} else if strings.Contains(writeBody, "n") {
 			hold = false
 		} else {
-			print.Error("%s: %s", "No valid input", writeBody)
+			print.Error("%s: %s", "No valid input, valid (y=yes or n=no)", writeBody)
 		}
 	}
 
@@ -59,7 +68,7 @@ func cmdIssueCreate(r *config.Red_t) *cobra.Command {
 		},
 	}
 
-	cmd.PersistentFlags().Int16P("project", "p", -1, "What project id should the new issue use")
+	cmd.PersistentFlags().StringP("project", "p", "", "What project identity should be used for the new issue")
 
 	return cmd
 }

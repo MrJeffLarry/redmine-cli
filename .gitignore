@@ -16,3 +16,5 @@
 local.env
 build
 tmp
+.red
+.rem
