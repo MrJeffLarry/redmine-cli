@@ -34,7 +34,7 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 	}
 
 	if len(projectIde) == 0 {
-		fmt.Println("Project identity is missing, please use `--project project-identity` or use local .red/config.json")
+		fmt.Println("Project identity is missing, please use `--project project-identity` or use local override .red/config.json, or global project")
 		return
 	}
 

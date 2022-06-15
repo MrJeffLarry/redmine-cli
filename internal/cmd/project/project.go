@@ -15,6 +15,7 @@ func NewCmdProject(r *config.Red_t) *cobra.Command {
 	}
 
 	cmd.AddCommand(cmdProjectList(r))
+	cmd.AddCommand(cmdProjectSet(r))
 
 	return cmd
 }

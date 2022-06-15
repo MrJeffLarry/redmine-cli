@@ -73,6 +73,13 @@ func (r *Red_t) SetApiKey(apiKey string) {
 	r.RedmineApiKey = apiKey
 }
 
+//
+//
+//
+func (r *Red_t) SetProject(id string) {
+	r.RedmineProject = id
+}
+
 func createFolderPath(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		if err := os.Mkdir(path, os.ModePerm); err != nil {
@@ -154,6 +161,7 @@ func (r *Red_t) Save() error {
 
 	viper.Set(CONFIG_REDMINE_URL, r.RedmineURL)
 	viper.Set(CONFIG_REDMINE_API_KEY, r.RedmineApiKey)
+	viper.Set(CONFIG_REDMINE_PROJECT, r.RedmineProject)
 
 	if err := viper.WriteConfig(); err != nil {
 		fmt.Println(err)
@@ -185,6 +193,7 @@ func (r *Red_t) LoadConfig() {
 	}
 	r.RedmineURL = viper.GetString(CONFIG_REDMINE_URL)
 	r.RedmineApiKey = viper.GetString(CONFIG_REDMINE_API_KEY)
+	r.RedmineProject = viper.GetString(CONFIG_REDMINE_PROJECT)
 }
 
 func (r *Red_t) localConfig() {
