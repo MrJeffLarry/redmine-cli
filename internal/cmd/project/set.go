@@ -9,10 +9,6 @@ import (
 func setProject(r *config.Red_t, cmd *cobra.Command) {
 	id := cmd.Flags().Arg(0)
 
-	if len(id) == 0 {
-		print.Error("Please specify what project identifier you would like to use globally, usage: set [id]")
-		return
-	}
 	r.SetProject(id)
 	if err := r.Save(); err != nil {
 		print.Error("%s [%s]", "Could not save project, please verify permissions", err)

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -24,6 +25,39 @@ func ClientGET(r *config.Red_t, path string) ([]byte, int, error) {
 		fmt.Println(err.Error())
 		return res, statusCode, errors.New("Server could not handle our request")
 	}
+	req.Header.Add("X-Redmine-API-Key", r.RedmineApiKey)
+	resp, err = client.Do(req)
+	if err != nil {
+		fmt.Println(err.Error())
+		return res, resp.StatusCode, errors.New("Server could not handle our request")
+	}
+	defer resp.Body.Close()
+
+	res, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println(err.Error())
+		return res, resp.StatusCode, errors.New("Kunde inte typa redmines svar")
+	}
+
+	return res, resp.StatusCode, nil
+}
+
+func ClientPUT(r *config.Red_t, path string, body []byte) ([]byte, int, error) {
+	var err error
+	var res []byte
+	var statusCode int
+	var req *http.Request
+	var resp *http.Response
+
+	client := &http.Client{}
+	statusCode = 0
+
+	req, err = http.NewRequest(http.MethodPut, r.RedmineURL+path, bytes.NewReader(body))
+	if err != nil {
+		fmt.Println(err.Error())
+		return res, statusCode, errors.New("Server could not handle our request")
+	}
+	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("X-Redmine-API-Key", r.RedmineApiKey)
 	resp, err = client.Do(req)
 	if err != nil {

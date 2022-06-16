@@ -7,7 +7,7 @@ import (
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/auth"
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/issue"
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/project"
-	"github.com/MrJeffLarry/redmine-cli/internal/cmd/users"
+	"github.com/MrJeffLarry/redmine-cli/internal/cmd/user"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
 	"github.com/spf13/cobra"
 )
@@ -58,7 +58,7 @@ func CmdInit(Version string) error {
 
 	cmd.AddCommand(issue.NewCmdIssue(r))
 	cmd.AddCommand(project.NewCmdProject(r))
-	cmd.AddCommand(users.NewCmdUsers(r))
+	cmd.AddCommand(user.NewCmdUser(r))
 	cmd.AddCommand(auth.NewCmdAuth(r))
 
 	if err := cmd.Execute(); err != nil {

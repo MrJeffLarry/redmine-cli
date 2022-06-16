@@ -1,4 +1,4 @@
-package users
+package user
 
 import (
 	"encoding/json"
@@ -59,7 +59,7 @@ func displayMeGET(r *config.Red_t, path string) {
 	)
 }
 
-func cmdUsersMe(r *config.Red_t) *cobra.Command {
+func cmdUserMe(r *config.Red_t) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "me",
 		Short: "Display my info",

@@ -34,6 +34,7 @@ type issue struct {
 	UpdatedOn           string         `json:"updated_on,omitempty"`
 	Journals            []issueJournal `json:"journals,omitempty"`
 	AllowedStatuses     []issueStatus  `json:"allowed_statuses,omitempty"`
+	Notes               string         `json:"notes,omitempty"`
 }
 
 type issueJournal struct {

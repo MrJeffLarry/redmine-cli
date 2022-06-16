@@ -18,6 +18,22 @@ contains
 
 this will then override the project
 
+## Command Tree
+
+red
+- issue
+- - create
+- - list
+- - - all
+- - - me
+- project
+- - list
+- - - all
+- - - me
+- - set
+- user
+- - me
+
 ## Config
 
 **Complete config list options**
