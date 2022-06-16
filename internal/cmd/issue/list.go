@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"strconv"
 	"strings"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/api"
@@ -17,7 +18,16 @@ const (
 	FLAG_ORDER_ASC = "asc"
 	FLAG_ORDER_DES = "des"
 
-	FLAG_LIMIT = "limit"
+	FLAG_SORT = "sort"
+
+	FLAG_LIMIT   = "limit"
+	FLAG_LIMIT_P = "l"
+
+	FLAG_OFFSET   = "offset"
+	FLAG_OFFSET_P = "o"
+
+	FLAG_PAGE   = "page"
+	FLAG_PAGE_P = "p"
 )
 
 func countDigi(i int64) (count int) {
@@ -29,7 +39,16 @@ func countDigi(i int64) (count int) {
 }
 
 func parseFlags(cmd *cobra.Command, path string) string {
-	//	order, err := cmd.Flags().GetString(FLAG_ORDER)
+	limit, _ := cmd.Flags().GetInt(FLAG_LIMIT)
+	offset, _ := cmd.Flags().GetInt(FLAG_OFFSET)
+	page, _ := cmd.Flags().GetInt(FLAG_PAGE)
+
+	if page > 0 {
+		path += "offset=" + strconv.Itoa(page*(limit)) + "&"
+	} else {
+		path += "offset=" + strconv.Itoa(offset) + "&"
+	}
+	path += "limit=" + strconv.Itoa(limit) + "&"
 	return path
 }
 
@@ -102,7 +121,7 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	}
 	fmt.Printf("--- Issues %d to %d (Total %d) ----\n",
 		issues.Offset,
-		issues.Limit,
+		issues.Offset+issues.Limit,
 		issues.TotalCount,
 	)
 }
@@ -133,12 +152,15 @@ func cmdIssueList(r *config.Red_t) *cobra.Command {
 		Short: "List all my issues",
 		Long:  "List all my issues",
 		Run: func(cmd *cobra.Command, args []string) {
-			displayListGET(r, cmd, "/issues.json?assigned_to_id=me")
+			displayListGET(r, cmd, "/issues.json?assigned_to_id=me&")
 		},
 	})
 
-	cmd.PersistentFlags().String("order", "", "Order on id_ASC or id_DES")
-	cmd.PersistentFlags().String("sort", "", "")
+	cmd.PersistentFlags().String(FLAG_ORDER, "", "Order on id_ASC or id_DES")
+	cmd.PersistentFlags().String(FLAG_SORT, "", "")
+	cmd.PersistentFlags().IntP(FLAG_PAGE, FLAG_PAGE_P, 0, "List 25 issues per page (uses limit and offset)")
+	cmd.PersistentFlags().IntP(FLAG_LIMIT, FLAG_LIMIT_P, 25, "Limit number of issues per page")
+	cmd.PersistentFlags().IntP(FLAG_OFFSET, FLAG_OFFSET_P, 0, "skip this number of issues")
 
 	return cmd
 }
