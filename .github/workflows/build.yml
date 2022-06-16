@@ -30,8 +30,5 @@ jobs:
       - name: Install deps
         run: make deps
 
-      - name: Lint
-        run: make lint
-
       - name: Test
         run: make test

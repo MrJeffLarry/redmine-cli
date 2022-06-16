@@ -28,14 +28,7 @@ BIN_TARGET=$(BIN_FOLDER)$(BIN_NAME)$(EXE)
 all: test build
 
 deps:
-	go mod vendor -v
-
-lint:
 	go get -v -t -d ./...
-	if [ -f Gopkg.toml ]; then
-		curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-		dep ensure
-	fi
 
 build: 
 	@echo "Compiling source"
