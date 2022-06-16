@@ -24,7 +24,7 @@ func IsAuthCmd(cmd *cobra.Command) bool {
 	return true
 }
 
-func CmdInit(Version string) error {
+func CmdInit(Version, GitCommit, BuildTime string) error {
 
 	r := config.InitConfig()
 
@@ -32,7 +32,7 @@ func CmdInit(Version string) error {
 		Use:           "red <command> <subcommand> [flags]",
 		Short:         "Redmine CLI",
 		Long:          `Redmine CLI for integration with Redmine API`,
-		Version:       Version,
+		Version:       Version + "\nGit Commit: " + GitCommit + "\nBuild time: " + BuildTime,
 		SilenceErrors: true,
 		SilenceUsage:  true,
 		Run:           func(cmd *cobra.Command, args []string) { cmd.Help() },

@@ -32,3 +32,11 @@ jobs:
 
       - name: Test
         run: make test
+
+      - name: Build
+        run: make build
+
+      - uses: actions/upload-artifact@v1
+        with:
+          name: artifacts
+          path: build

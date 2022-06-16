@@ -5,10 +5,12 @@ import (
 	"os"
 )
 
-func main() {
-	appVersion := "0.0.1"
+var Version = "0.0.0-dev"
+var GitCommit = ""
+var BuildTime = ""
 
-	if err := CmdInit(appVersion); err != nil {
+func main() {
+	if err := CmdInit(Version, GitCommit, BuildTime); err != nil {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}
