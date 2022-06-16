@@ -42,7 +42,7 @@ func countDigi(i int64) (count int) {
 	return
 }
 
-func parseFlags(cmd *cobra.Command, path string) string {
+func parseFlags(r *config.Red_t, cmd *cobra.Command, path string) string {
 	FLAG_SORT_FIELDS := []string{"id", "status", "project", "subject"}
 
 	limit, _ := cmd.Flags().GetInt(FLAG_LIMIT)
@@ -51,6 +51,10 @@ func parseFlags(cmd *cobra.Command, path string) string {
 	sort, _ := cmd.Flags().GetString(FLAG_SORT)
 	order, _ := cmd.Flags().GetBool(FLAG_ORDER_DESC)
 	search, _ := cmd.Flags().GetString(FLAG_SEARCH)
+
+	if r.RedmineProjectID > 0 {
+		path += "project_id=" + strconv.Itoa(r.RedmineProjectID) + "&"
+	}
 
 	if len(search) > 0 {
 		path += "subject=" + url.QueryEscape(search) + "&"
@@ -84,7 +88,7 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 
 	issues := issues{}
 
-	path = parseFlags(cmd, path)
+	path = parseFlags(r, cmd, path)
 
 	print.PrintDebug(r, 0, path)
 
@@ -163,8 +167,9 @@ func cmdIssueList(r *config.Red_t) *cobra.Command {
 	cmd.AddCommand(&cobra.Command{
 		Use:   "all",
 		Short: "List all issues",
-		Long:  "List all issues",
+		Long:  "List all issues and ignores project ID",
 		Run: func(cmd *cobra.Command, args []string) {
+			r.RedmineProjectID = 0 // ignore ID if we want too see all
 			displayListGET(r, cmd, "/issues.json?")
 		},
 	})

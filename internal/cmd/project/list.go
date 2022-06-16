@@ -43,7 +43,7 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	var parentLevel int
 	var idLen int
 	var nameLen int
-	var ideLen int
+	//	var ideLen int
 
 	projects := projects{}
 
@@ -65,7 +65,7 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	for _, project := range projects.Projects {
 		iLen := countDigi(project.ID)
 		nLen := len(project.Name)
-		ifLen := len(project.Identifier)
+		//		ifLen := len(project.Identifier)
 
 		if iLen > idLen {
 			idLen = iLen
@@ -75,25 +75,25 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 			nameLen = nLen
 		}
 
-		if ifLen > ideLen {
-			ideLen = ifLen
-		}
+		//		if ifLen > ideLen {
+		//			ideLen = ifLen
+		//		}
 	}
 
-	fmt.Printf("%s %s %s\n",
+	fmt.Printf("%s %s\n",
 		"ID "+strings.Repeat(" ", int(math.Abs(float64(idLen-len("ID"))))),
-		"IDENTITY "+strings.Repeat(" ", int(math.Abs(float64(ideLen-len("IDENTITY"))))),
+		//		"IDENTITY "+strings.Repeat(" ", int(math.Abs(float64(ideLen-len("IDENTITY"))))),
 		"NAME"+strings.Repeat(" ", int(math.Abs(float64(nameLen-len("NAME"))))),
 	)
 
 	for _, project := range projects.Projects {
 		iLeft := idLen - countDigi(project.ID)
 		nLeft := nameLen - len(project.Name)
-		ifLeft := ideLen - len(project.Identifier)
+		//		ifLeft := ideLen - len(project.Identifier)
 
 		idPad := strings.Repeat(" ", iLeft)
 		name := project.Name + strings.Repeat(" ", nLeft)
-		identifier := project.Identifier + strings.Repeat(" ", ifLeft)
+		//		identifier := project.Identifier + strings.Repeat(" ", ifLeft)
 		pName := project.Parent.Name
 
 		if len(pName) > 0 && pName == parent {
@@ -115,7 +115,7 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 			name = text.FgBlue.Sprint(project.Name + strings.Repeat(" ", nLeft))
 		}
 
-		fmt.Printf("%s%s %s %s %s\n", print.PrintID(project.ID), idPad, identifier, strings.Repeat(" ‣", parentLevel), name)
+		fmt.Printf("%s%s %s %s\n", print.PrintID(project.ID), idPad, strings.Repeat(" ‣", parentLevel), name)
 	}
 	fmt.Printf("--- projects %d to %d (Total %d) ----\n",
 		projects.Offset,

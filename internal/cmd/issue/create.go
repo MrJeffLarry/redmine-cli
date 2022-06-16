@@ -21,24 +21,24 @@ func writeLine(pre string) string {
 }
 
 func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
-	var projectIde string
+	var projectID int
 	hold := true
 	issue := issue{}
 
-	if len(r.RedmineProject) > 0 {
-		projectIde = r.RedmineProject
+	if r.RedmineProjectID > 0 {
+		projectID = r.RedmineProjectID
 	}
 
-	if proIde, _ := cmd.Flags().GetString("project"); len(proIde) > 0 {
-		projectIde = proIde
+	if proID, _ := cmd.Flags().GetInt("project"); proID > 0 {
+		projectID = proID
 	}
 
-	if len(projectIde) == 0 {
-		fmt.Println("Project identity is missing, please use `--project project-identity` or use local override .red/config.json, or global project")
+	if projectID <= 0 {
+		fmt.Println("Project ID is missing, please use `--project 20` or use local override .red/config.json, or global project")
 		return
 	}
 
-	fmt.Printf("Create new issue in project %s\n\n", text.FgGreen.Sprint(projectIde))
+	fmt.Printf("Create new issue in project %s\n\n", text.FgGreen.Sprint(projectID))
 
 	issue.Subject = writeLine("Subject")
 
@@ -68,7 +68,7 @@ func cmdIssueCreate(r *config.Red_t) *cobra.Command {
 		},
 	}
 
-	cmd.PersistentFlags().StringP("project", "p", "", "What project identity should be used for the new issue")
+	cmd.PersistentFlags().IntP("project", "p", -1, "What project ID should be used for the new issue")
 
 	return cmd
 }

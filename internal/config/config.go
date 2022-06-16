@@ -4,19 +4,22 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
 
 const (
-	RED_CONFIG_REDMINE_URL     = "RED_CONFIG_REDMINE_URL"
-	RED_CONFIG_REDMINE_API_KEY = "RED_CONFIG_REDMINE_API_KEY"
-	RED_CONFIG_REDMINE_PROJECT = "RED_CONFIG_REDMINE_PROJECT"
+	RED_CONFIG_REDMINE_URL        = "RED_CONFIG_REDMINE_URL"
+	RED_CONFIG_REDMINE_API_KEY    = "RED_CONFIG_REDMINE_API_KEY"
+	RED_CONFIG_REDMINE_PROJECT    = "RED_CONFIG_REDMINE_PROJECT"
+	RED_CONFIG_REDMINE_PROJECT_ID = "RED_CONFIG_REDMINE_PROJECT_ID"
 
-	CONFIG_REDMINE_URL     = "server"
-	CONFIG_REDMINE_API_KEY = "apiKey"
-	CONFIG_REDMINE_PROJECT = "project"
+	CONFIG_REDMINE_URL        = "server"
+	CONFIG_REDMINE_API_KEY    = "apiKey"
+	CONFIG_REDMINE_PROJECT    = "project"
+	CONFIG_REDMINE_PROJECT_ID = "projectId"
 
 	CONFIG_FILE   = "config.json"
 	CONFIG_FOLDER = ".red"
@@ -26,10 +29,11 @@ const (
 )
 
 type Red_t struct {
-	RedmineURL     string
-	RedmineApiKey  string
-	RedmineProject string
-	Debug          bool
+	RedmineURL       string
+	RedmineApiKey    string
+	RedmineProject   string
+	RedmineProjectID int
+	Debug            bool
 }
 
 //
@@ -78,6 +82,13 @@ func (r *Red_t) SetApiKey(apiKey string) {
 //
 func (r *Red_t) SetProject(id string) {
 	r.RedmineProject = id
+}
+
+//
+//
+//
+func (r *Red_t) SetProjectID(id int) {
+	r.RedmineProjectID = id
 }
 
 func createFolderPath(path string) error {
@@ -162,6 +173,7 @@ func (r *Red_t) Save() error {
 	viper.Set(CONFIG_REDMINE_URL, r.RedmineURL)
 	viper.Set(CONFIG_REDMINE_API_KEY, r.RedmineApiKey)
 	viper.Set(CONFIG_REDMINE_PROJECT, r.RedmineProject)
+	viper.Set(CONFIG_REDMINE_PROJECT_ID, r.RedmineProjectID)
 
 	if err := viper.WriteConfig(); err != nil {
 		fmt.Println(err)
@@ -191,9 +203,11 @@ func (r *Red_t) LoadConfig() {
 	if err := viper.ReadInConfig(); err != nil {
 		return // errors.New("Can't read config file in root")
 	}
+
 	r.RedmineURL = viper.GetString(CONFIG_REDMINE_URL)
 	r.RedmineApiKey = viper.GetString(CONFIG_REDMINE_API_KEY)
 	r.RedmineProject = viper.GetString(CONFIG_REDMINE_PROJECT)
+	r.RedmineProjectID = viper.GetInt(CONFIG_REDMINE_PROJECT_ID)
 }
 
 func (r *Red_t) localConfig() {
@@ -229,6 +243,9 @@ func (r *Red_t) localConfig() {
 	if redmineProject := viper.GetString(CONFIG_REDMINE_PROJECT); len(redmineProject) > 0 {
 		r.RedmineProject = redmineProject
 	}
+	if redmineProjectID := viper.GetInt(CONFIG_REDMINE_PROJECT_ID); redmineProjectID > 0 {
+		r.RedmineProjectID = redmineProjectID
+	}
 }
 
 //
@@ -240,6 +257,7 @@ func InitConfig() *Red_t {
 	red.RedmineURL = exEnv(RED_CONFIG_REDMINE_URL, "")
 	red.RedmineApiKey = exEnv(RED_CONFIG_REDMINE_API_KEY, "")
 	red.RedmineProject = exEnv(RED_CONFIG_REDMINE_PROJECT, "")
+	red.RedmineProjectID, _ = strconv.Atoi(exEnv(RED_CONFIG_REDMINE_PROJECT_ID, ""))
 
 	red.LoadConfig()
 	red.localConfig()
