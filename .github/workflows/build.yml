@@ -18,11 +18,14 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
-            
+
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
           go-version: '^1.18'
+
+      - name: Check out code
+        uses: actions/checkout@v2
 
       - name: Install deps
         run: make deps
