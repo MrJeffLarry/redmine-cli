@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -19,6 +20,9 @@ const (
 
 	FLAG_SORT   = "sort"
 	FLAG_SORT_P = "s"
+
+	FLAG_SEARCH   = "search"
+	FLAG_SEARCH_P = "q"
 
 	FLAG_LIMIT   = "limit"
 	FLAG_LIMIT_P = "l"
@@ -46,6 +50,11 @@ func parseFlags(cmd *cobra.Command, path string) string {
 	page, _ := cmd.Flags().GetInt(FLAG_PAGE)
 	sort, _ := cmd.Flags().GetString(FLAG_SORT)
 	order, _ := cmd.Flags().GetBool(FLAG_ORDER_DESC)
+	search, _ := cmd.Flags().GetString(FLAG_SEARCH)
+
+	if len(search) > 0 {
+		path += "subject=" + url.QueryEscape(search) + "&"
+	}
 
 	if page > 0 {
 		path += "offset=" + strconv.Itoa(page*(limit)) + "&"
@@ -76,6 +85,8 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	issues := issues{}
 
 	path = parseFlags(cmd, path)
+
+	print.PrintDebug(r, 0, path)
 
 	if body, status, err = api.ClientGET(r, path); err != nil {
 		fmt.Println(status, "Could not get response from client", err)
@@ -170,6 +181,7 @@ func cmdIssueList(r *config.Red_t) *cobra.Command {
 
 	cmd.PersistentFlags().Bool(FLAG_ORDER_DESC, false, "desc")
 	cmd.PersistentFlags().StringP(FLAG_SORT, FLAG_SORT_P, "", "Sort field: ID, Status, Project, Subject")
+	cmd.PersistentFlags().StringP(FLAG_SEARCH, FLAG_SEARCH_P, "", "Search in subject field")
 	cmd.PersistentFlags().IntP(FLAG_PAGE, FLAG_PAGE_P, 0, "List 25 issues per page (uses limit and offset)")
 	cmd.PersistentFlags().IntP(FLAG_LIMIT, FLAG_LIMIT_P, 25, "Limit number of issues per page")
 	cmd.PersistentFlags().IntP(FLAG_OFFSET, FLAG_OFFSET_P, 0, "skip this number of issues")

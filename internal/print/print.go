@@ -11,9 +11,7 @@ func PrintDebug(r *config.Red_t, status int, body string) {
 	if !r.Debug {
 		return
 	}
-	fmt.Println("------------- DEBUG INFO - BEGIN ----------------")
-	fmt.Println(body)
-	fmt.Println("------------- DEBUG INFO - END ------------------")
+	fmt.Println(text.FgBlack.Sprintf("DEBUG: %s", body))
 }
 
 func PrintRowHead(r *config.Red_t, format string, a ...any) {
