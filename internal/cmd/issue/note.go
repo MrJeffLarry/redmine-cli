@@ -67,7 +67,8 @@ func cmdIssueNote(r *config.Red_t) *cobra.Command {
 		Short: "Note on issues",
 		Long:  "Note on issues",
 		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Help()
+			if err := cmd.Help(); err != nil {
+			}
 		},
 	}
 

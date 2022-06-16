@@ -11,7 +11,10 @@ func NewCmdIssue(r *config.Red_t) *cobra.Command {
 		Short:   "issue",
 		Long:    "issue",
 		Aliases: []string{"i"},
-		Run:     func(cmd *cobra.Command, args []string) { cmd.Help() },
+		Run: func(cmd *cobra.Command, args []string) {
+			if err := cmd.Help(); err != nil {
+			}
+		},
 	}
 
 	cmd.AddCommand(cmdIssueList(r))
