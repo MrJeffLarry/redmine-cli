@@ -1,0 +1,29 @@
+name: alpha build
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+  release:
+    types: [ published ]
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: Build binary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/cache@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '^1.18'
+
+      - name: Install deps
+        run: make deps
+
+      - name: Lint
+        run: make lint
+
+      - name: Test
+        run: make test
