@@ -42,6 +42,7 @@ func CmdInit(Version, GitCommit, BuildTime string) error {
 	cmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
 		// Debug flag check for more info
 		r.Debug, _ = cmd.Flags().GetBool(config.DEBUG_FLAG)
+		r.All, _ = cmd.Flags().GetBool(config.ALL_FLAG)
 
 		// require that the user is authenticated before running most commands
 		if IsAuthCmd(cmd) && r.IsConfigBad() {
@@ -56,6 +57,7 @@ func CmdInit(Version, GitCommit, BuildTime string) error {
 	}
 
 	cmd.PersistentFlags().BoolP(config.DEBUG_FLAG, config.DEBUG_FLAG_S, false, "Show debug info and raw response")
+	cmd.PersistentFlags().Bool(config.ALL_FLAG, false, "Ignore project-id")
 
 	cmd.AddCommand(issue.NewCmdIssue(r))
 	cmd.AddCommand(project.NewCmdProject(r))

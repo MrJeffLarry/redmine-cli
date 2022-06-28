@@ -26,6 +26,8 @@ const (
 
 	DEBUG_FLAG   = "debug"
 	DEBUG_FLAG_S = "d"
+
+	ALL_FLAG = "all"
 )
 
 type Red_t struct {
@@ -34,6 +36,7 @@ type Red_t struct {
 	RedmineProject   string
 	RedmineProjectID int
 	Debug            bool
+	All              bool
 }
 
 //

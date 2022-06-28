@@ -52,7 +52,7 @@ func parseFlags(r *config.Red_t, cmd *cobra.Command, path string) string {
 	order, _ := cmd.Flags().GetBool(FLAG_ORDER_DESC)
 	search, _ := cmd.Flags().GetString(FLAG_SEARCH)
 
-	if r.RedmineProjectID > 0 {
+	if r.RedmineProjectID > 0 && !r.All {
 		path += "project_id=" + strconv.Itoa(r.RedmineProjectID) + "&"
 	}
 
