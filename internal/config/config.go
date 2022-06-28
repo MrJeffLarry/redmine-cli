@@ -17,9 +17,9 @@ const (
 	RED_CONFIG_REDMINE_PROJECT_ID = "RED_CONFIG_REDMINE_PROJECT_ID"
 
 	CONFIG_REDMINE_URL        = "server"
-	CONFIG_REDMINE_API_KEY    = "apiKey"
+	CONFIG_REDMINE_API_KEY    = "api-key"
 	CONFIG_REDMINE_PROJECT    = "project"
-	CONFIG_REDMINE_PROJECT_ID = "projectId"
+	CONFIG_REDMINE_PROJECT_ID = "project-id"
 
 	CONFIG_FILE   = "config.json"
 	CONFIG_FOLDER = ".red"
@@ -103,6 +103,29 @@ func createFolderPath(path string) error {
 	return nil
 }
 
+func ConfigLocalPath() (string, error) {
+	var configPath string
+	var pwd string
+	var err error
+
+	sep := string(os.PathSeparator)
+
+	if pwd, err = os.Getwd(); err != nil {
+		return configPath, err
+	}
+
+	configPath = pwd + sep + CONFIG_FOLDER
+
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		if err := createFolderPath(configPath); err != nil {
+			return "", errors.New("Could not create local config folder")
+		}
+		return configPath + sep, nil
+	}
+
+	return configPath + sep, nil
+}
+
 func ConfigPath() (string, error) {
 	sep := string(os.PathSeparator)
 
@@ -153,6 +176,31 @@ func CreateTmpFile(body string) (string, error) {
 	return f.Name(), nil
 }
 
+func saveLocal(r *Red_t, name string, value interface{}) error {
+	var err error
+	var configPath string
+
+	if configPath, err = ConfigLocalPath(); err != nil {
+		return err
+	}
+
+	viper.Reset()
+	viper.SetConfigFile(configPath + CONFIG_FILE)
+	viper.SetConfigType("json")
+
+	viper.ReadInConfig() // ignore if we can or not read we will try write in any way
+
+	viper.Set(name, value)
+
+	if err := viper.WriteConfig(); err != nil {
+		fmt.Println(err)
+		if err := viper.SafeWriteConfig(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 //
 //
 //
@@ -182,6 +230,13 @@ func (r *Red_t) Save() error {
 		}
 	}
 	return nil
+}
+
+//
+//
+//
+func (r *Red_t) SaveLocalProject(projectID int) error {
+	return saveLocal(r, CONFIG_REDMINE_PROJECT_ID, projectID)
 }
 
 //

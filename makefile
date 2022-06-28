@@ -22,10 +22,10 @@ SRC_TARGET=./cmd/red/
 BIN_NAME=red
 BIN_FOLDER=build/
 
-BIN_TARGET=$(BIN_FOLDER)$(BIN_NAME)$(EXE)
-
 GIT_COMMIT ?= $(shell { git stash create; git rev-parse HEAD; } | grep -Exm1 '[[:xdigit:]]{40}')
 VERSION ?= $(shell git symbolic-ref -q --short HEAD || git describe --tags --exact-match)
+
+BIN_TARGET=$(BIN_FOLDER)$(BIN_NAME)-$(VERSION)$(EXE)
 
 export FLAGS += -X "main.Version=$(VERSION)"
 export FLAGS += -X "main.GitCommit=$(GIT_COMMIT)"

@@ -12,7 +12,7 @@ contains
 
 ```json
 {
-    "projectId": 12
+    "project-id": 12
 }
 ```
 
@@ -30,9 +30,15 @@ red
 - - list
 - - - all
 - - - me
-- - set
 - user
 - - me
+- config
+- - global
+- - - project
+- - - - set
+- - local
+- - - project
+- - - - set
 
 ## Config
 
@@ -41,7 +47,7 @@ red
 ```json
 {
     "server": "https://redmine.example.com",
-    "apiKey": "randomkeyfromredmine",
-    "projectId": 23
+    "api-key": "randomkeyfromredmine",
+    "project-id": 23
 }
 ```

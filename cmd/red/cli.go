@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/auth"
+	cmdConfig "github.com/MrJeffLarry/redmine-cli/internal/cmd/config"
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/issue"
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/project"
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/user"
@@ -60,6 +61,7 @@ func CmdInit(Version, GitCommit, BuildTime string) error {
 	cmd.AddCommand(project.NewCmdProject(r))
 	cmd.AddCommand(user.NewCmdUser(r))
 	cmd.AddCommand(auth.NewCmdAuth(r))
+	cmd.AddCommand(cmdConfig.NewCmdConfig(r))
 
 	if err := cmd.Execute(); err != nil {
 		fmt.Println(err)
