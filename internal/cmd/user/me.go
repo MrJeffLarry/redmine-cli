@@ -36,15 +36,15 @@ func displayMeGET(r *config.Red_t, path string) {
 	user := user{}
 
 	if body, status, err = api.ClientGET(r, path); err != nil {
-		fmt.Println(status, "Could not get response from client", err)
+		print.Error("StatusCode %d, %s", status, err.Error())
 		return
 	}
 
-	print.PrintDebug(r, status, string(body))
+	print.Debug(r, status, string(body))
 
 	if err := json.Unmarshal(body, &user); err != nil {
-		fmt.Println(err)
-		fmt.Println(status, "Could not parse and read response from server")
+		print.Debug(r, status, err.Error())
+		print.Error("StatusCode %d, %s", status, "Could not parse and read response from server")
 		return
 	}
 

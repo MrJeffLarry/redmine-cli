@@ -33,7 +33,7 @@ func addNote(r *config.Red_t, path string, cmd *cobra.Command) {
 	print.PrintDebug(r, 0, string(body))
 
 	if body, status, err = api.ClientPUT(r, path, body); err != nil {
-		print.Error("Failed to send note to server, response code: %d, error: %s", status, err)
+		print.Error("StatusCode %d, %s", status, err.Error())
 		return
 	} else {
 		print.PrintDebug(r, status, string(body))

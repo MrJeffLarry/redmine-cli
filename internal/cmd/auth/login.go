@@ -34,7 +34,7 @@ func loginApiKey(r *config.Red_t, cmd *cobra.Command, server, apikey string) {
 	user := user{}
 
 	if res, status, err = api.ClientAuthApiKeyGET(r, "/users/current.json", server, apikey); err != nil {
-		fmt.Println(status, "Could not get response from client", err)
+		print.Error("StatusCode %d, %s", status, err.Error())
 		return
 	}
 
@@ -45,8 +45,8 @@ func loginApiKey(r *config.Red_t, cmd *cobra.Command, server, apikey string) {
 	}
 
 	if err := json.Unmarshal(res, &user); err != nil {
-		fmt.Println(err)
-		fmt.Println(status, "Could not parse and read response from server")
+		print.Debug(r, status, err.Error())
+		print.Error("StatusCode %d, %s", status, "Could not parse and read response from server")
 		return
 	}
 
@@ -73,7 +73,7 @@ func loginPassword(r *config.Red_t, cmd *cobra.Command, server, username string)
 
 	res, status, err := api.ClientAuthBasicGET(r, "/users/current.json", server, username, string(bytePassword))
 	if err != nil {
-		fmt.Println(err)
+		print.Error("StatusCode %d, %s", status, err.Error())
 		return
 	}
 
@@ -86,8 +86,8 @@ func loginPassword(r *config.Red_t, cmd *cobra.Command, server, username string)
 	}
 
 	if err := json.Unmarshal(res, &user); err != nil {
-		fmt.Println(err)
-		fmt.Println(status, "Could not parse and read response from server")
+		print.Debug(r, status, err.Error())
+		print.Error("StatusCode %d, %s", status, "Could not parse and read response from server")
 		return
 	}
 
