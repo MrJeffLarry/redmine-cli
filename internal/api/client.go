@@ -34,7 +34,7 @@ func ClientGET(r *config.Red_t, path string) ([]byte, int, error) {
 	req.Header.Add("X-Redmine-API-Key", r.RedmineApiKey)
 	resp, err = client.Do(req)
 	if err != nil {
-		return res, statusCode, errors.New(ERR_CONN_SILENCE + "[" + r.RedmineURL + "]")
+		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.RedmineURL + "]")
 	}
 	defer resp.Body.Close()
 
@@ -70,7 +70,7 @@ func ClientPUT(r *config.Red_t, path string, body []byte) ([]byte, int, error) {
 	resp, err = client.Do(req)
 	if err != nil {
 		fmt.Println(err.Error())
-		return res, statusCode, errors.New(ERR_CONN_SILENCE + "[" + r.RedmineURL + "]")
+		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.RedmineURL + "]")
 	}
 	defer resp.Body.Close()
 
@@ -109,7 +109,7 @@ func ClientAuthBasicGET(r *config.Red_t, path, server, username, password string
 	resp, err = client.Do(req)
 	if err != nil {
 		fmt.Println(err.Error())
-		return res, statusCode, errors.New(ERR_CONN_SILENCE + "[" + r.RedmineURL + "]")
+		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.RedmineURL + "]")
 	}
 	defer resp.Body.Close()
 
@@ -145,7 +145,7 @@ func ClientAuthApiKeyGET(r *config.Red_t, path, server, apikey string) ([]byte, 
 	resp, err = client.Do(req)
 	if err != nil {
 		fmt.Println(err.Error())
-		return res, statusCode, errors.New(ERR_CONN_SILENCE + "[" + r.RedmineURL + "]")
+		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.RedmineURL + "]")
 	}
 	defer resp.Body.Close()
 
