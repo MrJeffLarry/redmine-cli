@@ -144,7 +144,13 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 		idPad := strings.Repeat(" ", iLeft)
 		project := issue.Project.Name + strings.Repeat(" ", proLeft)
 
-		fmt.Printf("%s%s  %s  %s  %s\n", print.PrintID(issue.ID), idPad, status, project, issue.Subject)
+		fmt.Printf("%s%s  %s  %s %s\n",
+			print.PrintID(issue.ID),
+			idPad,
+			status,
+			project,
+			issue.Subject,
+		)
 	}
 	fmt.Printf("--- Issues %d to %d (Total %d) ----\n",
 		issues.Offset,
