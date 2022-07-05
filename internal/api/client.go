@@ -85,8 +85,41 @@ func ClientPUT(r *config.Red_t, path string, body []byte) ([]byte, int, error) {
 	return res, statusCode, nil
 }
 
-func ClientPOST(r *config.Red_t, path string) ([]byte, error) {
-	return []byte{}, nil
+func ClientPOST(r *config.Red_t, path string, body []byte) ([]byte, int, error) {
+	var err error
+	var res []byte
+	var statusCode int
+	var req *http.Request
+	var resp *http.Response
+
+	client := &http.Client{}
+	statusCode = 0
+
+	req, err = http.NewRequest(http.MethodPost, r.RedmineURL+path, bytes.NewReader(body))
+	if err != nil {
+		fmt.Println(err.Error())
+		return res, statusCode, errors.New(ERR_CONN_CREATE)
+	}
+
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("X-Redmine-API-Key", r.RedmineApiKey)
+
+	resp, err = client.Do(req)
+	if err != nil {
+		fmt.Println(err.Error())
+		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.RedmineURL + "]")
+	}
+	defer resp.Body.Close()
+
+	statusCode = resp.StatusCode
+
+	res, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println(err.Error())
+		return res, statusCode, errors.New(ERR_CONN_RES)
+	}
+
+	return res, statusCode, nil
 }
 
 func ClientAuthBasicGET(r *config.Red_t, path, server, username, password string) ([]byte, int, error) {
