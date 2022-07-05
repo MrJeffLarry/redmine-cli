@@ -66,7 +66,8 @@ build-all:
 	GOOS=linux GARCH=amd64 $(GOBUILD) -o $(BIN_FOLDER)$(BIN_NAME)_linux_amd64 $(SRC_TARGET)
 	GOOS=linux GOARCH=arm GOARM=7 $(GOBUILD) -o $(BIN_FOLDER)$(BIN_NAME)_linux_arm7 $(SRC_TARGET)
 	GOOS=windows GOARCH=386 $(GOBUILD) -o $(BIN_FOLDER)$(BIN_NAME).exe $(SRC_TARGET)
-	GOOS=darwin GOARCH=386 $(GOBUILD) -o $(BIN_FOLDER)$(BIN_NAME)_mac $(SRC_TARGET)	
+	GOOS=darwin GOARCH=amd64 $(GOBUILD) -o $(BIN_FOLDER)$(BIN_NAME)_mac_amd64 $(SRC_TARGET)
+	GOOS=darwin GOARCH=arm64 $(GOBUILD) -o $(BIN_FOLDER)$(BIN_NAME)_mac_arm64 $(SRC_TARGET)
 
 # Cross compilation
 build-ubuntu:
@@ -76,4 +77,7 @@ build-arm:
 build-win:
 	GOOS=windows GOARCH=386 $(GOBUILD) -o $(BIN_TARGET) $(SRC_TARGET)
 build-mac:
-	GOOS=darwin GOARCH=386 $(GOBUILD) -o $(BIN_TARGET) $(SRC_TARGET)
+	GOOS=darwin GOARCH=amd64 $(GOBUILD) -o $(BIN_TARGET) $(SRC_TARGET)
+
+# dist list
+# go tool dist list
