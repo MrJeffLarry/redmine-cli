@@ -8,6 +8,7 @@ import (
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
 	"github.com/MrJeffLarry/redmine-cli/internal/editor"
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
+	"github.com/MrJeffLarry/redmine-cli/internal/terminal"
 	"github.com/spf13/cobra"
 )
 
@@ -22,7 +23,7 @@ func addNote(r *config.Red_t, path string, cmd *cobra.Command) {
 	print.PrintDebug(r, 0, "Path:"+path)
 	print.PrintDebug(r, 0, "Notes: "+issue.Issue.Notes)
 
-	if !print.Confirm("Send Note?") {
+	if !terminal.Confirm("Send Note?") {
 		return
 	}
 

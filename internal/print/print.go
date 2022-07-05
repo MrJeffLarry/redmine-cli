@@ -1,10 +1,7 @@
 package print
 
 import (
-	"bufio"
 	"fmt"
-	"os"
-	"strings"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
 	"github.com/jedib0t/go-pretty/text"
@@ -50,24 +47,4 @@ func OK(format string, a ...any) {
 
 func Info(format string, a ...any) {
 	fmt.Printf(format, a...)
-}
-
-func writeLine(pre string) string {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print(pre, ": ")
-	text, _ := reader.ReadString('\n')
-	return text
-}
-
-func Confirm(text string) bool {
-	for {
-		writeBody := writeLine(text + " (y/n)")
-		if strings.Contains(writeBody, "y") {
-			return true
-		} else if strings.Contains(writeBody, "n") {
-			return false
-		} else {
-			Error("%s: %s", "No valid input, valid (y=yes or n=no)", writeBody)
-		}
-	}
 }
