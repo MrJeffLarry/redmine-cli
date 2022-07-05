@@ -1,29 +1,27 @@
 package issue
 
 import (
-	"bufio"
+	"encoding/json"
 	"fmt"
-	"os"
-	"strings"
 
+	"github.com/MrJeffLarry/redmine-cli/internal/api"
+	"github.com/MrJeffLarry/redmine-cli/internal/cmd/project"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
 	"github.com/MrJeffLarry/redmine-cli/internal/editor"
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
+	"github.com/MrJeffLarry/redmine-cli/internal/terminal"
+	"github.com/MrJeffLarry/redmine-cli/internal/util"
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 )
 
-func writeLine(pre string) string {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print(pre, ": ")
-	text, _ := reader.ReadString('\n')
-	return text
-}
-
 func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
+	var err error
 	var projectID int
-	hold := true
-	issue := issue{}
+	var trackers []util.IdName
+	var trackerName string
+
+	issue := newIssueHolder{}
 
 	if r.RedmineProjectID > 0 {
 		projectID = r.RedmineProjectID
@@ -38,23 +36,44 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 		return
 	}
 
-	fmt.Printf("Create new issue in project %s\n\n", text.FgGreen.Sprint(projectID))
+	issue.Issue.ProjectID = int64(projectID)
 
-	issue.Subject = writeLine("Subject")
-
-	for hold {
-		writeBody := writeLine("Write body? (y/n)")
-		if strings.Contains(writeBody, "y") {
-			issue.Description = editor.StartEdit("")
-			hold = false
-		} else if strings.Contains(writeBody, "n") {
-			hold = false
-		} else {
-			print.Error("%s: %s", "No valid input, valid (y=yes or n=no)", writeBody)
-		}
+	if trackers, err = project.GetTrackers(r, projectID); err != nil {
+		print.Error(err.Error())
+		return
 	}
 
-	fmt.Printf("Subject %s\nDescription: %s\n", issue.Subject, issue.Description)
+	fmt.Printf("Create new issue in project %s\n\n", text.FgGreen.Sprint(projectID))
+
+	issue.Issue.TrackerID, trackerName = terminal.WriteChooseIdName("Tracker", trackers)
+	issue.Issue.Subject = terminal.WriteLineReq("Subject", 1)
+	if terminal.Confirm("Write Body?") {
+		issue.Issue.Description = editor.StartEdit("")
+	}
+
+	body, err := json.Marshal(issue)
+	if err != nil {
+		print.Debug(r, 0, err.Error())
+		print.Error("Could not compose issue..")
+		return
+	}
+
+	print.Debug(r, 0, string(body))
+	fmt.Printf("\n\nSummery\n")
+	fmt.Printf("%s %s\n", text.FgGreen.Sprint("Subject"), issue.Issue.Subject)
+	fmt.Printf("%s %s\n", text.FgGreen.Sprint("Tracker"), trackerName)
+	fmt.Printf("%s %s\n", text.FgGreen.Sprint("Description"), text.FgBlack.Sprint(issue.Issue.Description))
+
+	if !terminal.Confirm("Create issue?") {
+		return
+	}
+
+	if body, status, err := api.ClientPOST(r, "/issues.json", body); err != nil || status != 201 {
+		print.Debug(r, 0, string(body))
+		print.Error("%d Could not send issue", status)
+		return
+	}
+	print.OK("Issue created!")
 }
 
 func cmdIssueCreate(r *config.Red_t) *cobra.Command {
