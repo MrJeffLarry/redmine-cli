@@ -12,6 +12,7 @@ GOCLEAN=$(GOCMD) clean
 GOTEST=$(GOCMD) test
 GOTOOL=$(GOCMD) tool
 GOGET=$(GOCMD) get
+GOINSTALL=$(GOCMD) install
 
 EXE= 
 ifeq ($(GOOS),windows)
@@ -33,8 +34,11 @@ export FLAGS += -X "main.BuildTime=$(shell date)"
 
 all: test build
 
+install:
+	$(GOINSTALL) ./cmd/red
+
 deps:
-	go get -v -t -d ./...
+	$(GOGET) -v -t -d ./...
 
 build: 
 	$(GOBUILD) -ldflags='$(FLAGS)' -o $(BIN_TARGET) $(SRC_TARGET)
@@ -57,6 +61,12 @@ clean:
 run:
 	@$(GOBUILD) -o $(BIN_TARGET) $(SRC_TARGET)
 	$(BIN_TARGET) $(args)
+
+build-all:
+	GOOS=linux GARCH=amd64 $(GOBUILD) -o $(BIN_FOLDER)$(BIN_NAME)_linux_amd64 $(SRC_TARGET)
+	GOOS=linux GOARCH=arm GOARM=7 $(GOBUILD) -o $(BIN_FOLDER)$(BIN_NAME)_linux_arm7 $(SRC_TARGET)
+	GOOS=windows GOARCH=386 $(GOBUILD) -o $(BIN_FOLDER)$(BIN_NAME).exe $(SRC_TARGET)
+	GOOS=darwin GOARCH=386 $(GOBUILD) -o $(BIN_FOLDER)$(BIN_NAME)_mac $(SRC_TARGET)	
 
 # Cross compilation
 build-ubuntu:
