@@ -10,6 +10,10 @@ type newIssueHolder struct {
 	Issue newIssue `json:"issue,omitempty"`
 }
 
+type issueStatusHolder struct {
+	IssueStatus []issueStatus `json:"issue_statuses,omitempty"`
+}
+
 type issues struct {
 	Issues     []issue `json:"issues,omitempty"`
 	TotalCount int     `json:"total_count,omitempty"`
@@ -30,6 +34,7 @@ type newIssue struct {
 	ParentIssueID  int64  `json:"parent_issue_id,omitempty"`
 	Private        bool   `json:"is_private,omitempty"`
 	EstimatedHours int    `json:"estimated_hours,omitempty"`
+	Notes          string `json:"notes,omitempty"`
 }
 
 type issue struct {
@@ -75,7 +80,7 @@ type issueJournalDetails struct {
 }
 
 type issueStatus struct {
-	ID       int    `json:"id,omitempty"`
+	ID       int64  `json:"id,omitempty"`
 	Name     string `json:"name,omitempty"`
 	IsClosed bool   `json:"is_closed,omitempty"`
 }

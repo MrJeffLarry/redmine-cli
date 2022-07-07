@@ -1,6 +1,7 @@
 package terminal
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -8,6 +9,8 @@ import (
 
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
 	"github.com/MrJeffLarry/redmine-cli/internal/util"
+	"github.com/jedib0t/go-pretty/text"
+	"github.com/manifoldco/promptui"
 	"golang.org/x/term"
 )
 
@@ -79,6 +82,84 @@ func clearTerminal() {
 }
 
 */
+
+func Choose(label string, chooses []util.IdName) (int64, string) {
+
+	templates := &promptui.SelectTemplates{
+		Label:    text.FgCyan.Sprint("?") + " {{ . }}",
+		Active:   "▸ {{ .Name | underline }}",
+		Inactive: "  {{ .Name }}",
+		Selected: text.FgGreen.Sprint("✔") + " {{ .Name | black }}",
+	}
+
+	searcher := func(input string, index int) bool {
+		choose := chooses[index]
+		name := strings.Replace(strings.ToLower(choose.Name), " ", "", -1)
+		input = strings.Replace(strings.ToLower(input), " ", "", -1)
+
+		return strings.Contains(name, input)
+	}
+
+	prompt := promptui.Select{
+		Label:     label,
+		Items:     chooses,
+		Templates: templates,
+		Size:      10,
+		Searcher:  searcher,
+	}
+
+	i, _, err := prompt.Run()
+
+	if err != nil {
+		if err.Error() == "^C" {
+			fmt.Printf("Exit\n")
+			os.Exit(0)
+		}
+		fmt.Printf("Prompt failed %v\n", err)
+		return -1, ""
+	}
+
+	return chooses[i].ID, chooses[i].Name
+}
+
+func ChooseString(label string, chooses []string) (string, int) {
+
+	prompt := promptui.Select{
+		Label: label,
+		Items: chooses,
+		//		Templates: templates,
+		Size: 10,
+		//		Searcher:  searcher,
+	}
+
+	i, _, err := prompt.Run()
+
+	if err != nil {
+		if err.Error() == "^C" {
+			fmt.Printf("Exit\n")
+			os.Exit(0)
+		}
+		fmt.Printf("Prompt failed %v\n", err)
+		return "", -1
+	}
+
+	return chooses[i], i
+}
+
+func PromptString(label string, def string) (string, error) {
+	prompt := promptui.Prompt{
+		Label:   label,
+		Default: def,
+	}
+
+	result, err := prompt.Run()
+
+	if err != nil {
+		return def, err
+	}
+	return result, nil
+}
+
 func WriteLineReq(pre string, length int) string {
 	for {
 		value := WriteLine(pre)
@@ -119,15 +200,48 @@ func WriteChooseString(pre string, chooses []string) string {
 	}
 }
 
-func Confirm(text string) bool {
-	for {
-		writeBody := WriteLine(text + " (y/n)")
-		if strings.Contains(writeBody, "y") {
-			return true
-		} else if strings.Contains(writeBody, "n") {
-			return false
-		} else {
-			print.Error("%s: %s", "No valid input, valid (y=yes or n=no)", writeBody)
+func Confirm(label string) bool {
+	validate := func(input string) error {
+		input = strings.ToLower(input)
+		if strings.Contains(input, "y") || strings.Contains(input, "n") {
+			return nil
 		}
+		if len(input) == 0 {
+			return nil
+		}
+		return errors.New("Not valid input, valid input is [y, yes, YES, n, no, NO]")
 	}
+
+	prompt := promptui.Prompt{
+		Label:     label + "? " + text.FgBlack.Sprint("[y/N]"),
+		IsConfirm: false,
+		Validate:  validate,
+	}
+
+	result, err := prompt.Run()
+	result = strings.ToLower(result)
+
+	if err != nil {
+		print.Error(err.Error())
+		return false
+	}
+
+	if strings.Contains(result, "y") {
+		return true
+	}
+	return false
+	/*
+		for {
+			writeBody := WriteLine(prompt + text.FgBlack.Sprint(" (y/N)"))
+			if strings.Contains(writeBody, "y") {
+				return true
+			} else if strings.Contains(writeBody, "n") {
+				return false
+			} else if len(writeBody) == 0 {
+				return false
+			} else {
+				print.Error("%s: %s", "No valid input, valid (y=yes or n=no)", writeBody)
+			}
+		}
+	*/
 }
