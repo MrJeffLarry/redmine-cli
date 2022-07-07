@@ -19,7 +19,6 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 	var err error
 	var projectID int
 	var trackers []util.IdName
-	var trackerName string
 
 	issue := newIssueHolder{}
 
@@ -45,7 +44,7 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 
 	fmt.Printf("Create new issue in project %s\n\n", text.FgGreen.Sprint(projectID))
 
-	issue.Issue.TrackerID, trackerName = terminal.WriteChooseIdName("Tracker", trackers)
+	issue.Issue.TrackerID, _ = terminal.Choose("Tracker", trackers)
 	issue.Issue.Subject = terminal.WriteLineReq("Subject", 1)
 	if terminal.Confirm("Write Body?") {
 		issue.Issue.Description = editor.StartEdit("")
@@ -59,10 +58,6 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 	}
 
 	print.Debug(r, 0, string(body))
-	fmt.Printf("\n\nSummery\n")
-	fmt.Printf("%s %s\n", text.FgGreen.Sprint("Subject"), issue.Issue.Subject)
-	fmt.Printf("%s %s\n", text.FgGreen.Sprint("Tracker"), trackerName)
-	fmt.Printf("%s %s\n", text.FgGreen.Sprint("Description"), text.FgBlack.Sprint(issue.Issue.Description))
 
 	if !terminal.Confirm("Create issue?") {
 		return
