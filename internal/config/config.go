@@ -15,11 +15,13 @@ const (
 	RED_CONFIG_REDMINE_API_KEY    = "RED_CONFIG_REDMINE_API_KEY"
 	RED_CONFIG_REDMINE_PROJECT    = "RED_CONFIG_REDMINE_PROJECT"
 	RED_CONFIG_REDMINE_PROJECT_ID = "RED_CONFIG_REDMINE_PROJECT_ID"
+	RED_CONFIG_REDMINE_USER_ID    = "RED_CONFIG_REDMINE_USER_ID"
 
 	CONFIG_REDMINE_URL        = "server"
 	CONFIG_REDMINE_API_KEY    = "api-key"
 	CONFIG_REDMINE_PROJECT    = "project"
 	CONFIG_REDMINE_PROJECT_ID = "project-id"
+	CONFIG_REDMINE_USER_ID    = "user-id"
 
 	CONFIG_FILE   = "config.json"
 	CONFIG_FOLDER = ".red"
@@ -35,6 +37,7 @@ type Red_t struct {
 	RedmineApiKey    string
 	RedmineProject   string
 	RedmineProjectID int
+	RedmineUserID    int
 	Debug            bool
 	All              bool
 }
@@ -92,6 +95,13 @@ func (r *Red_t) SetProject(id string) {
 //
 func (r *Red_t) SetProjectID(id int) {
 	r.RedmineProjectID = id
+}
+
+//
+//
+//
+func (r *Red_t) SetUserID(id int) {
+	r.RedmineUserID = id
 }
 
 func createFolderPath(path string) error {
@@ -226,6 +236,7 @@ func (r *Red_t) Save() error {
 	viper.Set(CONFIG_REDMINE_API_KEY, r.RedmineApiKey)
 	viper.Set(CONFIG_REDMINE_PROJECT, r.RedmineProject)
 	viper.Set(CONFIG_REDMINE_PROJECT_ID, r.RedmineProjectID)
+	viper.Set(CONFIG_REDMINE_USER_ID, r.RedmineUserID)
 
 	if err := viper.WriteConfig(); err != nil {
 		fmt.Println(err)
@@ -267,6 +278,7 @@ func (r *Red_t) LoadConfig() {
 	r.RedmineApiKey = viper.GetString(CONFIG_REDMINE_API_KEY)
 	r.RedmineProject = viper.GetString(CONFIG_REDMINE_PROJECT)
 	r.RedmineProjectID = viper.GetInt(CONFIG_REDMINE_PROJECT_ID)
+	r.RedmineUserID = viper.GetInt(CONFIG_REDMINE_USER_ID)
 }
 
 func (r *Red_t) localConfig() {
@@ -305,6 +317,9 @@ func (r *Red_t) localConfig() {
 	if redmineProjectID := viper.GetInt(CONFIG_REDMINE_PROJECT_ID); redmineProjectID > 0 {
 		r.RedmineProjectID = redmineProjectID
 	}
+	if redmineUserID := viper.GetInt(CONFIG_REDMINE_USER_ID); redmineUserID > 0 {
+		r.RedmineUserID = redmineUserID
+	}
 }
 
 //
@@ -317,6 +332,7 @@ func InitConfig() *Red_t {
 	red.RedmineApiKey = exEnv(RED_CONFIG_REDMINE_API_KEY, "")
 	red.RedmineProject = exEnv(RED_CONFIG_REDMINE_PROJECT, "")
 	red.RedmineProjectID, _ = strconv.Atoi(exEnv(RED_CONFIG_REDMINE_PROJECT_ID, ""))
+	red.RedmineUserID, _ = strconv.Atoi(exEnv(RED_CONFIG_REDMINE_USER_ID, ""))
 
 	red.LoadConfig()
 	red.localConfig()

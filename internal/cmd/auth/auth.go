@@ -28,9 +28,9 @@ func NewCmdAuth(r *config.Red_t) *cobra.Command {
 	cmd.AddCommand(cmdAuthLogin(r))
 	cmd.AddCommand(cmdAuthLogout(r))
 
-	cmd.PersistentFlags().String(FLAG_SERVER, "", "URL to redmine server")
-	cmd.PersistentFlags().String(FLAG_USERNAME, "", "Username to redmine")
-	cmd.PersistentFlags().String(FLAG_APIKEY, "", "Use ApiKey instead of username and password")
+	//	cmd.PersistentFlags().String(FLAG_SERVER, "", "URL to redmine server")
+	//	cmd.PersistentFlags().String(FLAG_USERNAME, "", "Username to redmine")
+	//	cmd.PersistentFlags().String(FLAG_APIKEY, "", "Use ApiKey instead of username and password")
 
 	return cmd
 }

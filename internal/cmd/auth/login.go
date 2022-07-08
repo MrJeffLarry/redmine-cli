@@ -7,6 +7,7 @@ import (
 	"github.com/MrJeffLarry/redmine-cli/internal/api"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
+	"github.com/MrJeffLarry/redmine-cli/internal/terminal"
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 )
@@ -52,6 +53,7 @@ func loginApiKey(r *config.Red_t, cmd *cobra.Command, server, apikey string) {
 
 	r.SetApiKey(user.User.ApiKey)
 	r.SetServer(server)
+	r.SetUserID(user.User.ID)
 	if err = r.Save(); err != nil {
 		fmt.Println(err)
 		return
@@ -93,6 +95,7 @@ func loginPassword(r *config.Red_t, cmd *cobra.Command, server, username string)
 
 	r.SetApiKey(user.User.ApiKey)
 	r.SetServer(server)
+	r.SetUserID(user.User.ID)
 	if err = r.Save(); err != nil {
 		fmt.Println(err)
 		return
@@ -106,17 +109,13 @@ func displayLogin(r *config.Red_t, cmd *cobra.Command) {
 	var username string
 	var apikey string
 
-	if server, _ = cmd.Flags().GetString(FLAG_SERVER); server == "" {
-		fmt.Println("--server flag missing")
-		return
-	}
+	server = terminal.WriteLineReq("Server", 2)
+	_, chooseID := terminal.ChooseString("Login method", []string{"Apikey", "Username and Password"})
 
-	username, _ = cmd.Flags().GetString(FLAG_USERNAME)
-	apikey, _ = cmd.Flags().GetString(FLAG_APIKEY)
-
-	if username == "" && apikey == "" {
-		fmt.Println("Username or apikey flag missing")
-		return
+	if chooseID == 0 {
+		apikey = terminal.WriteLineReq("ApiKey", 2)
+	} else {
+		username = terminal.WriteLineReq("Username", 2)
 	}
 
 	if apikey != "" {

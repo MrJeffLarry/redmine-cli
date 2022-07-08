@@ -46,8 +46,12 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 
 	issue.Issue.TrackerID, _ = terminal.Choose("Tracker", trackers)
 	issue.Issue.Subject = terminal.WriteLineReq("Subject", 1)
-	if terminal.Confirm("Write Body?") {
+	if terminal.Confirm("Write Body") {
 		issue.Issue.Description = editor.StartEdit("")
+	}
+
+	if r.RedmineUserID > 0 && terminal.Confirm("Assign to me") {
+		issue.Issue.AssignedToID = r.RedmineUserID
 	}
 
 	body, err := json.Marshal(issue)
@@ -59,7 +63,7 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 
 	print.Debug(r, 0, string(body))
 
-	if !terminal.Confirm("Create issue?") {
+	if !terminal.Confirm("Create issue") {
 		return
 	}
 
