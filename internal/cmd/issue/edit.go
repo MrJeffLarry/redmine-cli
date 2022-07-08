@@ -20,6 +20,7 @@ const (
 	FIELD_SUBJECT     = "Subject"
 	FIELD_DESCRIPTION = "Description"
 	FIELD_STATUS      = "Status"
+	FIELD_PRIORITY    = "Priority"
 	FIELD_TRACKER     = "Tracker"
 	FIELD_NOTE        = "Notes"
 	FIELD_PREVIEW     = "Preview"
@@ -62,6 +63,36 @@ func cmdIssueEditIssueStatus(r *config.Red_t, issue *newIssueHolder) error {
 	}
 
 	issue.Issue.StatusID, _ = terminal.Choose("Choose Status", idNames)
+	return nil
+}
+
+func cmdIssueEditIssuePriority(r *config.Red_t, issue *newIssueHolder) error {
+	var body []byte
+	var status int
+	var err error
+	var priorityHolder issuePrioritiesHolder
+
+	body, status, err = api.ClientGET(r, "/enumerations/issue_priorities.json")
+	print.Debug(r, status, string(body))
+	if err != nil || status != 200 {
+		return errors.New("Could not get statuses from server, abort")
+	}
+
+	if err := json.Unmarshal(body, &priorityHolder); err != nil {
+		print.Debug(r, status, err.Error())
+		return errors.New("Could not parse and read response from server")
+	}
+
+	var idNames []util.IdName
+	for _, prio := range priorityHolder.IssuePriorities {
+		idname := util.IdName{
+			ID:   prio.ID,
+			Name: prio.Name,
+		}
+		idNames = append(idNames, idname)
+	}
+
+	issue.Issue.PriorityID, _ = terminal.Choose("Choose Priority", idNames)
 	return nil
 }
 
@@ -144,6 +175,7 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 		FIELD_SUBJECT,
 		FIELD_DESCRIPTION,
 		FIELD_STATUS,
+		FIELD_PRIORITY,
 		FIELD_TRACKER,
 		FIELD_NOTE,
 		FIELD_PREVIEW,
@@ -185,6 +217,10 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 			}
 		case FIELD_STATUS:
 			if err = cmdIssueEditIssueStatus(r, &issue); err != nil {
+				print.Error(err.Error())
+			}
+		case FIELD_PRIORITY:
+			if err = cmdIssueEditIssuePriority(r, &issue); err != nil {
 				print.Error(err.Error())
 			}
 		case FIELD_TRACKER:

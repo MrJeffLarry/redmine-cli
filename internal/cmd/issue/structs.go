@@ -14,6 +14,10 @@ type issueStatusHolder struct {
 	IssueStatus []issueStatus `json:"issue_statuses,omitempty"`
 }
 
+type issuePrioritiesHolder struct {
+	IssuePriorities []issuePriorities `json:"issue_priorities,omitempty"`
+}
+
 type issues struct {
 	Issues     []issue `json:"issues,omitempty"`
 	TotalCount int     `json:"total_count,omitempty"`
@@ -83,4 +87,10 @@ type issueStatus struct {
 	ID       int64  `json:"id,omitempty"`
 	Name     string `json:"name,omitempty"`
 	IsClosed bool   `json:"is_closed,omitempty"`
+}
+
+type issuePriorities struct {
+	ID        int64  `json:"id,omitempty"`
+	Name      string `json:"name,omitempty"`
+	IsDefault bool   `json:"is_default,omitempty"`
 }
