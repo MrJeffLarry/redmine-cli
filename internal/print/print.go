@@ -7,18 +7,15 @@ import (
 	"github.com/jedib0t/go-pretty/text"
 )
 
-func PrintDebug(r *config.Red_t, status int, body string) {
+func Debug(r *config.Red_t, format string, a ...any) {
 	if !r.Debug {
 		return
 	}
-	fmt.Println(text.FgBlack.Sprintf("DEBUG: %s", body))
-}
-
-func Debug(r *config.Red_t, status int, body string) {
-	if !r.Debug {
+	if len(a) > 0 {
+		fmt.Println(text.FgBlack.Sprintf("DEBUG: "+format, a))
 		return
 	}
-	fmt.Println(text.FgBlack.Sprintf("DEBUG: %s", body))
+	fmt.Println(text.FgBlack.Sprintf("DEBUG: " + format))
 }
 
 func PrintRowHead(r *config.Red_t, format string, a ...any) {

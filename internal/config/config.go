@@ -104,11 +104,24 @@ func (r *Red_t) SetUserID(id int) {
 	r.RedmineUserID = id
 }
 
+func (r *Red_t) ClearAll() {
+	r.RedmineURL = ""
+	r.RedmineApiKey = ""
+	r.RedmineUserID = 0
+	r.RedmineProject = ""
+	r.RedmineProjectID = 0
+}
+
 func createFolderPath(path string) error {
-	if _, err := os.Stat(path); os.IsNotExist(err) {
+	_, err := os.Stat(path)
+	if os.IsPermission(err) {
+		return errors.New("We are not allowed to access folder in " + path + " please check permissions")
+	}
+
+	if os.IsNotExist(err) {
 		if err := os.Mkdir(path, os.ModePerm); err != nil {
 			if os.IsPermission(err) {
-				return errors.New("Could not create folder")
+				return errors.New("We are not allowed to create folder in " + path)
 			}
 			return err
 		}
@@ -131,7 +144,7 @@ func ConfigLocalPath() (string, error) {
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		if err := createFolderPath(configPath); err != nil {
-			return "", errors.New("Could not create local config folder")
+			return "", err
 		}
 		return configPath + sep, nil
 	}
@@ -147,38 +160,18 @@ func ConfigPath() (string, error) {
 	if err != nil {
 		return "", errors.New("Can't find home directory")
 	}
+
 	if err := createFolderPath(home + sep + CONFIG_FOLDER); err != nil {
-		return "", errors.New("Could not create config folder")
+		return "", err
 	}
 
 	return home + sep + CONFIG_FOLDER + sep, nil
 }
 
-func TmpPath() (string, error) {
-	var path string
-	var err error
-
-	if path, err = ConfigPath(); err != nil {
-		return "", err
-	}
-
-	if err = createFolderPath(path + "tmp"); err != nil {
-		return "", err
-	}
-
-	return path + "tmp", nil
-}
-
-// fs, err := os.CreateTemp(dir, pattern)
 func CreateTmpFile(body string) (string, error) {
-	var path string
 	var err error
 
-	if path, err = TmpPath(); err != nil {
-		return "", err
-	}
-
-	f, err := os.CreateTemp(path, "tmp-*.md")
+	f, err := os.CreateTemp(os.TempDir(), "red-*.md")
 	if err != nil {
 		return "", err
 	}
@@ -228,7 +221,6 @@ func (r *Red_t) Save() error {
 
 	filePath := homePath + CONFIG_FILE
 
-	//	viper.SetConfigName(CONFIG_FILE)
 	viper.SetConfigFile(filePath)
 	viper.SetConfigType("json")
 
@@ -239,7 +231,6 @@ func (r *Red_t) Save() error {
 	viper.Set(CONFIG_REDMINE_USER_ID, r.RedmineUserID)
 
 	if err := viper.WriteConfig(); err != nil {
-		fmt.Println(err)
 		if err := viper.SafeWriteConfig(); err != nil {
 			return err
 		}

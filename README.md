@@ -48,6 +48,7 @@ red
 {
     "server": "https://redmine.example.com",
     "api-key": "randomkeyfromredmine",
-    "project-id": 23
+    "user-id": 1,
+    "project-id": 23,
 }
 ```

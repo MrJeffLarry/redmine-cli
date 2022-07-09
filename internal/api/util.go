@@ -8,6 +8,8 @@ func StatusCode(status int) error {
 	switch status {
 	case 200:
 		return nil
+	case 401:
+		return errors.New("Wrong login details, please try again")
 	case 404:
 		return errors.New("Does not exsist")
 	case 403:

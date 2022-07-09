@@ -56,19 +56,19 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 
 	body, err := json.Marshal(issue)
 	if err != nil {
-		print.Debug(r, 0, err.Error())
+		print.Debug(r, err.Error())
 		print.Error("Could not compose issue..")
 		return
 	}
 
-	print.Debug(r, 0, string(body))
+	print.Debug(r, string(body))
 
 	if !terminal.Confirm("Create issue") {
 		return
 	}
 
 	if body, status, err := api.ClientPOST(r, "/issues.json", body); err != nil || status != 201 {
-		print.Debug(r, 0, string(body))
+		print.Debug(r, string(body))
 		print.Error("%d Could not send issue", status)
 		return
 	}

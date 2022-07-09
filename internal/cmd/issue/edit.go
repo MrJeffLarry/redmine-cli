@@ -41,13 +41,13 @@ func cmdIssueEditIssueStatus(r *config.Red_t, issue *newIssueHolder) error {
 	var statusHolder issueStatusHolder
 
 	body, status, err = api.ClientGET(r, "/issue_statuses.json")
-	print.Debug(r, status, string(body))
+	print.Debug(r, "%d %s", status, string(body))
 	if err != nil || status != 200 {
 		return errors.New("Could not get statuses from server, abort")
 	}
 
 	if err := json.Unmarshal(body, &statusHolder); err != nil {
-		print.Debug(r, status, err.Error())
+		print.Debug(r, err.Error())
 		return errors.New("Could not parse and read response from server")
 	}
 
@@ -73,13 +73,13 @@ func cmdIssueEditIssuePriority(r *config.Red_t, issue *newIssueHolder) error {
 	var priorityHolder issuePrioritiesHolder
 
 	body, status, err = api.ClientGET(r, "/enumerations/issue_priorities.json")
-	print.Debug(r, status, string(body))
+	print.Debug(r, "%d %s", status, string(body))
 	if err != nil || status != 200 {
 		return errors.New("Could not get statuses from server, abort")
 	}
 
 	if err := json.Unmarshal(body, &priorityHolder); err != nil {
-		print.Debug(r, status, err.Error())
+		print.Debug(r, err.Error())
 		return errors.New("Could not parse and read response from server")
 	}
 
@@ -128,12 +128,12 @@ func cmdIssueEditIssueSave(r *config.Red_t, path string, issue *newIssueHolder) 
 
 	body, err = json.Marshal(issue)
 	if err != nil {
-		print.Debug(r, 0, err.Error())
+		print.Debug(r, err.Error())
 		print.Error("Could not compose issue..")
 		return
 	}
 
-	print.Debug(r, 0, string(body))
+	print.Debug(r, string(body))
 
 	if !terminal.Confirm("Confirm save issue?") {
 		return
@@ -144,7 +144,7 @@ func cmdIssueEditIssueSave(r *config.Red_t, path string, issue *newIssueHolder) 
 			print.Error("%d Could not read error response from server: %s", status, string(body))
 			return
 		}
-		print.Debug(r, 0, string(body))
+		print.Debug(r, string(body))
 		print.Error("%d Could not save issue: %v", status, errList.Errors)
 		return
 	}
@@ -152,7 +152,7 @@ func cmdIssueEditIssueSave(r *config.Red_t, path string, issue *newIssueHolder) 
 }
 
 func cmdIssueEditIssueDebug(r *config.Red_t, issue *newIssueHolder) {
-	print.Debug(r, 0, fmt.Sprintf("\n"+
+	print.Debug(r, "\n"+
 		"Subject: %s\n"+
 		"TrackerID: %d\n"+
 		"StatusID: %d\n"+
@@ -163,7 +163,7 @@ func cmdIssueEditIssueDebug(r *config.Red_t, issue *newIssueHolder) {
 		issue.Issue.StatusID,
 		issue.Issue.Notes,
 		issue.Issue.Description,
-	))
+	)
 }
 
 func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
@@ -193,7 +193,7 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 		return
 	}
 
-	print.PrintDebug(r, status, string(body))
+	print.Debug(r, "%d %s", status, string(body))
 
 	if err := api.StatusCode(status); err != nil {
 		print.Error(err.Error())
@@ -201,7 +201,7 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 	}
 
 	if err := json.Unmarshal(body, &viewIssue); err != nil {
-		print.Debug(r, status, err.Error())
+		print.Debug(r, err.Error())
 		print.Error("StatusCode %d, %s", status, "Could not parse and read response from server")
 		return
 	}

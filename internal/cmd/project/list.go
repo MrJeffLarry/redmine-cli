@@ -54,10 +54,10 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 		return
 	}
 
-	print.Debug(r, status, string(body))
+	print.Debug(r, "%d %s", string(body))
 
 	if err := json.Unmarshal(body, &projects); err != nil {
-		print.Debug(r, status, err.Error())
+		print.Debug(r, err.Error())
 		print.Error("StatusCode %d, %s", status, "Could not parse and read response from server")
 		return
 	}

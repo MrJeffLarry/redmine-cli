@@ -17,14 +17,14 @@ func GetTrackers(r *config.Red_t, projectID int) ([]util.IdName, error) {
 
 	body, status, err := api.ClientGET(r, "/projects/"+strconv.Itoa(projectID)+".json?include=trackers,issue_categories")
 
-	print.Debug(r, status, string(body))
+	print.Debug(r, "%d %s", status, string(body))
 
 	if err != nil {
 		return trackers, errors.New("Could not get trackers from project..")
 	}
 
 	if err := json.Unmarshal(body, &project); err != nil {
-		print.Debug(r, status, err.Error())
+		print.Debug(r, err.Error())
 		return trackers, errors.New("Could not parse and read response from server")
 	}
 

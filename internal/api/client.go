@@ -3,11 +3,11 @@ package api
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
+	"github.com/MrJeffLarry/redmine-cli/internal/print"
 )
 
 const (
@@ -60,7 +60,7 @@ func ClientPUT(r *config.Red_t, path string, body []byte) ([]byte, int, error) {
 
 	req, err = http.NewRequest(http.MethodPut, r.RedmineURL+path, bytes.NewReader(body))
 	if err != nil {
-		fmt.Println(err.Error())
+		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_CREATE)
 	}
 
@@ -69,7 +69,7 @@ func ClientPUT(r *config.Red_t, path string, body []byte) ([]byte, int, error) {
 
 	resp, err = client.Do(req)
 	if err != nil {
-		fmt.Println(err.Error())
+		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.RedmineURL + "]")
 	}
 	defer resp.Body.Close()
@@ -78,7 +78,7 @@ func ClientPUT(r *config.Red_t, path string, body []byte) ([]byte, int, error) {
 
 	res, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println(err.Error())
+		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_RES)
 	}
 
@@ -97,7 +97,7 @@ func ClientPOST(r *config.Red_t, path string, body []byte) ([]byte, int, error) 
 
 	req, err = http.NewRequest(http.MethodPost, r.RedmineURL+path, bytes.NewReader(body))
 	if err != nil {
-		fmt.Println(err.Error())
+		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_CREATE)
 	}
 
@@ -106,7 +106,7 @@ func ClientPOST(r *config.Red_t, path string, body []byte) ([]byte, int, error) 
 
 	resp, err = client.Do(req)
 	if err != nil {
-		fmt.Println(err.Error())
+		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.RedmineURL + "]")
 	}
 	defer resp.Body.Close()
@@ -115,7 +115,7 @@ func ClientPOST(r *config.Red_t, path string, body []byte) ([]byte, int, error) 
 
 	res, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println(err.Error())
+		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_RES)
 	}
 
@@ -134,15 +134,15 @@ func ClientAuthBasicGET(r *config.Red_t, path, server, username, password string
 
 	req, err = http.NewRequest(http.MethodGet, server+path, nil)
 	if err != nil {
-		fmt.Println(err.Error())
+		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_CREATE)
 	}
 	req.SetBasicAuth(username, password)
 
 	resp, err = client.Do(req)
 	if err != nil {
-		fmt.Println(err.Error())
-		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.RedmineURL + "]")
+		print.Debug(r, err.Error())
+		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + server + "]")
 	}
 	defer resp.Body.Close()
 
@@ -150,7 +150,7 @@ func ClientAuthBasicGET(r *config.Red_t, path, server, username, password string
 
 	res, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println(err.Error())
+		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_RES)
 	}
 
@@ -169,7 +169,7 @@ func ClientAuthApiKeyGET(r *config.Red_t, path, server, apikey string) ([]byte, 
 
 	req, err = http.NewRequest(http.MethodGet, server+path, nil)
 	if err != nil {
-		fmt.Println(err.Error())
+		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_CREATE)
 	}
 
@@ -177,8 +177,8 @@ func ClientAuthApiKeyGET(r *config.Red_t, path, server, apikey string) ([]byte, 
 
 	resp, err = client.Do(req)
 	if err != nil {
-		fmt.Println(err.Error())
-		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.RedmineURL + "]")
+		print.Debug(r, err.Error())
+		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + server + "]")
 	}
 	defer resp.Body.Close()
 
@@ -186,7 +186,7 @@ func ClientAuthApiKeyGET(r *config.Red_t, path, server, apikey string) ([]byte, 
 
 	res, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println(err.Error())
+		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_RES)
 	}
 

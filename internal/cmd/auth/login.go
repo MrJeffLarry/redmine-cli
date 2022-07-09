@@ -2,31 +2,14 @@ package auth
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/api"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
 	"github.com/MrJeffLarry/redmine-cli/internal/terminal"
+	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
-	"golang.org/x/term"
 )
-
-func loginCheckStatus(status int, badAuth string) bool {
-	switch status {
-	case 401:
-		fmt.Println(badAuth)
-		return false
-	case 500:
-		fmt.Println("Server had an internal error on our request, try again")
-		return false
-	case 200:
-		return true
-	default:
-		fmt.Println("Could not process your request, please try again")
-		return false
-	}
-}
 
 func loginApiKey(r *config.Red_t, cmd *cobra.Command, server, apikey string) {
 	var err error
@@ -39,14 +22,15 @@ func loginApiKey(r *config.Red_t, cmd *cobra.Command, server, apikey string) {
 		return
 	}
 
-	print.PrintDebug(r, status, string(res))
+	print.Debug(r, "%d %s", status, string(res))
 
-	if !loginCheckStatus(status, "Incorrect apikey, get (API access key) from: "+server+"/my/account") {
+	if err = api.StatusCode(status); err != nil {
+		print.Error(err.Error())
 		return
 	}
 
 	if err := json.Unmarshal(res, &user); err != nil {
-		print.Debug(r, status, err.Error())
+		print.Debug(r, err.Error())
 		print.Error("StatusCode %d, %s", status, "Could not parse and read response from server")
 		return
 	}
@@ -55,40 +39,39 @@ func loginApiKey(r *config.Red_t, cmd *cobra.Command, server, apikey string) {
 	r.SetServer(server)
 	r.SetUserID(user.User.ID)
 	if err = r.Save(); err != nil {
-		fmt.Println(err)
+		print.Error(err.Error())
 		return
 	}
 
-	fmt.Println("Login done!")
+	print.OK("Login done!")
 }
 
 func loginPassword(r *config.Red_t, cmd *cobra.Command, server, username string) {
-	var bytePassword []byte
+	var password string
 	var user user
 	var err error
 
-	fmt.Print("Password: ")
-	if bytePassword, err = term.ReadPassword(0); err != nil {
-		fmt.Println(err)
+	if password, err = terminal.PromptPassword("Password", ""); err != nil {
+		print.Error(err.Error())
 		return
 	}
 
-	res, status, err := api.ClientAuthBasicGET(r, "/users/current.json", server, username, string(bytePassword))
+	res, status, err := api.ClientAuthBasicGET(r, "/users/current.json", server, username, password)
 	if err != nil {
 		print.Error("StatusCode %d, %s", status, err.Error())
 		return
 	}
 
-	print.PrintDebug(r, status, string(res))
+	print.Debug(r, "%d %s", status, string(res))
 
-	fmt.Println("")
-
-	if !loginCheckStatus(status, "Wrong username or password") {
+	if err = api.StatusCode(status); err != nil {
+		print.Info("If Two-factor authentication is enabled, this login method will not work as it is not supported, please use Apikey instead, you will find the Apikey (Api access key) at /my/account\n")
+		print.Error(err.Error())
 		return
 	}
 
 	if err := json.Unmarshal(res, &user); err != nil {
-		print.Debug(r, status, err.Error())
+		print.Debug(r, err.Error())
 		print.Error("StatusCode %d, %s", status, "Could not parse and read response from server")
 		return
 	}
@@ -97,36 +80,43 @@ func loginPassword(r *config.Red_t, cmd *cobra.Command, server, username string)
 	r.SetServer(server)
 	r.SetUserID(user.User.ID)
 	if err = r.Save(); err != nil {
-		fmt.Println(err)
+		print.Error(err.Error())
 		return
 	}
 
-	fmt.Println("Login success!")
+	print.OK("Login success!")
 }
 
 func displayLogin(r *config.Red_t, cmd *cobra.Command) {
 	var server string
 	var username string
 	var apikey string
+	var err error
 
-	server = terminal.WriteLineReq("Server", 2)
+	print.Info(text.FgGreen.Sprint("Welcome to Red an Redmine CLI\n") +
+		"Before login make sure you have enabled `Enable REST web service`\nfind it in Administration -> Settings -> API or use url /settings?tab=api\nYou find ApiKey (API access key) from /my/account\n\n")
+
+	if server, err = terminal.PromptStringRequire("Server URL (https://example.com)", ""); err != nil {
+		print.Error("Could not read input, please try again or submit issue")
+		return
+	}
+
 	_, chooseID := terminal.ChooseString("Login method", []string{"Apikey", "Username and Password"})
 
 	if chooseID == 0 {
-		apikey = terminal.WriteLineReq("ApiKey", 2)
-	} else {
-		username = terminal.WriteLineReq("Username", 2)
-	}
-
-	if apikey != "" {
+		if apikey, err = terminal.PromptPassword("ApiKey", ""); err != nil {
+			print.Error("Could not read input, please try again or submit issue")
+			return
+		}
 		loginApiKey(r, cmd, server, apikey)
 		return
 	}
 
-	if username != "" {
-		loginPassword(r, cmd, server, username)
+	if username, err = terminal.PromptStringRequire("Username", ""); err != nil {
+		print.Error("Could not read input, please try again or submit issue")
 		return
 	}
+	loginPassword(r, cmd, server, username)
 }
 
 func cmdAuthLogin(r *config.Red_t) *cobra.Command {

@@ -39,7 +39,7 @@ func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
 		return
 	}
 
-	print.PrintDebug(r, status, string(body))
+	print.Debug(r, "%d %s", status, string(body))
 
 	if err := api.StatusCode(status); err != nil {
 		fmt.Println(err)
@@ -47,7 +47,7 @@ func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	}
 
 	if err := json.Unmarshal(body, &viewIssue); err != nil {
-		print.Debug(r, status, err.Error())
+		print.Debug(r, err.Error())
 		print.Error("StatusCode %d, %s", status, "Could not parse and read response from server")
 		return
 	}

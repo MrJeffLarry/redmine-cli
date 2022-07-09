@@ -20,8 +20,6 @@ func NewCmdIssue(r *config.Red_t) *cobra.Command {
 	cmd.AddCommand(cmdIssueList(r))
 	cmd.AddCommand(cmdIssueView(r))
 	cmd.AddCommand(cmdIssueCreate(r))
-	//	cmd.AddCommand(cmdIssueNote(r))
-	//	cmd.AddCommand(cmdIssueSet(r))
 	cmd.AddCommand(cmdIssueEdit(r))
 
 	return cmd

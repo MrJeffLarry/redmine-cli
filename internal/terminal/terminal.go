@@ -146,6 +146,42 @@ func ChooseString(label string, chooses []string) (string, int) {
 	return chooses[i], i
 }
 
+func PromptPassword(label string, def string) (string, error) {
+	var err error
+	var bytePassword []byte
+
+	fmt.Print(text.FgGreen.Sprint(label + " "))
+	if bytePassword, err = term.ReadPassword(0); err != nil {
+		fmt.Println("")
+		return "", err
+	}
+	fmt.Println("")
+
+	return string(bytePassword), nil
+}
+
+func PromptStringRequire(label string, def string) (string, error) {
+	validate := func(input string) error {
+		if len(input) > 0 {
+			return nil
+		}
+		return errors.New("This field is required")
+	}
+
+	prompt := promptui.Prompt{
+		Label:    label,
+		Default:  def,
+		Validate: validate,
+	}
+
+	result, err := prompt.Run()
+
+	if err != nil {
+		return def, err
+	}
+	return result, nil
+}
+
 func PromptString(label string, def string) (string, error) {
 	prompt := promptui.Prompt{
 		Label:   label,
