@@ -11,7 +11,7 @@ func StatusCode(status int) error {
 	case 401:
 		return errors.New("Wrong login details, please try again")
 	case 404:
-		return errors.New("Does not exsist")
+		return errors.New("Does not exist")
 	case 403:
 		return errors.New("Does not have access to view or access this")
 	case 500:
