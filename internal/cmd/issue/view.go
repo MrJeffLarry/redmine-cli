@@ -63,16 +63,16 @@ func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
 
 	fmt.Printf(
 		"------------ %s %s - %s [%s] ---------\n"+
-			text.Bold.Sprint("Start Date:")+" %s\n"+
-			text.Bold.Sprint("Due Date:")+" %s\n"+
-			text.Bold.Sprint("Done:")+" %s %d%%\n\n"+
-			text.Bold.Sprint("Assigned:")+" %s\n"+
-			text.Bold.Sprint("Created:")+" %s\n"+
-			text.Bold.Sprint("Project:")+" %s\n"+
-			text.Bold.Sprint("Version:")+" %s\n"+
-			text.Bold.Sprint("Status:")+" %s\n"+
-			text.Bold.Sprint("Priority:")+" %s\n"+
-			"------------ Description ---------\n"+
+			text.FgGreen.Sprint("Start Date")+" %s\n"+
+			text.FgGreen.Sprint("Due Date")+" %s\n"+
+			text.FgGreen.Sprint("Done")+" %s %d%%\n\n"+
+			text.FgGreen.Sprint("Assigned")+" %s\n"+
+			text.FgGreen.Sprint("Created")+" %s\n"+
+			text.FgGreen.Sprint("Project")+" %s\n"+
+			text.FgGreen.Sprint("Version")+" %s\n"+
+			text.FgGreen.Sprint("Status")+" %s\n"+
+			text.FgGreen.Sprint("Priority")+" %s\n"+
+			text.FgGreen.Sprint("Description")+"\n"+
 			"\n%s\n\n",
 		text.FgYellow.Sprint(issue.Tracker.Name),
 		print.PrintID(issue.ID),
@@ -96,23 +96,23 @@ func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
 			status := ""
 			notes := ""
 			for _, detail := range journal.Details {
-				status += "| "
+				status += text.FgGreen.Sprint("Update") + " "
 				status += detail.Name + " changed from "
 				status += detail.OldValue + " to "
 				status += detail.NewValue + "\n"
 			}
 			if len(journal.Notes) > 0 {
-				notes = "| Notes: "
+				notes = text.FgGreen.Sprint("Notes") + " "
 				notes += journal.Notes + "\n"
 			}
 
-			fmt.Printf("-------------  #%d - %s -------------\n"+
+			fmt.Printf(" %s %s\n"+
 				"%s"+
 				"%s\n",
-				journal.ID,
+				text.FgGreen.Sprintf("#%d", journal.ID),
 				journal.User.Name,
-				notes,
-				status,
+				text.FgBlack.Sprint(notes),
+				text.FgBlack.Sprint(status),
 			)
 		}
 	}

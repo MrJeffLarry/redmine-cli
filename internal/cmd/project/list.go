@@ -2,14 +2,11 @@ package project
 
 import (
 	"encoding/json"
-	"fmt"
-	"math"
-	"strings"
+	"strconv"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/api"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
-	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 )
 
@@ -38,12 +35,12 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	var err error
 	var body []byte
 	var status int
-	var oldParent string
-	var parent string
-	var parentLevel int
-	var idLen int
-	var nameLen int
-	//	var ideLen int
+	//	var oldParent string
+	//	var parent string
+	//	var parentLevel int
+	//	var idLen int
+	//	var nameLen int
+	head := []string{"ID", "NAME"}
 
 	projects := projects{}
 
@@ -62,66 +59,60 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 		return
 	}
 
+	l := print.NewList(head...)
+
 	for _, project := range projects.Projects {
-		iLen := countDigi(project.ID)
-		nLen := len(project.Name)
-		//		ifLen := len(project.Identifier)
+		l.AddRow(strconv.FormatInt(project.ID, 10), project.Name)
+		//		iLen := countDigi(project.ID)
+		//		nLen := len(project.Name)
 
-		if iLen > idLen {
-			idLen = iLen
-		}
+		//		if iLen > idLen {
+		//			idLen = iLen
+		//		}
 
-		if nLen > nameLen {
-			nameLen = nLen
-		}
-
-		//		if ifLen > ideLen {
-		//			ideLen = ifLen
+		//		if nLen > nameLen {
+		//			nameLen = nLen
 		//		}
 	}
 
-	fmt.Printf("%s %s\n",
-		"ID "+strings.Repeat(" ", int(math.Abs(float64(idLen-len("ID"))))),
-		//		"IDENTITY "+strings.Repeat(" ", int(math.Abs(float64(ideLen-len("IDENTITY"))))),
-		"NAME"+strings.Repeat(" ", int(math.Abs(float64(nameLen-len("NAME"))))),
-	)
+	l.Render()
+	/*
+		fmt.Printf("%s %s\n",
+			"ID "+strings.Repeat(" ", int(math.Abs(float64(idLen-len("ID"))))),
+			"NAME"+strings.Repeat(" ", int(math.Abs(float64(nameLen-len("NAME"))))),
+		)
 
-	for _, project := range projects.Projects {
-		iLeft := idLen - countDigi(project.ID)
-		nLeft := nameLen - len(project.Name)
-		//		ifLeft := ideLen - len(project.Identifier)
+		for _, project := range projects.Projects {
+			iLeft := idLen - countDigi(project.ID)
+			nLeft := nameLen - len(project.Name)
 
-		idPad := strings.Repeat(" ", iLeft)
-		name := project.Name + strings.Repeat(" ", nLeft)
-		//		identifier := project.Identifier + strings.Repeat(" ", ifLeft)
-		pName := project.Parent.Name
+			idPad := strings.Repeat(" ", iLeft)
+			name := project.Name + strings.Repeat(" ", nLeft)
+			pName := project.Parent.Name
 
-		if len(pName) > 0 && pName == parent {
-			// same level do nothing
-		} else if len(pName) > 0 && pName != parent {
-			if oldParent == pName {
-				parentLevel--
+			if len(pName) > 0 && pName == parent {
+				// same level do nothing
+			} else if len(pName) > 0 && pName != parent {
+				if oldParent == pName {
+					parentLevel--
+				} else {
+					parentLevel++
+				}
+				oldParent = parent
+				parent = pName
 			} else {
-				parentLevel++
+				parent = pName
+				parentLevel = 0
 			}
-			oldParent = parent
-			parent = pName
-		} else {
-			parent = pName
-			parentLevel = 0
-		}
 
-		if parentLevel > 0 {
-			name = text.FgBlue.Sprint(project.Name + strings.Repeat(" ", nLeft))
+			fmt.Printf("%s%s %s %s\n", print.PrintID(project.ID), idPad, strings.Repeat(" ‣", parentLevel), name)
 		}
-
-		fmt.Printf("%s%s %s %s\n", print.PrintID(project.ID), idPad, strings.Repeat(" ‣", parentLevel), name)
-	}
-	fmt.Printf("--- projects %d to %d (Total %d) ----\n",
-		projects.Offset,
-		projects.Limit,
-		projects.TotalCount,
-	)
+		fmt.Printf("--- projects %d to %d (Total %d) ----\n",
+			projects.Offset,
+			projects.Limit,
+			projects.TotalCount,
+		)
+	*/
 }
 
 func cmdProjectList(r *config.Red_t) *cobra.Command {
