@@ -40,7 +40,7 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	//	var parentLevel int
 	//	var idLen int
 	//	var nameLen int
-	head := []string{"ID", "NAME"}
+	head := []string{"ID", "NAME", "PARENT"}
 
 	projects := projects{}
 
@@ -62,17 +62,19 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	l := print.NewList(head...)
 
 	for _, project := range projects.Projects {
-		l.AddRow(strconv.FormatInt(project.ID, 10), project.Name)
-		//		iLen := countDigi(project.ID)
-		//		nLen := len(project.Name)
+		id := print.Colum{}
+		name := print.Colum{}
+		parent := print.Colum{}
 
-		//		if iLen > idLen {
-		//			idLen = iLen
-		//		}
+		id.Content = strconv.FormatInt(project.ID, 10)
+		id.FgColor = print.ID
 
-		//		if nLen > nameLen {
-		//			nameLen = nLen
-		//		}
+		name.Content = project.Name
+		name.ParentPad = true
+		name.Parent = project.Parent.Name
+
+		parent.Content = project.Parent.Name
+		l.AddRow(id, name, parent)
 	}
 
 	l.Render()

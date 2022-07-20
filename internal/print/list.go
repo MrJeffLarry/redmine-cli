@@ -5,10 +5,23 @@ import (
 	"strings"
 )
 
+type Colum struct {
+	FgColor     Color
+	BgColor     Color
+	ParentPad   bool
+	Parent      string
+	ParentSize  int
+	ContentSize int
+	Content     string
+}
+
 type List struct {
-	maxLens []int
-	headers []string
-	rows    [][]string
+	maxLens     []int
+	headers     []string
+	rows        [][]Colum
+	Parent      string
+	OldParent   string
+	ParentLevel int
 }
 
 func NewList(header ...string) *List {
@@ -21,10 +34,28 @@ func NewList(header ...string) *List {
 	return list
 }
 
-func (l *List) AddRow(row ...string) {
+func (l *List) AddRow(row ...Colum) {
 	for i, field := range row {
-		if len(field) > l.maxLens[i] {
-			l.maxLens[i] = len(field)
+		if field.ParentPad {
+			if len(field.Parent) > 0 && field.Parent == l.Parent {
+				// same level do nothing
+			} else if len(field.Parent) > 0 && field.Parent != l.Parent {
+				if l.OldParent == field.Parent {
+					l.ParentLevel--
+				} else {
+					l.ParentLevel++
+				}
+				l.OldParent = l.Parent
+				l.Parent = field.Parent
+			} else {
+				l.Parent = field.Parent
+				l.ParentLevel = 0
+			}
+			row[i].ParentSize = l.ParentLevel
+		}
+		row[i].ContentSize = len(field.Content) + (row[i].ParentSize * 2)
+		if row[i].ContentSize > l.maxLens[i] {
+			l.maxLens[i] = row[i].ContentSize
 		}
 	}
 	l.rows = append(l.rows, row)
@@ -32,12 +63,17 @@ func (l *List) AddRow(row ...string) {
 
 func (l *List) Render() {
 	for i, head := range l.headers {
-		fmt.Printf("%s %s:%d-%d", head, strings.Repeat(" ", l.maxLens[i]-len(head)), len(head), l.maxLens[i])
+		fmt.Printf("%s %s", head, strings.Repeat(" ", l.maxLens[i]-len(head)))
 	}
 	fmt.Printf("\n")
 	for _, row := range l.rows {
 		for i, field := range row {
-			fmt.Printf("%s %s", field, strings.Repeat(" ", l.maxLens[i]-len(field)))
+			pad := l.maxLens[i]
+			pad -= field.ContentSize
+			fmt.Printf("%s%s %s",
+				strings.Repeat("‣ ", field.ParentSize),
+				field.FgColor.Color(field.Content),
+				strings.Repeat(" ", pad))
 		}
 		fmt.Printf("\n")
 	}
