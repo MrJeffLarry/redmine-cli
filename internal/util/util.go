@@ -1,6 +1,8 @@
 package util
 
-import "strconv"
+import (
+	"strconv"
+)
 
 type IdName struct {
 	ID   int64  `json:"id,omitempty"`
