@@ -2,6 +2,7 @@ package issue
 
 import (
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
+	"github.com/MrJeffLarry/redmine-cli/internal/print"
 	"github.com/spf13/cobra"
 )
 
@@ -13,6 +14,7 @@ func NewCmdIssue(r *config.Red_t) *cobra.Command {
 		Aliases: []string{"i"},
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := cmd.Help(); err != nil {
+				print.Error("Could not print help")
 			}
 		},
 	}

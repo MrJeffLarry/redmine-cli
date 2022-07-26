@@ -51,7 +51,7 @@ func cmdIssueEditIssueStatus(r *config.Red_t, issue *newIssueHolder) error {
 		return errors.New("Could not parse and read response from server")
 	}
 
-	fmt.Printf(text.FgBlack.Sprint("Do check what status is allowed to change from status to status, as there is rules we can not read, so double check status got set\n"))
+	fmt.Println(text.FgBlack.Sprint("Do check what status is allowed to change from status to status, as there is rules we can not read, so double check status got set"))
 
 	var idNames []util.IdName
 	for _, status := range statusHolder.IssueStatus {

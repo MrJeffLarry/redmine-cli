@@ -14,17 +14,22 @@ import (
 const (
 	HEAD_ID       = "ID"
 	HEAD_STATUS   = "STATUS"
+	HEAD_TRACKER  = "TRACKER"
 	HEAD_PRIORITY = "PRIORITY"
 	HEAD_PROJECT  = "PROJECT"
 	HEAD_SUBJECT  = "SUBJECT"
+
+	FLAG_DISPLAY_PROJECT = "project"
 )
 
 func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	var err error
 	var body []byte
 	var status int
-	head := []string{HEAD_ID, HEAD_STATUS, HEAD_PRIORITY, HEAD_PROJECT, HEAD_SUBJECT}
+	var dispProject bool
 
+	head := []string{HEAD_ID, HEAD_TRACKER, HEAD_STATUS, HEAD_PRIORITY, HEAD_SUBJECT}
+	sort := []string{"id", "status", "priority", "subject"}
 	issues := issues{}
 	projectID := 0
 
@@ -32,7 +37,12 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 		projectID = r.RedmineProjectID
 	}
 
-	path += util.ParseFlags(cmd, projectID, []string{"id", "status", "priority", "project", "subject"})
+	if dispProject, _ = cmd.Flags().GetBool(FLAG_DISPLAY_PROJECT); dispProject {
+		head = append(head, HEAD_PROJECT)
+		sort = append(sort, "project")
+	}
+
+	path += util.ParseFlags(cmd, projectID, sort)
 
 	print.Debug(r, path)
 
@@ -53,20 +63,26 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 
 	for _, issue := range issues.Issues {
 		id := print.Column{}
+		tracker := print.Column{}
 		status := print.Column{}
 		priority := print.Column{}
-		project := print.Column{}
 		subject := print.Column{}
+		project := print.Column{}
 
 		id.Content = strconv.FormatInt(issue.ID, 10)
 		id.FgColor = print.ID
 
+		tracker.Content = issue.Tracker.Name
 		status.Content = issue.Status.Name
 		priority.Content = issue.Priority.Name
-		project.Content = issue.Project.Name
 		subject.Content = issue.Subject
+		project.Content = issue.Project.Name
 
-		l.AddRow(id, status, priority, project, subject)
+		if dispProject {
+			l.AddRow(id, tracker, status, priority, subject, project)
+		} else {
+			l.AddRow(id, tracker, status, priority, subject)
+		}
 	}
 	l.SetLimit(issues.Limit)
 	l.SetOffset(issues.Offset)
@@ -105,6 +121,8 @@ func cmdIssueList(r *config.Red_t) *cobra.Command {
 			displayListGET(r, cmd, "/issues.json?assigned_to_id=me&")
 		},
 	})
+
+	cmd.PersistentFlags().Bool(FLAG_DISPLAY_PROJECT, false, "Display project column")
 
 	util.AddFlags(cmd)
 

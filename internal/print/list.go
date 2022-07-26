@@ -2,6 +2,7 @@ package print
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"unicode/utf8"
 
@@ -41,6 +42,10 @@ func NewList(header ...string) *List {
 }
 
 func (l *List) AddRow(row ...Column) {
+	if len(row) != len(l.headers) {
+		Error("Ohhh no! Darn! The number of columns does not match headers, Please report this to the developers")
+		os.Exit(0)
+	}
 	for i, field := range row {
 		if field.ParentPad {
 			if utf8.RuneCountInString(field.Parent) > 0 && field.Parent == l.Parent {
@@ -106,7 +111,7 @@ func (l *List) Render() {
 		l.Offset = 0
 	}
 
-	fmt.Println(text.FgBlack.Sprintf("- - - - %d to %d (Total %d) - - - -",
+	fmt.Println(text.FgHiBlack.Sprintf("- - - - %d to %d (Total %d) - - - -",
 		l.Offset,
 		l.Offset+l.Limit,
 		l.TotalCount,
