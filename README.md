@@ -10,7 +10,7 @@ Redmine CLI
 
 ```bash
 brew tap mrjefflarry/redmine-cli https://github.com/mrjefflarry/redmine-cli
-brew install redmine-cli
+brew install mrjefflarry/redmine-cli/red
 ```
 
 ### Windows
@@ -19,7 +19,7 @@ brew install redmine-cli
 
 ```powershell
 scoop bucket add org https://github.com/mrjefflarry/redmine-cli.git
-scoop install mrjefflarry/redmine-cli
+scoop install mrjefflarry/redmine-cli/red
 ```
 
 ### Linux

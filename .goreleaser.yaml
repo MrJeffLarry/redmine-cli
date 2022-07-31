@@ -46,7 +46,6 @@ archives:
     files:
       - README.md
       - LICENSE
-      - build/*
 
 snapshot:
   name_template: "{{ .Tag }}-alpha"
@@ -85,8 +84,5 @@ brews:
     description: "Redmine CLI"
     install: |-
       bin.install "red"
-      bash_completion.install "build/red.bash" => "red"
-      zsh_completion.install "build/red.zsh" => "_red"
-      fish_completion.install "build/red.fish"
     test: |
       system "#{bin}/red -v"
