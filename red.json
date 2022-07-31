@@ -1,0 +1,21 @@
+{
+    "version": "0.0.2",
+    "architecture": {
+        "32bit": {
+            "url": "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.2/red_0.0.2_Windows_i386.tar.gz",
+            "bin": [
+                "red.exe"
+            ],
+            "hash": "8191f70f6588db3d9b9e3c7840c121db6db06a7fdb367580676136e679723ea1"
+        },
+        "64bit": {
+            "url": "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.2/red_0.0.2_Windows_x86_64.tar.gz",
+            "bin": [
+                "red.exe"
+            ],
+            "hash": "250cd77174620d718cd04fd1d28893eaf75830b6ca08ab5128a665ce1c0928f2"
+        }
+    },
+    "homepage": "https://github.com/mrjefflarry/redmine-cli",
+    "description": "Redmine CLI"
+}
