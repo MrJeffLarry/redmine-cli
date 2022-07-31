@@ -1,4 +1,62 @@
-# redmine-cli
+# Redmine-cli
+
+Redmine CLI
+
+## Install
+
+### MacOS
+
+**brew**
+
+```bash
+brew tap mrjefflarry/redmine-cli https://github.com/mrjefflarry/redmine-cli
+brew install redmine-cli
+```
+
+### Windows
+
+**scoop**
+
+```powershell
+scoop bucket add org https://github.com/mrjefflarry/redmine-cli.git
+scoop install mrjefflarry/redmine-cli
+```
+
+### Linux
+
+**snap**
+
+```bash
+snap install red-cli
+```
+
+## Usage
+
+```
+> red -h
+Redmine CLI for integration with Redmine API
+
+Usage:
+  red <command> <subcommand> [flags]
+  red [command]
+
+Available Commands:
+  auth        auth to Redmine
+  completion  Generate the autocompletion script for the specified shell
+  config      get or set config
+  help        Help about any command
+  issue       issue
+  project     project
+  user        Get users info
+
+Flags:
+      --all       Ignore project-id
+  -d, --debug     Show debug info and raw response
+  -h, --help      help for red
+  -v, --version   version for red
+
+Use "red [command] --help" for more information about a command.
+```
 
 ### Usage for override global config
 
@@ -18,29 +76,7 @@ contains
 
 this will then override the project
 
-## Command Tree
-
-red
-- issue
-- - create
-- - list
-- - - all
-- - - me
-- project
-- - list
-- - - all
-- - - me
-- user
-- - me
-- config
-- - global
-- - - project
-- - - - set
-- - local
-- - - project
-- - - - set
-
-## Config
+### Config
 
 **Complete config list options**
 

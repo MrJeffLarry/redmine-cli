@@ -1,0 +1,92 @@
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+    - go generate ../../...
+
+project_name: red
+
+builds:
+  - main: ./cmd/red
+
+    binary: red
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm
+      - arm64
+      - 386
+    goarm:
+      - 6
+      - 7
+    ignore:
+      - goos: darwin
+        goarch: 386
+      - goos: windows
+        goarch: arm
+      - goos: windows
+        goarch: arm64
+
+universal_binaries:
+  - name_template: red
+    replace: true
+
+archives:
+  - replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
+    files:
+      - README.md
+      - LICENSE
+      - build/*
+
+snapshot:
+  name_template: "{{ .Tag }}-alpha"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+
+scoop:
+  bucket:
+    owner: mrjefflarry
+    name: redmine-cli
+  homepage: "https://github.com/mrjefflarry/redmine-cli"
+  description: "Redmine CLI"
+
+#snapcrafts:
+#  - summary: Redmine CLI
+#    name: redmine-cli
+#    publish: true
+#    description: |
+#      Redmine CLI for interacting with Redmine Servers
+#    grade: stable
+#    confinement: strict
+#    apps:
+#      red:
+#        plugs: [ "home", "network" ]
+
+brews:
+  - tap:
+      owner: mrjefflarry
+      name: redmine-cli
+    homepage: https://github.com/mrjefflarry/redmine-cli
+    description: "Redmine CLI"
+    install: |-
+      bin.install "red"
+      bash_completion.install "build/red.bash" => "red"
+      zsh_completion.install "build/red.zsh" => "_red"
+      fish_completion.install "build/red.fish"
+    test: |
+      system "#{bin}/red -v"

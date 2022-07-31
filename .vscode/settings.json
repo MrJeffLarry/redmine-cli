@@ -1,5 +1,6 @@
 {
     "yaml.schemas": {
-        "https://json.schemastore.org/github-workflow.json": "file:///Users/jeffhagerman/Development/github/mrjefflarry/redmine-cli/.github/workflow/build.yml"
+        "https://json.schemastore.org/github-workflow.json": "file:///Users/jeffhagerman/Development/github/mrjefflarry/redmine-cli/.github/workflow/build.yml",
+        "https://goreleaser.com/static/schema.json": "file:///Users/jeffhagerman/Development/github/mrjefflarry/redmine-cli/.goreleaser.yaml"
     }
 }

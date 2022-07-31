@@ -18,3 +18,5 @@ build
 tmp
 .red
 .rem
+dist/
+.vscode

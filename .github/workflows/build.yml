@@ -1,11 +1,7 @@
-name: alpha build
+name: Alpha build
 on:
   pull_request:
     types: [ opened, synchronize, reopened ]
-  release:
-    types: [ published ]
-  push:
-    branches: [ main ]
 
 jobs:
   build:
