@@ -32,7 +32,6 @@ jobs:
 #        uses: goreleaser/goreleaser-action@v3.0.0
 #        with:
 #          args: build --rm-dist --config .goreleaser.yaml
-#          workdir: cmd/red/
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -41,6 +40,5 @@ jobs:
         with:
           version: latest
           args: release --rm-dist --config .goreleaser.yaml
-          workdir: cmd/red/
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
