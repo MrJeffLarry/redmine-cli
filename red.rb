@@ -5,52 +5,40 @@
 class Red < Formula
   desc "Redmine CLI"
   homepage "https://github.com/mrjefflarry/redmine-cli"
-  version "0.0.2"
+  version "0.0.3"
 
   on_macos do
-    url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.2/red_0.0.2_Darwin_all.tar.gz"
-    sha256 "ffd6e12e824dfc28137ce809bdd1712bc9bcb8de48c7616fe74a779c9fcaef26"
+    url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.3/red_0.0.3_Darwin_all.tar.gz"
+    sha256 "52580599cd586785afed18da7976a439aeaa2596a85f5b8b5b7cb9bcf5188857"
 
     def install
       bin.install "red"
-      bash_completion.install "build/red.bash" => "red"
-      zsh_completion.install "build/red.zsh" => "_red"
-      fish_completion.install "build/red.fish"
     end
   end
 
   on_linux do
-    if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.2/red_0.0.2_Linux_arm64.tar.gz"
-      sha256 "eaf290b00d36e3935f3d164642188ddeec394d95a41bfdf8c84b849ba7d81202"
-
-      def install
-        bin.install "red"
-        bash_completion.install "build/red.bash" => "red"
-        zsh_completion.install "build/red.zsh" => "_red"
-        fish_completion.install "build/red.fish"
-      end
-    end
     if Hardware::CPU.intel?
-      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.2/red_0.0.2_Linux_x86_64.tar.gz"
-      sha256 "6f1741fac8d7c4c40f9cf82457e01d45225be05c85582fc6a1106684c617905d"
+      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.3/red_0.0.3_Linux_x86_64.tar.gz"
+      sha256 "f84cf00550ce5b22033a2386320164d57b0f1c22700840433a1b73100e393bf6"
 
       def install
         bin.install "red"
-        bash_completion.install "build/red.bash" => "red"
-        zsh_completion.install "build/red.zsh" => "_red"
-        fish_completion.install "build/red.fish"
       end
     end
     if Hardware::CPU.arm? && !Hardware::CPU.is_64_bit?
-      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.2/red_0.0.2_Linux_armv6.tar.gz"
-      sha256 "3e9d799291937c414757b8e0e8bf315c0b9e8f1b27e24fd7788ebced512f5538"
+      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.3/red_0.0.3_Linux_armv6.tar.gz"
+      sha256 "b785a87395cea343bf9ce0336c5f725c8afbd54afa4078560d9d79b8ada83a57"
 
       def install
         bin.install "red"
-        bash_completion.install "build/red.bash" => "red"
-        zsh_completion.install "build/red.zsh" => "_red"
-        fish_completion.install "build/red.fish"
+      end
+    end
+    if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
+      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.3/red_0.0.3_Linux_arm64.tar.gz"
+      sha256 "06e3d24a149e3be29fa3d5ccec9c4f0f207dc8327ec78a2991c3242dd43098ab"
+
+      def install
+        bin.install "red"
       end
     end
   end
