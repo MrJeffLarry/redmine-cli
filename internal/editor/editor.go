@@ -3,13 +3,24 @@ package editor
 import (
 	"os"
 	"os/exec"
+	"runtime"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
 )
 
 func StartEdit(body string) string {
-	return editor("nano", body)
+	edit := "nano"
+	if runtime.GOOS == "windows" {
+		edit = "notepad"
+	} else if g := os.Getenv("GIT_EDITOR"); g != "" {
+		edit = g
+	} else if v := os.Getenv("VISUAL"); v != "" {
+		edit = v
+	} else if e := os.Getenv("EDITOR"); e != "" {
+		edit = e
+	}
+	return editor(edit, body)
 }
 
 func StartView(body string) {
