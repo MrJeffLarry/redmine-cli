@@ -111,13 +111,13 @@ func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
 				"%s\n",
 				text.FgGreen.Sprintf("#%d", journal.ID),
 				journal.User.Name,
-				text.FgBlack.Sprint(notes),
-				text.FgBlack.Sprint(status),
+				text.FgHiBlack.Sprint(notes),
+				text.FgHiBlack.Sprint(status),
 			)
 		}
 	}
 
-	fmt.Println(text.FgBlack.Sprintf("View issue: %s", r.RedmineURL+"/issues/"+sid))
+	fmt.Println(text.FgHiBlack.Sprintf("View issue: %s", r.RedmineURL+"/issues/"+sid))
 }
 
 func cmdIssueView(r *config.Red_t) *cobra.Command {

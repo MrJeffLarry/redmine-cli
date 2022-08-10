@@ -250,7 +250,7 @@ func Confirm(label string) bool {
 	}
 
 	prompt := promptui.Prompt{
-		Label:     label + "? " + text.FgBlack.Sprint("[y/N]"),
+		Label:     label + "? " + text.FgHiBlack.Sprint("[y/N]"),
 		IsConfirm: false,
 		Validate:  validate,
 	}
@@ -269,7 +269,7 @@ func Confirm(label string) bool {
 	return false
 	/*
 		for {
-			writeBody := WriteLine(prompt + text.FgBlack.Sprint(" (y/N)"))
+			writeBody := WriteLine(prompt + text.FgHiBlack.Sprint(" (y/N)"))
 			if strings.Contains(writeBody, "y") {
 				return true
 			} else if strings.Contains(writeBody, "n") {

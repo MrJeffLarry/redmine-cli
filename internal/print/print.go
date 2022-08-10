@@ -12,10 +12,10 @@ func Debug(r *config.Red_t, format string, a ...any) {
 		return
 	}
 	if len(a) > 0 {
-		fmt.Println(text.FgBlack.Sprintf("DEBUG: "+format, a))
+		fmt.Println(text.FgHiBlack.Sprintf("DEBUG: "+format, a))
 		return
 	}
-	fmt.Println(text.FgBlack.Sprintf("DEBUG: " + format))
+	fmt.Println(text.FgHiBlack.Sprintf("DEBUG: " + format))
 }
 
 func PrintRowHead(r *config.Red_t, format string, a ...any) {
