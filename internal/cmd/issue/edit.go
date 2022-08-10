@@ -209,7 +209,13 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 	fmt.Printf("Edit issue #%s\n\n", text.FgGreen.Sprint(id))
 
 	for {
-		choose, _ := terminal.ChooseString("Issue", chooses)
+		choose, i := terminal.ChooseString("Issue", chooses)
+		if i == -1 {
+			if !terminal.Confirm("Exit") {
+				continue
+			}
+			return
+		}
 		switch choose {
 		case FIELD_SUBJECT:
 			if err = cmdIssueEditIssueSubject(r, viewIssue.Issue.Subject, &issue); err != nil {

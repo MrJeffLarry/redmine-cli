@@ -1,284 +1,132 @@
 package terminal
 
 import (
-	"errors"
 	"fmt"
-	"io"
 	"os"
-	"strings"
-	"syscall"
 
-	"github.com/MrJeffLarry/redmine-cli/internal/print"
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/MrJeffLarry/redmine-cli/internal/util"
-	"github.com/jedib0t/go-pretty/text"
-	"github.com/manifoldco/promptui"
-	"golang.org/x/term"
 )
 
-func input(pre string) (string, error) {
-	if !term.IsTerminal(0) || !term.IsTerminal(1) {
-		return "", fmt.Errorf("stdin/stdout should be terminal")
-	}
-	oldState, err := term.MakeRaw(0)
-	if err != nil {
-		return "", err
-	}
-	defer term.Restore(0, oldState)
-	screen := struct {
-		io.Reader
-		io.Writer
-	}{os.Stdin, os.Stdout}
-
-	term := term.NewTerminal(screen, "")
-	term.AutoCompleteCallback = func(line string, pos int, key rune) (newLine string, newPos int, ok bool) {
-		switch key {
-		//		case 'T':
-		//			line += "Task"
-		default:
-			line += string(key)
-			pos++
-		}
-		return line, pos, true
-	}
-	term.SetPrompt(Green(term, pre))
-
-	line, err := term.ReadLine()
-	if err == io.EOF {
-		return line, err // have to restore terminal before exit
-	}
-	if err != nil {
-		return "", err
-	}
-	return line, nil
-}
-
-func WriteLine(pre string) string {
-	text, err := input(pre + " ")
-	if err == io.EOF {
-		os.Exit(0) // need to restore before we exit
-	}
-	if err != nil {
-		return ""
-	}
-
-	//	var screen *bytes.Buffer = new(bytes.Buffer)
-	//	var output *bufio.Writer = bufio.NewWriter(os.Stdout)
-
-	//	reader := bufio.NewReader(os.Stdin)
-	//	fmt.Print(pre, ": ")
-	//	text, _ := reader.ReadString('\n')
-	text = strings.Trim(text, " \n")
-	return text
-}
-
-/*
-// Move cursor to given position
-func moveCursor(x int, y int) {
-	fmt.Fprintf(screen, "\033[%d;%dH", x, y)
-}
-
-// Clear the terminal
-func clearTerminal() {
-	output.WriteString("\033[2J")
-}
-
-*/
-
 func Choose(label string, chooses []util.IdName) (int64, string) {
+	options := make([]string, len(chooses))
 
-	templates := &promptui.SelectTemplates{
-		Label:    text.FgCyan.Sprint("?") + " {{ . }}",
-		Active:   "▸ {{ .Name | underline }}",
-		Inactive: "  {{ .Name }}",
-		Selected: text.FgGreen.Sprint("✔") + " {{ .Name | black }}",
+	for i, m := range chooses {
+		options[i] = m.Name
 	}
 
-	searcher := func(input string, index int) bool {
-		choose := chooses[index]
-		name := strings.Replace(strings.ToLower(choose.Name), " ", "", -1)
-		input = strings.Replace(strings.ToLower(input), " ", "", -1)
-
-		return strings.Contains(name, input)
+	choose := &survey.Select{
+		Message: label + ":",
+		Options: options,
 	}
 
-	prompt := promptui.Select{
-		Label:     label,
-		Items:     chooses,
-		Templates: templates,
-		Size:      10,
-		Searcher:  searcher,
-	}
+	index := 0
 
-	i, _, err := prompt.Run()
-
-	if err != nil {
-		if err.Error() == "^C" {
-			fmt.Printf("Exit\n")
+	if err := survey.AskOne(choose, &index); err != nil {
+		if err == terminal.InterruptErr {
 			os.Exit(0)
+			return -1, ""
 		}
 		fmt.Printf("Prompt failed %v\n", err)
 		return -1, ""
 	}
 
-	return chooses[i].ID, chooses[i].Name
+	return chooses[index].ID, chooses[index].Name
 }
 
 func ChooseString(label string, chooses []string) (string, int) {
 
-	prompt := promptui.Select{
-		Label: label,
-		Items: chooses,
-		//		Templates: templates,
-		Size: 10,
-		//		Searcher:  searcher,
+	choose := &survey.Select{
+		Message: label + ":",
+		Options: chooses,
 	}
 
-	i, _, err := prompt.Run()
+	index := 0
 
-	if err != nil {
-		if err.Error() == "^C" {
-			fmt.Printf("Exit\n")
+	if err := survey.AskOne(choose, &index); err != nil {
+		if err == terminal.InterruptErr {
 			os.Exit(0)
+			return "", -1
 		}
 		fmt.Printf("Prompt failed %v\n", err)
 		return "", -1
 	}
 
-	return chooses[i], i
+	return chooses[index], index
 }
 
 func PromptPassword(label string, def string) (string, error) {
-	var err error
-	var bytePassword []byte
-
-	fmt.Print(text.FgGreen.Sprint(label + " "))
-	if bytePassword, err = term.ReadPassword(int(syscall.Stdin)); err != nil {
-		fmt.Println("")
-		return "", err
+	pass := ""
+	ask := &survey.Password{
+		Message: label,
 	}
-	fmt.Println("")
 
-	return string(bytePassword), nil
+	if err := survey.AskOne(ask, &pass); err != nil {
+		if err == terminal.InterruptErr {
+			os.Exit(0)
+			return def, nil
+		}
+		fmt.Printf("Prompt failed %v\n", err)
+		return def, err
+	}
+
+	return pass, nil
 }
 
 func PromptStringRequire(label string, def string) (string, error) {
-	validate := func(input string) error {
-		if len(input) > 0 {
-			return nil
-		}
-		return errors.New("This field is required")
-	}
-
-	prompt := promptui.Prompt{
-		Label:    label,
-		Default:  def,
-		Validate: validate,
-	}
-
-	result, err := prompt.Run()
-
-	if err != nil {
-		return def, err
-	}
-	return result, nil
-}
-
-func PromptString(label string, def string) (string, error) {
-	prompt := promptui.Prompt{
-		Label:   label,
+	ask := &survey.Input{
+		Message: label + ":",
 		Default: def,
 	}
 
-	result, err := prompt.Run()
+	resp := ""
 
-	if err != nil {
+	if err := survey.AskOne(ask, &resp, survey.WithValidator(survey.Required)); err != nil {
+		if err == terminal.InterruptErr {
+			os.Exit(0)
+			return def, nil
+		}
+		fmt.Printf("Prompt failed %v\n", err)
 		return def, err
 	}
-	return result, nil
+
+	return resp, nil
 }
 
-func WriteLineReq(pre string, length int) string {
-	for {
-		value := WriteLine(pre)
-		if len(value) > length {
-			return value
+func PromptString(label string, def string) (string, error) {
+	ask := &survey.Input{
+		Message: label + ":",
+		Default: def,
+	}
+
+	resp := ""
+
+	if err := survey.AskOne(ask, &resp, survey.WithValidator(survey.Required)); err != nil {
+		if err == terminal.InterruptErr {
+			os.Exit(0)
+			return def, nil
 		}
-		print.Error("%s require a length of %d or more", pre, length)
-	}
-}
-
-func WriteChooseIdName(pre string, chooses []util.IdName) (int64, string) {
-
-	fmt.Printf("Choose %s\n", pre)
-	for _, choose := range chooses {
-		fmt.Printf("-> %s\n", choose.Name)
+		fmt.Printf("Prompt failed %v\n", err)
+		return def, err
 	}
 
-	for {
-		value := WriteLine(pre)
-		for _, choose := range chooses {
-			if strings.Compare(value, choose.Name) == 0 {
-				return choose.ID, choose.Name
-			}
-		}
-		print.Error("%s does not exist, please choose from list above", value)
-	}
-}
-
-func WriteChooseString(pre string, chooses []string) string {
-	for {
-		value := WriteLine(pre)
-		for _, choose := range chooses {
-			if strings.Compare(value, choose) == 0 {
-				return choose
-			}
-		}
-		print.Error("%s does not exist, please choose from list above", value)
-	}
+	return resp, nil
 }
 
 func Confirm(label string) bool {
-	validate := func(input string) error {
-		input = strings.ToLower(input)
-		if strings.Contains(input, "y") || strings.Contains(input, "n") {
-			return nil
+	confirm := false
+
+	prompt := &survey.Confirm{
+		Message: label,
+	}
+
+	if err := survey.AskOne(prompt, &confirm); err != nil {
+		if err == terminal.InterruptErr {
+			os.Exit(0)
+			return confirm
 		}
-		if len(input) == 0 {
-			return nil
-		}
-		return errors.New("Not valid input, valid input is [y, yes, YES, n, no, NO]")
+		return confirm
 	}
-
-	prompt := promptui.Prompt{
-		Label:     label + "? " + text.FgHiBlack.Sprint("[y/N]"),
-		IsConfirm: false,
-		Validate:  validate,
-	}
-
-	result, err := prompt.Run()
-	result = strings.ToLower(result)
-
-	if err != nil {
-		print.Error(err.Error())
-		return false
-	}
-
-	if strings.Contains(result, "y") {
-		return true
-	}
-	return false
-	/*
-		for {
-			writeBody := WriteLine(prompt + text.FgHiBlack.Sprint(" (y/N)"))
-			if strings.Contains(writeBody, "y") {
-				return true
-			} else if strings.Contains(writeBody, "n") {
-				return false
-			} else if len(writeBody) == 0 {
-				return false
-			} else {
-				print.Error("%s: %s", "No valid input, valid (y=yes or n=no)", writeBody)
-			}
-		}
-	*/
+	return confirm
 }
