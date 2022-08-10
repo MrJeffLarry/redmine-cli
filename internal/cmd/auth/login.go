@@ -97,6 +97,7 @@ func displayLogin(r *config.Red_t, cmd *cobra.Command) {
 		"Before login make sure you have enabled `Enable REST web service`\nfind it in Administration -> Settings -> API or use url /settings?tab=api\nYou find ApiKey (API access key) from /my/account\n\n")
 
 	if server, err = terminal.PromptStringRequire("Server URL (https://example.com)", ""); err != nil {
+		print.Debug(r, err.Error())
 		print.Error("Could not read input, please try again or submit issue")
 		return
 	}
@@ -105,6 +106,7 @@ func displayLogin(r *config.Red_t, cmd *cobra.Command) {
 
 	if chooseID == 0 {
 		if apikey, err = terminal.PromptPassword("ApiKey", ""); err != nil {
+			print.Debug(r, err.Error())
 			print.Error("Could not read input, please try again or submit issue")
 			return
 		}
@@ -113,6 +115,7 @@ func displayLogin(r *config.Red_t, cmd *cobra.Command) {
 	}
 
 	if username, err = terminal.PromptStringRequire("Username", ""); err != nil {
+		print.Debug(r, err.Error())
 		print.Error("Could not read input, please try again or submit issue")
 		return
 	}

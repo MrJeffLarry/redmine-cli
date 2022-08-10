@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"strings"
+	"syscall"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
 	"github.com/MrJeffLarry/redmine-cli/internal/util"
@@ -151,7 +152,7 @@ func PromptPassword(label string, def string) (string, error) {
 	var bytePassword []byte
 
 	fmt.Print(text.FgGreen.Sprint(label + " "))
-	if bytePassword, err = term.ReadPassword(0); err != nil {
+	if bytePassword, err = term.ReadPassword(int(syscall.Stdin)); err != nil {
 		fmt.Println("")
 		return "", err
 	}
