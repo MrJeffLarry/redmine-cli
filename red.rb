@@ -5,11 +5,11 @@
 class Red < Formula
   desc "Redmine CLI"
   homepage "https://github.com/mrjefflarry/redmine-cli"
-  version "0.0.3"
+  version "0.0.4"
 
   on_macos do
-    url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.3/red_0.0.3_Darwin_all.tar.gz"
-    sha256 "52580599cd586785afed18da7976a439aeaa2596a85f5b8b5b7cb9bcf5188857"
+    url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.4/red_0.0.4_Darwin_all.tar.gz"
+    sha256 "3c44d2309ac0faf18d8c55a6efe8e999659e2eab9519ab0e02602887f4b05347"
 
     def install
       bin.install "red"
@@ -18,24 +18,24 @@ class Red < Formula
 
   on_linux do
     if Hardware::CPU.intel?
-      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.3/red_0.0.3_Linux_x86_64.tar.gz"
-      sha256 "f84cf00550ce5b22033a2386320164d57b0f1c22700840433a1b73100e393bf6"
+      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.4/red_0.0.4_Linux_x86_64.tar.gz"
+      sha256 "09d7d14050eebe4afe6b8a214af700fe86a85a5a1f158afb5d55e194e9e18737"
 
       def install
         bin.install "red"
       end
     end
     if Hardware::CPU.arm? && !Hardware::CPU.is_64_bit?
-      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.3/red_0.0.3_Linux_armv6.tar.gz"
-      sha256 "b785a87395cea343bf9ce0336c5f725c8afbd54afa4078560d9d79b8ada83a57"
+      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.4/red_0.0.4_Linux_armv6.tar.gz"
+      sha256 "0d012c0c3403d0fc60c0fef8255fcba39cc9de7d29220d04466a81493713d96c"
 
       def install
         bin.install "red"
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.3/red_0.0.3_Linux_arm64.tar.gz"
-      sha256 "06e3d24a149e3be29fa3d5ccec9c4f0f207dc8327ec78a2991c3242dd43098ab"
+      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.4/red_0.0.4_Linux_arm64.tar.gz"
+      sha256 "73ad14b29f047f967ce334d8f9eed18a37c64d2401a8cf00d81d989793cf5a41"
 
       def install
         bin.install "red"
