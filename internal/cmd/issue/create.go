@@ -43,34 +43,14 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 	}
 
 	fmt.Printf("Create new issue in project %s\n\n", text.FgGreen.Sprint(projectID))
-	/*
-		qes := []terminal.Question{}
-		qes = append(qes, terminal.Question{
-			Name: "tracker",
-			Prompt: "Tracker:",
-			Type: terminal.QUESTION_SELECT_ID_NAME,
-			IdNameOptions: trackers,
-		})
-		qes = append(qes, terminal.Question{
-			Name: "subject",
-			Prompt: "Subject:",
-			Type: terminal.QUESTION_STRING,
-		})
-		qes = append(qes, terminal.Question{
-			Name: "subject",
-			Prompt: "Subject:",
-			Type: terminal.QUESTION_STRING,
-		})
 
-		res := struct {
-			Tracker int
-			Subject string
-			Body string
-		}
-	*/
+	if terminal.Confirm("Add as subtask?") {
+		issue.Issue.ParentIssueID, _ = terminal.PromptInt("Parent Issue ID", -1)
+	}
 
 	issue.Issue.TrackerID, _ = terminal.Choose("Tracker", trackers)
 	issue.Issue.Subject, _ = terminal.PromptStringRequire("Subject", "")
+
 	if terminal.Confirm("Write Body") {
 		issue.Issue.Description = editor.StartEdit("")
 	}

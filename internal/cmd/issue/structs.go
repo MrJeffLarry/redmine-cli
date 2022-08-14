@@ -35,7 +35,7 @@ type newIssue struct {
 	CategoryID     int64  `json:"category_id,omitempty"`
 	FixedVersionID int64  `json:"fixed_version_id,omitempty"`
 	AssignedToID   int    `json:"assigned_to_id,omitempty"`
-	ParentIssueID  int64  `json:"parent_issue_id,omitempty"`
+	ParentIssueID  int    `json:"parent_issue_id,omitempty"`
 	Private        bool   `json:"is_private,omitempty"`
 	EstimatedHours int    `json:"estimated_hours,omitempty"`
 	Notes          string `json:"notes,omitempty"`
