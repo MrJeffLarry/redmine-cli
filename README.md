@@ -88,3 +88,9 @@ this will then override the project
     "project-id": 23,
 }
 ```
+
+### Editor
+
+We look for env `EDITOR`, `GIT_EDITOR` or `VISUAL` for editor to use
+
+if none of these is set we use notepad on Windows and nano on Others
