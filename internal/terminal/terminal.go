@@ -114,6 +114,26 @@ func PromptString(label string, def string) (string, error) {
 	return resp, nil
 }
 
+func PromptInt(label string, def int) (int, error) {
+	var resp int
+
+	ask := &survey.Input{
+		Message: label + ":",
+		Default: "-1",
+	}
+
+	if err := survey.AskOne(ask, &resp, survey.WithValidator(survey.Required)); err != nil {
+		if err == terminal.InterruptErr {
+			os.Exit(0)
+			return def, nil
+		}
+		fmt.Printf("Prompt failed %v\n", err)
+		return def, err
+	}
+
+	return resp, nil
+}
+
 func Confirm(label string) bool {
 	confirm := false
 
