@@ -5,11 +5,11 @@
 class Red < Formula
   desc "Redmine CLI"
   homepage "https://github.com/mrjefflarry/redmine-cli"
-  version "0.0.4"
+  version "0.0.5"
 
   on_macos do
-    url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.4/red_0.0.4_Darwin_all.tar.gz"
-    sha256 "3c44d2309ac0faf18d8c55a6efe8e999659e2eab9519ab0e02602887f4b05347"
+    url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.5/red_0.0.5_Darwin_all.tar.gz"
+    sha256 "0e774a7371f7efafc49af2f9df270a0ae9eb098a70a7264a4592dc98033ca8bc"
 
     def install
       bin.install "red"
@@ -17,25 +17,25 @@ class Red < Formula
   end
 
   on_linux do
-    if Hardware::CPU.intel?
-      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.4/red_0.0.4_Linux_x86_64.tar.gz"
-      sha256 "09d7d14050eebe4afe6b8a214af700fe86a85a5a1f158afb5d55e194e9e18737"
-
-      def install
-        bin.install "red"
-      end
-    end
     if Hardware::CPU.arm? && !Hardware::CPU.is_64_bit?
-      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.4/red_0.0.4_Linux_armv6.tar.gz"
-      sha256 "0d012c0c3403d0fc60c0fef8255fcba39cc9de7d29220d04466a81493713d96c"
+      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.5/red_0.0.5_Linux_armv6.tar.gz"
+      sha256 "c4865b4a6df6e80c85f30c6a1e878c87e34d92781edadaa6304c3da77cf04e63"
 
       def install
         bin.install "red"
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.4/red_0.0.4_Linux_arm64.tar.gz"
-      sha256 "73ad14b29f047f967ce334d8f9eed18a37c64d2401a8cf00d81d989793cf5a41"
+      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.5/red_0.0.5_Linux_arm64.tar.gz"
+      sha256 "0cf4f8fb00bfc03bb29861eed7a5e401ece9fec6e00432384d4ec095ad02908c"
+
+      def install
+        bin.install "red"
+      end
+    end
+    if Hardware::CPU.intel?
+      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.5/red_0.0.5_Linux_x86_64.tar.gz"
+      sha256 "458f5e7edc04a9d56a0ec5a547aaea7096ee691e5ab3ecf6c0923249a83e829a"
 
       def install
         bin.install "red"
