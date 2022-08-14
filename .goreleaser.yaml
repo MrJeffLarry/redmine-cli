@@ -57,7 +57,6 @@ snapshot:
   name_template: "{{ .Tag }}-alpha"
 
 changelog:
-  use: github
   sort: desc
   filters:
     exclude:
