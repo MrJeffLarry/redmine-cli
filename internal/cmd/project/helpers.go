@@ -20,7 +20,7 @@ func GetTrackers(r *config.Red_t, projectID int) ([]util.IdName, error) {
 	print.Debug(r, "%d %s", status, string(body))
 
 	if err != nil {
-		return trackers, errors.New("Could not get trackers from project..")
+		return trackers, err
 	}
 
 	if err := json.Unmarshal(body, &project); err != nil {

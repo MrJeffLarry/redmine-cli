@@ -14,6 +14,7 @@ const (
 	ERR_CONN_CREATE  = "Could not create connection with server, correct server details?"
 	ERR_CONN_SILENCE = "No response from server, correct server details?"
 	ERR_CONN_RES     = "Could not read response from server.."
+	ERR_CONN_AUTH    = "Request is not authorized, do you have access or have authenticated?"
 )
 
 func ClientGET(r *config.Red_t, path string) ([]byte, int, error) {
@@ -43,6 +44,10 @@ func ClientGET(r *config.Red_t, path string) ([]byte, int, error) {
 	res, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return res, statusCode, errors.New(ERR_CONN_RES)
+	}
+
+	if statusCode == http.StatusForbidden || statusCode == http.StatusUnauthorized {
+		return res, statusCode, errors.New(ERR_CONN_AUTH)
 	}
 
 	return res, statusCode, nil
@@ -82,6 +87,10 @@ func ClientPUT(r *config.Red_t, path string, body []byte) ([]byte, int, error) {
 		return res, statusCode, errors.New(ERR_CONN_RES)
 	}
 
+	if statusCode == http.StatusForbidden || statusCode == http.StatusUnauthorized {
+		return res, statusCode, errors.New(ERR_CONN_AUTH)
+	}
+
 	return res, statusCode, nil
 }
 
@@ -117,6 +126,10 @@ func ClientPOST(r *config.Red_t, path string, body []byte) ([]byte, int, error) 
 	if err != nil {
 		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_RES)
+	}
+
+	if statusCode == http.StatusForbidden || statusCode == http.StatusUnauthorized {
+		return res, statusCode, errors.New(ERR_CONN_AUTH)
 	}
 
 	return res, statusCode, nil
