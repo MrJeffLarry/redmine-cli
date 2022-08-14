@@ -1,10 +1,16 @@
+project_name: red
+
 before:
   hooks:
     - go mod tidy
     - go generate ./...
     - go generate ../../...
 
-project_name: red
+release:
+  prerelease: auto
+  name_template: "v{{.Version}}"
+  draft: true
+  mode: "keep-existing"
 
 builds:
   - main: ./cmd/red
@@ -51,11 +57,13 @@ snapshot:
   name_template: "{{ .Tag }}-alpha"
 
 changelog:
-  sort: asc
+  use: github
+  sort: desc
   filters:
     exclude:
       - '^docs:'
       - '^test:'
+      - '^build:'
 
 scoop:
   bucket:
