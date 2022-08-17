@@ -24,7 +24,13 @@ func StartEdit(body string) string {
 }
 
 func StartView(body string) {
-	viewer("less", body)
+	pager := "less"
+	if runtime.GOOS == "windows" {
+		pager = "notepad"
+	} else if e := os.Getenv("PAGER"); e != "" {
+		pager = e
+	}
+	viewer(pager, body)
 }
 
 func createFile(editor string, arg []string, body string) error {
@@ -56,7 +62,7 @@ func viewer(viewer string, body string) {
 		return
 	}
 
-	if err = createFile(viewer, []string{"-f", path}, body); err != nil {
+	if err = createFile(viewer, []string{path}, body); err != nil {
 		print.Error(err.Error())
 		return
 	}
