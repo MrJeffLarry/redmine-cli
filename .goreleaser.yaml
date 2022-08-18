@@ -71,17 +71,17 @@ scoop:
   homepage: "https://github.com/mrjefflarry/redmine-cli"
   description: "Redmine CLI"
 
-#snapcrafts:
-#  - summary: Redmine CLI
-#    name: redmine-cli
-#    publish: true
-#    description: |
-#      Redmine CLI for interacting with Redmine Servers
-#    grade: stable
-#    confinement: strict
-#    apps:
-#      red:
-#        plugs: [ "home", "network" ]
+snapcrafts:
+  - summary: Redmine CLI
+    name: red-cli
+    publish: true
+    description: |
+      Redmine CLI for interacting with Redmine Servers
+    grade: stable
+    confinement: strict
+    apps:
+      red:
+        plugs: [ "home", "network" ]
 
 brews:
   - tap:
