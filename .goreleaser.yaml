@@ -73,14 +73,12 @@ scoop:
 
 snapcrafts:
   - summary: Redmine CLI
-    name: red-cli
     publish: true
-    description: |
-      Redmine CLI for interacting with Redmine Servers
+    description: Redmine CLI for interacting with Redmine Servers
     grade: stable
     confinement: strict
     apps:
-      red:
+      red-cli:
         plugs: [ "home", "network" ]
 
 brews:
