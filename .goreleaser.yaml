@@ -79,6 +79,7 @@ snapcrafts:
     confinement: strict
     apps:
       red:
+        aliases: ["red-cli"]
         plugs: [ "home", "network" ]
 
 brews:
