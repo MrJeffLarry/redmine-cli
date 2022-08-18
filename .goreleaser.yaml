@@ -72,7 +72,8 @@ scoop:
   description: "Redmine CLI"
 
 snapcrafts:
-  - summary: Redmine CLI
+  - summary: 
+    name: red-cli
     publish: true
     description: Redmine CLI for interacting with Redmine Servers
     grade: stable
