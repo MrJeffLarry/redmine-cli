@@ -5,11 +5,11 @@
 class Red < Formula
   desc "Redmine CLI"
   homepage "https://github.com/mrjefflarry/redmine-cli"
-  version "0.0.5"
+  version "0.0.6"
 
   on_macos do
-    url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.5/red_0.0.5_Darwin_all.tar.gz"
-    sha256 "086700d7a63fac2ac5fb1c6722adc82ebf2eb71893edb4aa0be041d281f80c12"
+    url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.6/red_0.0.6_Darwin_all.tar.gz"
+    sha256 "2b6dbd4ac452ec42d9938830414edc6376e92056c2806ca0cf652c31274f29d0"
 
     def install
       bin.install "red"
@@ -17,25 +17,25 @@ class Red < Formula
   end
 
   on_linux do
+    if Hardware::CPU.arm? && !Hardware::CPU.is_64_bit?
+      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.6/red_0.0.6_Linux_armv6.tar.gz"
+      sha256 "97ed2d557e316c7e84db6a283d8d66867805d44478303258afa3b7275882c06b"
+
+      def install
+        bin.install "red"
+      end
+    end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.5/red_0.0.5_Linux_arm64.tar.gz"
-      sha256 "87abad79e6324323bf9869126ef02689ee9ab4f9f158dddfc54c74408002e661"
+      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.6/red_0.0.6_Linux_arm64.tar.gz"
+      sha256 "ce8611879b95bb6873aa7bc9b83e432eedb7ec95f2fa267f599f702298f64fa7"
 
       def install
         bin.install "red"
       end
     end
     if Hardware::CPU.intel?
-      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.5/red_0.0.5_Linux_x86_64.tar.gz"
-      sha256 "7c3f989c14027d8e81a7639751a139e7b7f107bf546b4169b8a113e5e4a0097d"
-
-      def install
-        bin.install "red"
-      end
-    end
-    if Hardware::CPU.arm? && !Hardware::CPU.is_64_bit?
-      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.5/red_0.0.5_Linux_armv6.tar.gz"
-      sha256 "2fecb703d8e0a82e658251acc36d2a5bdbf0ae17b71eedfafd01cd0a951c8828"
+      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.6/red_0.0.6_Linux_x86_64.tar.gz"
+      sha256 "67dac17506baea4e6de0a36109cd76048340aaed1ceb3163f6e3c04db747dca2"
 
       def install
         bin.install "red"
