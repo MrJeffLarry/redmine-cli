@@ -20,7 +20,7 @@ ifeq ($(GOOS),windows)
 endif
 
 SRC_TARGET=./cmd/red/
-BIN_NAME=red
+BIN_NAME=red-cli
 BIN_FOLDER=build/
 
 GIT_COMMIT ?= $(shell { git stash create; git rev-parse HEAD; } | grep -Exm1 '[[:xdigit:]]{40}')

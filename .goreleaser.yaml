@@ -1,4 +1,4 @@
-project_name: red
+project_name: red-cli
 
 before:
   hooks:
@@ -14,8 +14,7 @@ release:
 
 builds:
   - main: ./cmd/red
-
-    binary: red
+    binary: red-cli
     env:
       - CGO_ENABLED=0
     goos:
@@ -39,7 +38,7 @@ builds:
         goarch: arm64
 
 universal_binaries:
-  - name_template: red
+  - name_template: red-cli
     replace: true
 
 archives:
@@ -71,17 +70,17 @@ scoop:
   homepage: "https://github.com/mrjefflarry/redmine-cli"
   description: "Redmine CLI"
 
-#snapcrafts:
-#  - summary: Redmine CLI
-#    name: redmine-cli
-#    publish: true
-#    description: |
-#      Redmine CLI for interacting with Redmine Servers
-#    grade: stable
-#    confinement: strict
-#    apps:
-#      red:
-#        plugs: [ "home", "network" ]
+snapcrafts:
+  - summary: Redmine CLI
+    name: red-cli
+    publish: true
+    description: Redmine CLI for interacting with Redmine Servers
+    grade: stable
+    confinement: strict
+    apps:
+      red-cli:
+        aliases: ["red-cli"]
+        plugs: [ "home", "network" ]
 
 brews:
   - tap:
@@ -90,6 +89,6 @@ brews:
     homepage: https://github.com/mrjefflarry/redmine-cli
     description: "Redmine CLI"
     install: |-
-      bin.install "red"
+      bin.install "red-cli"
     test: |
-      system "#{bin}/red -v"
+      system "#{bin}/red-cli -v"

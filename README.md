@@ -10,7 +10,7 @@ Redmine CLI
 
 ```bash
 brew tap mrjefflarry/redmine-cli https://github.com/mrjefflarry/redmine-cli
-brew install mrjefflarry/redmine-cli/red
+brew install mrjefflarry/redmine-cli/red-cli
 ```
 
 ### Windows
@@ -19,7 +19,7 @@ brew install mrjefflarry/redmine-cli/red
 
 ```powershell
 scoop bucket add org https://github.com/mrjefflarry/redmine-cli.git
-scoop install mrjefflarry/redmine-cli/red
+scoop install mrjefflarry/redmine-cli/red-cli
 ```
 
 ### Linux
@@ -33,12 +33,12 @@ snap install red-cli
 ## Usage
 
 ```
-> red -h
+> red-cli -h
 Redmine CLI for integration with Redmine API
 
 Usage:
-  red <command> <subcommand> [flags]
-  red [command]
+  red-cli <command> <subcommand> [flags]
+  red-cli [command]
 
 Available Commands:
   auth        auth to Redmine
@@ -55,7 +55,7 @@ Flags:
   -h, --help      help for red
   -v, --version   version for red
 
-Use "red [command] --help" for more information about a command.
+Use "red-cli [command] --help" for more information about a command.
 ```
 
 ### Usage for override global config
