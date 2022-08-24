@@ -30,7 +30,7 @@ func CmdInit(Version, GitCommit, BuildTime string) error {
 	r := config.InitConfig()
 
 	cmd := &cobra.Command{
-		Use:           "red <command> <subcommand> [flags]",
+		Use:           "red-cli <command> <subcommand> [flags]",
 		Short:         "Redmine CLI",
 		Long:          `Redmine CLI for integration with Redmine API`,
 		Version:       Version + "\nGit Commit: " + GitCommit + "\nBuild time: " + BuildTime,
@@ -46,7 +46,7 @@ func CmdInit(Version, GitCommit, BuildTime string) error {
 
 		// require that the user is authenticated before running most commands
 		if IsAuthCmd(cmd) && r.IsConfigBad() {
-			fmt.Println("Redmine CLI (red) v" + Version)
+			fmt.Println("Redmine CLI (red-cli) v" + Version)
 			fmt.Println("")
 			fmt.Println("You are not logged in, Please run `red auth login`")
 			fmt.Println("")
