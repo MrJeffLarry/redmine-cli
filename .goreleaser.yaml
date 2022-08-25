@@ -23,7 +23,6 @@ builds:
       - windows
     goarch:
       - amd64
-      - arm
       - arm64
       - 386
     goarm:
@@ -32,8 +31,6 @@ builds:
     ignore:
       - goos: darwin
         goarch: 386
-      - goos: windows
-        goarch: arm
       - goos: windows
         goarch: arm64
 
@@ -51,9 +48,6 @@ archives:
     files:
       - README.md
       - LICENSE
-
-snapshot:
-  name_template: "{{ .Tag }}-alpha"
 
 changelog:
   sort: desc
@@ -73,7 +67,7 @@ scoop:
 snapcrafts:
   - summary: Redmine CLI
     name: red-cli
-    publish: true
+    publish: false
     description: Redmine CLI for interacting with Redmine Servers
     grade: stable
     confinement: strict

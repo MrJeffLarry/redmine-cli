@@ -30,8 +30,8 @@ jobs:
 
       - name: Snapcraft
         uses: samuelmeuli/action-snapcraft@v1
-        with:
-          snapcraft_token: ${{ secrets.SNAPCRAFT_SECRET }}
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_SECRET }}
 
       - name: Release
         uses: goreleaser/goreleaser-action@v2
