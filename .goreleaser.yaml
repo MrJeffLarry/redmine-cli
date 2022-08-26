@@ -9,7 +9,7 @@ before:
 release:
   prerelease: auto
   name_template: "v{{.Version}}"
-  draft: true
+  draft: false
   mode: "keep-existing"
 
 builds:
