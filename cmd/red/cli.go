@@ -48,7 +48,7 @@ func CmdInit(Version, GitCommit, BuildTime string) error {
 		if IsAuthCmd(cmd) && r.IsConfigBad() {
 			fmt.Println("Redmine CLI (red-cli) v" + Version)
 			fmt.Println("")
-			fmt.Println("You are not logged in, Please run `red auth login`")
+			fmt.Println("You are not logged in, Please run `red-cli auth login`")
 			fmt.Println("")
 			return errors.New("Not authenticated")
 		}
