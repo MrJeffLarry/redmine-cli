@@ -22,3 +22,4 @@ gpg --default-key "$EMAIL" --clearsign -o - Release > InRelease
 
 git add .
 git commit -m "Update APT release files"
+git push
