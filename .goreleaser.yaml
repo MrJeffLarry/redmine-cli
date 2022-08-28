@@ -57,9 +57,9 @@ changelog:
       - '^test:'
       - '^build:'
 
-publishers:
-  - name: Ubuntu, Debian APT
-    cmd: ./script/apt.sh {{ .Version }}
+#publishers:
+#  - name: Ubuntu, Debian APT
+#    cmd: ./script/apt.sh {{ .Version }}
 
 scoop:
   bucket:

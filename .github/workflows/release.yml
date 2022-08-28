@@ -28,11 +28,6 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Import GPG key
-        run: |
-          chmod +x ./script/*.sh
-          mkdir -p tmp && echo "${{ secrets.APT_SECRET_KEY }}" > ./tmp/private_key.gpg
-
       - name: Snapcraft
         uses: samuelmeuli/action-snapcraft@v1
         with:
@@ -45,3 +40,9 @@ jobs:
           args: release --rm-dist --config .goreleaser.yaml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+
+      - name: Update APT Release files
+        run: |
+          chmod +x ./script/*.sh
+          mkdir -p tmp && echo "${{ secrets.APT_SECRET_KEY }}" > ./tmp/private_key.gpg
+          ./script/apt.sh
