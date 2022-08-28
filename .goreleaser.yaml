@@ -16,7 +16,9 @@ builds:
   - main: ./cmd/red
     binary: red-cli
     hooks:
-      post: ./apt/apt.sh
+      post:
+#        - chmod +x ./scripts/*.sh
+        - ./script/apt.sh
     env:
       - CGO_ENABLED=0
     goos:
