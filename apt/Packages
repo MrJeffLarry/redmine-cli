@@ -1,0 +1,48 @@
+Package: red-cli
+Version: 0.0.8
+Architecture: arm64
+Maintainer: Jeff Hägerman
+Installed-Size: 8704
+Recommends: less, nano
+Filename: ./red-cli_0.0.8_linux_arm64.deb
+Size: 3567604
+MD5sum: 29048b98c392b82d1e3f2f23b408c386
+SHA1: 28f83c9299751d23a1d43afd489d67aadf6383ac
+SHA256: 68f970d3a578566e0dcccec29644a09ba18c21f974a51935a3991f1fb9afd884
+Priority: optional
+Homepage: https://github.com/mrjefflarry/redmine-cli
+Description: Drum rolls installer package.
+ Software to create fast and easy drum rolls.
+
+Package: red-cli
+Version: 0.0.8
+Architecture: i386
+Maintainer: Jeff Hägerman
+Installed-Size: 8652
+Recommends: less, nano
+Filename: ./red-cli_0.0.8_linux_386.deb
+Size: 3735034
+MD5sum: 06404c0dd84f692618da9f385286da81
+SHA1: d566e1a079662d0985777a5c2631dfbeef0129ae
+SHA256: 228cf329613ef9ce07f3b8fab1516e3b99ef43e82960a8415b1e7ce095177a4d
+Priority: optional
+Homepage: https://github.com/mrjefflarry/redmine-cli
+Description: Drum rolls installer package.
+ Software to create fast and easy drum rolls.
+
+Package: red-cli
+Version: 0.0.8
+Architecture: amd64
+Maintainer: Jeff Hägerman
+Installed-Size: 9084
+Recommends: less, nano
+Filename: ./red-cli_0.0.8_linux_amd64.deb
+Size: 3917296
+MD5sum: 76c05f031fc6a84a887943676143b76a
+SHA1: af74b849de40e8abc07bfdb45ed61d01d7439363
+SHA256: 100abb2c81e9447d9008936bb86a9072c696c7489fc8044c049d95cdc61fa826
+Priority: optional
+Homepage: https://github.com/mrjefflarry/redmine-cli
+Description: Drum rolls installer package.
+ Software to create fast and easy drum rolls.
+
