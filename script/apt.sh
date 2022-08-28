@@ -2,10 +2,7 @@
 
 export EMAIL=jeff@hagerman.io
 
-#sudo apt update
-#sudo apt install gnupg dpkg-dev -y
-
-#gpg --import ./tmp/private_key.asc
+rm ./apt/*.deb
 
 cp ./dist/*.deb ./apt/
 
