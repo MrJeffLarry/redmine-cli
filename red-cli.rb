@@ -9,7 +9,7 @@ class RedCli < Formula
 
   on_macos do
     url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.8/red-cli_0.0.8_Darwin_all.tar.gz"
-    sha256 "e0c3693f9f8957a508cf51171ed9e364c9695db13c187cdffb57dc2f3dddc59a"
+    sha256 "f43c761839b35b03aba3b6be2f2ee16e8255127ca67331e6be8a62e9b8f0703f"
 
     def install
       bin.install "red-cli"
@@ -19,7 +19,7 @@ class RedCli < Formula
   on_linux do
     if Hardware::CPU.intel?
       url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.8/red-cli_0.0.8_Linux_x86_64.tar.gz"
-      sha256 "35d9b8d4ac1efdeb9e00dccae53abc30369f0e2d18196bf893bd59e6268f10d4"
+      sha256 "acb2f2f08a181e2412217110001cc331bb4887574b6530b4f3ab5565bfbd9c2b"
 
       def install
         bin.install "red-cli"
@@ -27,7 +27,7 @@ class RedCli < Formula
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
       url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.8/red-cli_0.0.8_Linux_arm64.tar.gz"
-      sha256 "a2789bed03990fa0a6e261ffda37c83f7205a503cb9b3736504538e2619bd6db"
+      sha256 "ee408b7480027e7ecc84c00e9c1a6903a47e8a64bfa2ec7ca7b88a1c5b269237"
 
       def install
         bin.install "red-cli"
