@@ -57,10 +57,6 @@ changelog:
       - '^test:'
       - '^build:'
 
-#publishers:
-#  - name: Ubuntu, Debian APT
-#    cmd: ./script/apt.sh {{ .Version }}
-
 scoop:
   bucket:
     owner: mrjefflarry
@@ -72,9 +68,7 @@ nfpms:
   - vendor: mrjefflarry
     homepage: https://github.com/mrjefflarry/redmine-cli
     maintainer: Jeff Hägerman
-    description: |-
-      Drum rolls installer package.
-      Software to create fast and easy drum rolls.
+    description: Redmine CLI for interacting with Redmine Servers
 
     # Formats to be generated.
     formats:
@@ -84,16 +78,19 @@ nfpms:
       - less
       - nano
 
-snapcrafts:
-  - summary: Redmine CLI
-    name: red-cli
-    publish: false
-    description: Redmine CLI for interacting with Redmine Servers
-    grade: stable
-    confinement: strict
-    apps:
-      red-cli:
-        plugs: [ "home", "network" ]
+# sandbox with snap does not work well when open nano or less from red-cli
+# drop support as of now, use apt instead
+# could use confinement as "classic" then it should work, need to apply for it at snap forum
+#snapcrafts:
+#  - summary: Redmine CLI
+#    name: red-cli
+#    publish: false
+#    description: Redmine CLI for interacting with Redmine Servers
+#    grade: stable
+#    confinement: strict
+#    apps:
+#      red-cli:
+#        plugs: [ "home", "network" ]
 
 brews:
   - tap:
