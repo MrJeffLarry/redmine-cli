@@ -6,14 +6,14 @@
             "bin": [
                 "red-cli.exe"
             ],
-            "hash": "c3347ce9f6b51c33b2306a9b3cf3265735f9311f6e036dd98ee77762b9ca1bdb"
+            "hash": "86b82d8092fc34d7ee0ea1b1a8e104330cd9c3a7ab31613a29351b8e023be2ed"
         },
         "64bit": {
             "url": "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.0.8/red-cli_0.0.8_Windows_x86_64.tar.gz",
             "bin": [
                 "red-cli.exe"
             ],
-            "hash": "06ff9a29eb4d395841f1f8180b3f3cba79b17be137fe9fc39797dc89737fa97d"
+            "hash": "5268dbb48fe6645c1f4968bf8b2ce562171890e71d7a4406f29caa6a52f1e08c"
         }
     },
     "homepage": "https://github.com/mrjefflarry/redmine-cli",
