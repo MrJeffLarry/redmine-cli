@@ -29,7 +29,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Import GPG key
-        run: mkdir -p tmp && echo "${{ secrets.APT_SECRET_KEY }}" > ./tmp/private_key.gpg
+        run: |
+          chmod +x ./script/*.sh
+          mkdir -p tmp && echo "${{ secrets.APT_SECRET_KEY }}" > ./tmp/private_key.gpg
 
       - name: Snapcraft
         uses: samuelmeuli/action-snapcraft@v1

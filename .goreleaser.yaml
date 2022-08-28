@@ -15,10 +15,6 @@ release:
 builds:
   - main: ./cmd/red
     binary: red-cli
-    hooks:
-      post:
-#        - chmod +x ./scripts/*.sh
-        - ./script/apt.sh
     env:
       - CGO_ENABLED=0
     goos:
@@ -61,6 +57,10 @@ changelog:
       - '^test:'
       - '^build:'
 
+publishers:
+  - name: Ubuntu, Debian APT
+    cmd: ./script/apt.sh {{ .Version }}
+
 scoop:
   bucket:
     owner: mrjefflarry
@@ -78,9 +78,7 @@ nfpms:
 
     # Formats to be generated.
     formats:
-      - apk
       - deb
-      - rpm
 
     recommends:
       - less
