@@ -51,8 +51,7 @@ jobs:
         run: |
           chmod +x ./script/*.sh
           ./script/apt.sh
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git pull origin main
-          git commit -m "Update APT release files" -a
-          git push origin main
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update APT release files
