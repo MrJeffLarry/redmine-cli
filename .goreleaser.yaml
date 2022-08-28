@@ -64,6 +64,24 @@ scoop:
   homepage: "https://github.com/mrjefflarry/redmine-cli"
   description: "Redmine CLI"
 
+nfpms:
+  - vendor: mrjefflarry
+    homepage: https://github.com/mrjefflarry/redmine-cli
+    maintainer: Jeff Hägerman
+    description: |-
+      Drum rolls installer package.
+      Software to create fast and easy drum rolls.
+
+    # Formats to be generated.
+    formats:
+      - apk
+      - deb
+      - rpm
+
+    recommends:
+      - less
+      - nano
+
 snapcrafts:
   - summary: Redmine CLI
     name: red-cli
