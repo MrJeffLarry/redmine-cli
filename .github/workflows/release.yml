@@ -53,5 +53,6 @@ jobs:
           ./script/apt.sh
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          git pull origin main
           git commit -m "Update APT release files" -a
-          git push
+          git push origin main
