@@ -33,11 +33,6 @@ sudo apt update
 sudo apt install red-cli
 ```
 
-**snap**
-
-```bash
-snap install red-cli
-```
 
 ## Usage
 
