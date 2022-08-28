@@ -48,13 +48,15 @@ jobs:
         with:
           gpg_private_key: ${{ secrets.APT_SECRET_KEY }}
 
+#          git checkout main
+#          git pull
+
       - name: Update APT Release files
         run: |
-          git checkout main
-          git pull
           chmod +x ./script/*.sh
           ./script/apt.sh
 
-      - uses: stefanzweifel/git-auto-commit-action@v4
+#      - uses: stefanzweifel/git-auto-commit-action@v4
+      - uses: EndBug/add-and-commit@v9
         with:
-          commit_message: Update APT release files
+          message: Update APT release files
