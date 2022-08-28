@@ -46,3 +46,6 @@ jobs:
           chmod +x ./script/*.sh
           mkdir -p tmp && echo "${{ secrets.APT_SECRET_KEY }}" > ./tmp/private_key.gpg
           ./script/apt.sh
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -m "Update APT release files" -a
