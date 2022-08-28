@@ -50,6 +50,8 @@ jobs:
 
       - name: Update APT Release files
         run: |
+          git checkout main
+          git pull
           chmod +x ./script/*.sh
           ./script/apt.sh
 
