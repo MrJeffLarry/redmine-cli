@@ -54,3 +54,4 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git commit -m "Update APT release files" -a
+          git push
