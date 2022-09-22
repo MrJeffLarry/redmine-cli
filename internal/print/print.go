@@ -26,7 +26,7 @@ func PrintRow(r *config.Red_t, format string, a ...any) {
 	fmt.Printf(format, a...)
 }
 
-func PrintID(id int64) string {
+func PrintID(id int) string {
 	return text.FgGreen.Sprint("#", id)
 }
 

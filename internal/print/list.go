@@ -13,7 +13,7 @@ type Column struct {
 	FgColor     Color
 	BgColor     Color
 	ParentPad   bool
-	Parent      string
+	Parent      int
 	ParentSize  int
 	ContentSize int
 	Content     string
@@ -23,8 +23,8 @@ type List struct {
 	maxLens     []int
 	headers     []string
 	rows        [][]Column
-	Parent      string
-	OldParent   string
+	Parent      int
+	OldParent   int
 	ParentLevel int
 	Offset      int
 	Limit       int
@@ -48,9 +48,9 @@ func (l *List) AddRow(row ...Column) {
 	}
 	for i, field := range row {
 		if field.ParentPad {
-			if utf8.RuneCountInString(field.Parent) > 0 && field.Parent == l.Parent {
+			if field.Parent > 0 && field.Parent == l.Parent {
 				// same level do nothing
-			} else if utf8.RuneCountInString(field.Parent) > 0 && field.Parent != l.Parent {
+			} else if field.Parent > 0 && field.Parent != l.Parent {
 				if l.OldParent == field.Parent {
 					l.ParentLevel--
 				} else {

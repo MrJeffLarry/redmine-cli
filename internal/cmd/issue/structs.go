@@ -26,14 +26,14 @@ type issues struct {
 }
 
 type newIssue struct {
-	ProjectID      int64  `json:"project_id,omitempty"`
-	TrackerID      int64  `json:"tracker_id,omitempty"`
-	StatusID       int64  `json:"status_id,omitempty"`
-	PriorityID     int64  `json:"priority_id,omitempty"`
+	ProjectID      int    `json:"project_id,omitempty"`
+	TrackerID      int    `json:"tracker_id,omitempty"`
+	StatusID       int    `json:"status_id,omitempty"`
+	PriorityID     int    `json:"priority_id,omitempty"`
 	Subject        string `json:"subject,omitempty"`
 	Description    string `json:"description,omitempty"`
-	CategoryID     int64  `json:"category_id,omitempty"`
-	FixedVersionID int64  `json:"fixed_version_id,omitempty"`
+	CategoryID     int    `json:"category_id,omitempty"`
+	FixedVersionID int    `json:"fixed_version_id,omitempty"`
 	AssignedToID   int    `json:"assigned_to_id,omitempty"`
 	ParentIssueID  int    `json:"parent_issue_id,omitempty"`
 	Private        bool   `json:"is_private,omitempty"`
@@ -42,7 +42,7 @@ type newIssue struct {
 }
 
 type issue struct {
-	ID                  int64          `json:"id,omitempty"`
+	ID                  int            `json:"id,omitempty"`
 	Project             util.IdName    `json:"project,omitempty"`
 	Tracker             util.IdName    `json:"tracker,omitempty"`
 	Status              issueStatus    `json:"status,omitempty"`
@@ -50,6 +50,7 @@ type issue struct {
 	Author              util.IdName    `json:"author,omitempty"`
 	AssignedTo          util.IdName    `json:"assigned_to,omitempty"`
 	FixedVersion        util.IdName    `json:"fixed_version,omitempty"`
+	Parent              util.Id        `json:"parent,omitempty"`
 	Subject             string         `json:"subject,omitempty"`
 	Description         string         `json:"description,omitempty"`
 	StartDate           string         `json:"start_date,omitempty"`
@@ -68,7 +69,7 @@ type issue struct {
 }
 
 type issueJournal struct {
-	ID           int64                 `json:"id,omitempty"`
+	ID           int                   `json:"id,omitempty"`
 	User         util.IdName           `json:"user,omitempty"`
 	Notes        string                `json:"notes,omitempty"`
 	CreatedOn    string                `json:"created_on,omitempty"`
@@ -84,13 +85,13 @@ type issueJournalDetails struct {
 }
 
 type issueStatus struct {
-	ID       int64  `json:"id,omitempty"`
+	ID       int    `json:"id,omitempty"`
 	Name     string `json:"name,omitempty"`
 	IsClosed bool   `json:"is_closed,omitempty"`
 }
 
 type issuePriorities struct {
-	ID        int64  `json:"id,omitempty"`
+	ID        int    `json:"id,omitempty"`
 	Name      string `json:"name,omitempty"`
 	IsDefault bool   `json:"is_default,omitempty"`
 }

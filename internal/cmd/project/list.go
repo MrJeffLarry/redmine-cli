@@ -45,7 +45,7 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 
 		name.Content = project.Name
 		name.ParentPad = true
-		name.Parent = project.Parent.Name
+		name.Parent = project.Parent.ID
 
 		l.AddRow(id, name)
 	}

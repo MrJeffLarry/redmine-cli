@@ -69,8 +69,10 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 		subject := print.Column{}
 		project := print.Column{}
 
-		id.Content = strconv.FormatInt(issue.ID, 10)
+		id.Content = strconv.FormatInt(int64(issue.ID), 10)
 		id.FgColor = print.ID
+		id.ParentPad = true
+		id.Parent = issue.Parent.ID
 
 		tracker.Content = issue.Tracker.Name
 		status.Content = issue.Status.Name
