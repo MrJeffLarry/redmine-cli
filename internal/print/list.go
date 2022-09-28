@@ -21,7 +21,8 @@ type Column struct {
 type List struct {
 	maxLens             []int
 	headers             []string
-	rows1               []Row
+	rows                []Row
+	newRows             []Row
 	Parent              int
 	OldParent           int
 	ParentLevel         int
@@ -64,7 +65,7 @@ func (l *List) AddRow(id int, parentID int, row ...Column) {
 	r.ID = id
 	r.ParentID = parentID
 	r.Columns = append(r.Columns, row...)
-	l.rows1 = append(l.rows1, r)
+	l.rows = append(l.rows, r)
 }
 
 func (l *List) SetOffset(offset int) {
@@ -79,59 +80,27 @@ func (l *List) SetTotal(total int) {
 	l.TotalCount = total
 }
 
-func insertInt(array []Row, value Row, index int) []Row {
-	return append(array[:index], append([]Row{value}, array[index:]...)...)
-}
-
-func removeInt(array []Row, index int) []Row {
-	return append(array[:index], array[index+1:]...)
-}
-
-func moveInt(array []Row, srcIndex int, dstIndex int) []Row {
-	value := array[srcIndex]
-	return insertInt(removeInt(array, srcIndex), value, dstIndex)
+func child(l *List, parentI int) {
+	for i, row := range l.rows {
+		if l.rows[parentI].ID == row.ParentID {
+			l.newRows = append(l.newRows, row)
+			child(l, i)
+		}
+	}
 }
 
 func (l *List) Render() {
-	var oldID int
-	var oldParentID int
-	dirtySort := true
 
-	for dirtySort && l.ParentIssueGrouping {
-		cleanSort := 0
-
-		for i := 0; i < len(l.rows1); i++ {
-			ID := l.rows1[i].ID
-			parentID := l.rows1[i].ParentID
-
-			if ((oldID != parentID) && (oldParentID != parentID)) && parentID > 0 {
-				exist := false
-				for i1 := 0; i1 < len(l.rows1); i1++ {
-
-					if l.rows1[i1].ID != parentID {
-						continue
-					}
-					exist = true
-					l.rows1 = moveInt(l.rows1, i, i1)
-					break
-				}
-				if !exist {
-					l.rows1[i].IgnorePad = true
-					cleanSort++
-				}
-			} else {
-				cleanSort++
+	if l.ParentIssueGrouping {
+		for i, row := range l.rows {
+			if row.ParentID == 0 {
+				l.newRows = append(l.newRows, row)
+				child(l, i)
 			}
-			oldParentID = parentID
-			oldID = ID
-		}
-
-		if cleanSort >= len(l.rows1) {
-			dirtySort = false
 		}
 	}
 
-	for _, row := range l.rows1 {
+	for _, row := range l.newRows {
 		for i1, field := range row.Columns {
 			if field.ParentPad && l.ParentIssueGrouping && !row.IgnorePad {
 				if row.ParentID > 0 && row.ParentID == l.Parent {
@@ -165,7 +134,7 @@ func (l *List) Render() {
 
 	fmt.Printf("\n")
 
-	for _, row := range l.rows1 {
+	for _, row := range l.newRows {
 		for i, field := range row.Columns {
 			parentSize := 0
 			pad := l.maxLens[i]
@@ -184,7 +153,7 @@ func (l *List) Render() {
 		fmt.Printf("\n")
 	}
 	if l.TotalCount == 0 {
-		l.TotalCount = len(l.rows1)
+		l.TotalCount = len(l.newRows)
 	}
 	if l.Limit == 0 {
 		l.Limit = l.TotalCount
