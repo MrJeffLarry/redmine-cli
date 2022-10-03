@@ -14,7 +14,7 @@ type singleProject struct {
 }
 
 type project struct {
-	ID              int64         `json:"id,omitempty"`
+	ID              int           `json:"id,omitempty"`
 	Name            string        `json:"name,omitempty"`
 	Identifier      string        `json:"identifier,omitempty"`
 	Description     string        `json:"description,omitempty"`

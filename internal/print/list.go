@@ -13,26 +13,36 @@ type Column struct {
 	FgColor     Color
 	BgColor     Color
 	ParentPad   bool
-	Parent      int
 	ParentSize  int
 	ContentSize int
 	Content     string
 }
 
 type List struct {
-	maxLens     []int
-	headers     []string
-	rows        [][]Column
-	Parent      int
-	OldParent   int
-	ParentLevel int
-	Offset      int
-	Limit       int
-	TotalCount  int
+	maxLens             []int
+	headers             []string
+	rows                []Row
+	newRows             []Row
+	Parent              int
+	OldParent           int
+	ParentLevel         int
+	Offset              int
+	Limit               int
+	TotalCount          int
+	ParentIssueGrouping bool
+}
+
+type Row struct {
+	ID        int
+	ParentID  int
+	IgnorePad bool
+	Columns   []Column
 }
 
 func NewList(header ...string) *List {
 	list := &List{}
+
+	list.ParentIssueGrouping = true
 
 	for _, field := range header {
 		list.maxLens = append(list.maxLens, utf8.RuneCountInString(field))
@@ -41,35 +51,21 @@ func NewList(header ...string) *List {
 	return list
 }
 
-func (l *List) AddRow(row ...Column) {
+func (l *List) SetParentIssueGrouping(v bool) {
+	l.ParentIssueGrouping = v
+}
+
+func (l *List) AddRow(id int, parentID int, row ...Column) {
 	if len(row) != len(l.headers) {
 		Error("Ohhh no! Darn! The number of columns does not match headers, Please report this to the developers")
 		os.Exit(0)
 	}
-	for i, field := range row {
-		if field.ParentPad {
-			if field.Parent > 0 && field.Parent == l.Parent {
-				// same level do nothing
-			} else if field.Parent > 0 && field.Parent != l.Parent {
-				if l.OldParent == field.Parent {
-					l.ParentLevel--
-				} else {
-					l.ParentLevel++
-				}
-				l.OldParent = l.Parent
-				l.Parent = field.Parent
-			} else {
-				l.Parent = field.Parent
-				l.ParentLevel = 0
-			}
-			row[i].ParentSize = l.ParentLevel
-		}
-		row[i].ContentSize = utf8.RuneCountInString(field.Content) + (row[i].ParentSize * 2)
-		if row[i].ContentSize > l.maxLens[i] {
-			l.maxLens[i] = row[i].ContentSize
-		}
-	}
-	l.rows = append(l.rows, row)
+
+	r := Row{}
+	r.ID = id
+	r.ParentID = parentID
+	r.Columns = append(r.Columns, row...)
+	l.rows = append(l.rows, r)
 }
 
 func (l *List) SetOffset(offset int) {
@@ -84,17 +80,72 @@ func (l *List) SetTotal(total int) {
 	l.TotalCount = total
 }
 
+func child(l *List, parentI int) {
+	for i, row := range l.rows {
+		if l.rows[parentI].ID == row.ParentID {
+			l.newRows = append(l.newRows, row)
+			child(l, i)
+		}
+	}
+}
+
 func (l *List) Render() {
+
+	if l.ParentIssueGrouping {
+		for i, row := range l.rows {
+			if row.ParentID == 0 {
+				l.newRows = append(l.newRows, row)
+				child(l, i)
+			}
+		}
+	}
+
+	for _, row := range l.newRows {
+		for i1, field := range row.Columns {
+			if field.ParentPad && l.ParentIssueGrouping && !row.IgnorePad {
+				if row.ParentID > 0 && row.ParentID == l.Parent {
+					// same level do nothing
+				} else if row.ParentID > 0 && row.ParentID != l.Parent {
+					if l.OldParent == row.ParentID {
+						l.ParentLevel--
+					} else {
+						l.ParentLevel++
+					}
+					l.OldParent = l.Parent
+					l.Parent = row.ParentID
+				} else {
+					l.Parent = row.ParentID
+					l.ParentLevel = 0
+				}
+				row.Columns[i1].ParentSize = l.ParentLevel
+			}
+
+			row.Columns[i1].ContentSize = utf8.RuneCountInString(field.Content) + (row.Columns[i1].ParentSize * 2)
+
+			if row.Columns[i1].ContentSize > l.maxLens[i1] {
+				l.maxLens[i1] = row.Columns[i1].ContentSize
+			}
+		}
+	}
+
 	for i, head := range l.headers {
 		fmt.Printf("%s  %s", head, strings.Repeat(" ", l.maxLens[i]-utf8.RuneCountInString(head)))
 	}
+
 	fmt.Printf("\n")
-	for _, row := range l.rows {
-		for i, field := range row {
+
+	for _, row := range l.newRows {
+		for i, field := range row.Columns {
+			parentSize := 0
 			pad := l.maxLens[i]
 			pad -= field.ContentSize
+
+			if field.ParentSize > 0 {
+				parentSize = field.ParentSize
+			}
+
 			fmt.Printf("%s%s  %s",
-				strings.Repeat("‣ ", field.ParentSize),
+				strings.Repeat("‣ ", parentSize),
 				field.FgColor.Color(field.Content),
 				strings.Repeat(" ", pad),
 			)
@@ -102,7 +153,7 @@ func (l *List) Render() {
 		fmt.Printf("\n")
 	}
 	if l.TotalCount == 0 {
-		l.TotalCount = len(l.rows)
+		l.TotalCount = len(l.newRows)
 	}
 	if l.Limit == 0 {
 		l.Limit = l.TotalCount

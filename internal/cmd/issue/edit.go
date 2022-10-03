@@ -230,7 +230,7 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 				print.Error(err.Error())
 			}
 		case FIELD_TRACKER:
-			if err = cmdIssueEditIssueTracker(r, int(viewIssue.Issue.Project.ID), &issue); err != nil {
+			if err = cmdIssueEditIssueTracker(r, viewIssue.Issue.Project.ID, &issue); err != nil {
 				print.Error(err.Error())
 			}
 		case FIELD_DESCRIPTION:
