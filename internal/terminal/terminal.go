@@ -9,7 +9,7 @@ import (
 	"github.com/MrJeffLarry/redmine-cli/internal/util"
 )
 
-func Choose(label string, chooses []util.IdName) (int64, string) {
+func Choose(label string, chooses []util.IdName) (int, string) {
 	options := make([]string, len(chooses))
 
 	for i, m := range chooses {

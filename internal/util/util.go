@@ -5,8 +5,12 @@ import (
 )
 
 type IdName struct {
-	ID   int64  `json:"id,omitempty"`
+	ID   int    `json:"id,omitempty"`
 	Name string `json:"name,omitempty"`
+}
+
+type Id struct {
+	ID int `json:"id,omitempty"`
 }
 
 type Errors struct {

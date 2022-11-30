@@ -59,7 +59,7 @@ func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
 		closed = text.FgRed.Sprint("CLOSED")
 	}
 
-	sid := strconv.FormatInt(issue.ID, 10)
+	sid := strconv.FormatInt(int64(issue.ID), 10)
 
 	fmt.Printf(
 		"------------ %s %s - %s [%s] ---------\n"+

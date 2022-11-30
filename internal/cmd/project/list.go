@@ -40,15 +40,15 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 		id := print.Column{}
 		name := print.Column{}
 
-		id.Content = strconv.FormatInt(project.ID, 10)
+		id.Content = strconv.FormatInt(int64(project.ID), 10)
 		id.FgColor = print.ID
 
 		name.Content = project.Name
 		name.ParentPad = true
-		name.Parent = project.Parent.Name
 
-		l.AddRow(id, name)
+		l.AddRow(project.ID, project.Parent.ID, id, name)
 	}
+
 	l.SetLimit(projects.Limit)
 	l.SetOffset(projects.Offset)
 	l.SetTotal(projects.TotalCount)

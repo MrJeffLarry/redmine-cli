@@ -35,7 +35,7 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 		return
 	}
 
-	issue.Issue.ProjectID = int64(projectID)
+	issue.Issue.ProjectID = projectID
 
 	if trackers, err = project.GetTrackers(r, projectID); err != nil {
 		print.Error(err.Error())

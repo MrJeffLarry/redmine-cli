@@ -12,12 +12,13 @@ import (
 )
 
 const (
-	HEAD_ID       = "ID"
-	HEAD_STATUS   = "STATUS"
-	HEAD_TRACKER  = "TRACKER"
-	HEAD_PRIORITY = "PRIORITY"
-	HEAD_PROJECT  = "PROJECT"
-	HEAD_SUBJECT  = "SUBJECT"
+	HEAD_ID             = "ID"
+	HEAD_STATUS         = "STATUS"
+	HEAD_TRACKER        = "TRACKER"
+	HEAD_TARGET_VERSION = "TARGET VERSION"
+	HEAD_PRIORITY       = "PRIORITY"
+	HEAD_PROJECT        = "PROJECT"
+	HEAD_SUBJECT        = "SUBJECT"
 
 	FLAG_DISPLAY_PROJECT = "project"
 )
@@ -28,7 +29,7 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	var status int
 	var dispProject bool
 
-	head := []string{HEAD_ID, HEAD_TRACKER, HEAD_STATUS, HEAD_PRIORITY, HEAD_SUBJECT}
+	head := []string{HEAD_ID, HEAD_TRACKER, HEAD_STATUS, HEAD_PRIORITY, HEAD_TARGET_VERSION, HEAD_SUBJECT}
 	sort := []string{"id", "status", "priority", "subject"}
 	issues := issues{}
 	projectID := 0
@@ -68,20 +69,23 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 		priority := print.Column{}
 		subject := print.Column{}
 		project := print.Column{}
+		targetVersion := print.Column{}
 
-		id.Content = strconv.FormatInt(issue.ID, 10)
+		id.Content = strconv.FormatInt(int64(issue.ID), 10)
 		id.FgColor = print.ID
+		id.ParentPad = true
 
 		tracker.Content = issue.Tracker.Name
 		status.Content = issue.Status.Name
 		priority.Content = issue.Priority.Name
 		subject.Content = issue.Subject
 		project.Content = issue.Project.Name
+		targetVersion.Content = issue.FixedVersion.Name
 
 		if dispProject {
-			l.AddRow(id, tracker, status, priority, subject, project)
+			l.AddRow(issue.ID, issue.Parent.ID, id, tracker, status, priority, targetVersion, subject, project)
 		} else {
-			l.AddRow(id, tracker, status, priority, subject)
+			l.AddRow(issue.ID, issue.Parent.ID, id, tracker, status, priority, targetVersion, subject)
 		}
 	}
 	l.SetLimit(issues.Limit)
