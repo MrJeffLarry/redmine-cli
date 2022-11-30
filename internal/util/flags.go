@@ -24,6 +24,10 @@ const (
 
 	FLAG_PAGE   = "page"
 	FLAG_PAGE_P = "p"
+
+	FLAG_FILTER_TARGET_VERSION_ID = "target_id"
+
+	FLAG_FILTER_STATUS_ID = "status_id"
 )
 
 func AddFlags(cmd *cobra.Command) {
@@ -33,6 +37,8 @@ func AddFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().IntP(FLAG_PAGE, FLAG_PAGE_P, 0, "List 25 objects per page (uses limit and offset)")
 	cmd.PersistentFlags().IntP(FLAG_LIMIT, FLAG_LIMIT_P, 25, "Limit number of objects per page")
 	cmd.PersistentFlags().IntP(FLAG_OFFSET, FLAG_OFFSET_P, 0, "skip this number of objects")
+	cmd.PersistentFlags().Int(FLAG_FILTER_TARGET_VERSION_ID, 0, "Filter on target version ID")
+	cmd.PersistentFlags().Int(FLAG_FILTER_STATUS_ID, 0, "Filter on status ID")
 }
 
 func ParseFlags(cmd *cobra.Command, projectID int, sortFields []string) string {
@@ -43,6 +49,8 @@ func ParseFlags(cmd *cobra.Command, projectID int, sortFields []string) string {
 	sort, _ := cmd.Flags().GetString(FLAG_SORT)
 	order, _ := cmd.Flags().GetBool(FLAG_ORDER_ASC)
 	page, _ := cmd.Flags().GetInt(FLAG_PAGE)
+	targetID, _ := cmd.Flags().GetInt(FLAG_FILTER_TARGET_VERSION_ID)
+	statusID, _ := cmd.Flags().GetInt(FLAG_FILTER_STATUS_ID)
 	//	search, _ := cmd.Flags().GetString(FLAG_SEARCH)
 
 	if projectID > 0 {
@@ -72,6 +80,14 @@ func ParseFlags(cmd *cobra.Command, projectID int, sortFields []string) string {
 			path += ":desc"
 		}
 		path += "&"
+	}
+
+	if targetID > 0 {
+		path += "fixed_version_id=" + strconv.Itoa(targetID) + "&"
+	}
+
+	if statusID > 0 {
+		path += "status_id=" + strconv.Itoa(statusID) + "&"
 	}
 
 	return path
