@@ -36,6 +36,7 @@ type Row struct {
 	ID        int
 	ParentID  int
 	IgnorePad bool
+	Solved    bool
 	Columns   []Column
 }
 
@@ -83,6 +84,7 @@ func (l *List) SetTotal(total int) {
 func child(l *List, parentI int) {
 	for i, row := range l.rows {
 		if l.rows[parentI].ID == row.ParentID {
+			l.rows[i].Solved = true
 			l.newRows = append(l.newRows, row)
 			child(l, i)
 		}
@@ -94,8 +96,16 @@ func (l *List) Render() {
 	if l.ParentIssueGrouping {
 		for i, row := range l.rows {
 			if row.ParentID == 0 {
+				l.rows[i].Solved = true
 				l.newRows = append(l.newRows, row)
 				child(l, i)
+			}
+		}
+
+		for _, row := range l.rows {
+			if !row.Solved {
+				row.ParentID = 0
+				l.newRows = append(l.newRows, row)
 			}
 		}
 	}
