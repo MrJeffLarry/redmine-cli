@@ -33,11 +33,6 @@ jobs:
       - name: Fetch all tags
         run: git fetch --force --tags
 
-      - name: Snapcraft
-        uses: samuelmeuli/action-snapcraft@v1
-        with:
-          snapcraft_token: ${{ secrets.SNAPCRAFT_SECRET }}
-
       - name: Release
         uses: goreleaser/goreleaser-action@v3
         with:
