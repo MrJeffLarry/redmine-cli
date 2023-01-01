@@ -30,14 +30,26 @@ type project struct {
 }
 
 type versions struct {
-	Versions []version `json:"versions"`
+	Versions []version `json:"versions,omitempty"`
 }
 
 type version struct {
 	ID          int         `json:"id,omitempty"`
-	Project     util.IdName `json:"project"`
+	Project     util.IdName `json:"project,omitempty"`
 	Name        string      `json:"name,omitempty"`
-	Description string      `json:"description"`
-	Status      string      `json:"status"`
-	DueDate     string      `json:"due_date"`
+	Description string      `json:"description,omitempty"`
+	Status      string      `json:"status,omitempty"`
+	DueDate     string      `json:"due_date,omitempty"`
+}
+
+type memberships struct {
+	Memberships []membership
+}
+
+type membership struct {
+	ID      int           `json:"id,omitempty"`
+	Project util.IdName   `json:"project,omitempty"`
+	User    util.IdName   `json:"user,omitempty"`
+	Group   util.IdName   `json:"group,omitempty"`
+	Roles   []util.IdName `json:"roles,omitempty"`
 }

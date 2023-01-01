@@ -47,12 +47,12 @@ func cmdIssueCreateSave(r *config.Red_t, issue *newIssueHolder) bool {
 func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 	var err error
 	var projectID int
-	var trackers []util.IdName
-	var versions []util.IdName
+	var idNames []util.IdName
 	chooses := []string{
 		FIELD_SAVE,
 		FIELD_VERSION,
 		FIELD_PARENT_ID,
+		FIELD_ASSIGN,
 		FIELD_EXIT}
 
 	issue := newIssueHolder{}
@@ -72,14 +72,14 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 
 	issue.Issue.ProjectID = projectID
 
-	if trackers, err = project.GetTrackers(r, projectID); err != nil {
+	if idNames, err = project.GetTrackers(r, projectID); err != nil {
 		print.Error(err.Error())
 		return
 	}
 
 	fmt.Printf("Create new issue in project %s\n\n", text.FgGreen.Sprint(projectID))
 
-	issue.Issue.TrackerID, _ = terminal.Choose("Tracker", trackers)
+	issue.Issue.TrackerID, _ = terminal.Choose("Tracker", idNames)
 	issue.Issue.Subject, _ = terminal.PromptStringRequire("Subject", "")
 	if terminal.Confirm("Write Body") {
 		issue.Issue.Description = editor.StartEdit("")
@@ -101,18 +101,29 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 				return
 			}
 		case FIELD_VERSION:
-			if versions, err = project.GetVersions(r, projectID); err != nil {
+			if idNames, err = project.GetVersions(r, projectID); err != nil {
 				print.Error(err.Error())
 			}
-			issue.Issue.FixedVersionID, _ = terminal.Choose("Version", versions)
+
+			id, _ := terminal.Choose("Version", idNames)
+
+			if id >= 0 {
+				issue.Issue.FixedVersionID = id
+			}
 		case FIELD_PARENT_ID:
 			parentID, _ := terminal.PromptInt("Parent ID (-1 means none)", -1)
 			if parentID > 0 {
 				issue.Issue.ParentIssueID = parentID
 			}
 		case FIELD_ASSIGN:
-			if r.RedmineUserID > 0 && terminal.Confirm("Assign to me") {
-				issue.Issue.AssignedToID = r.RedmineUserID
+			if idNames, err = project.GetAssigns(r, projectID); err != nil {
+				print.Error(err.Error())
+			}
+
+			id, _ := terminal.Choose("Assign", idNames)
+
+			if id >= 0 {
+				issue.Issue.AssignedToID = id
 			}
 		case FIELD_EXIT:
 			if !terminal.Confirm("Exit") {
