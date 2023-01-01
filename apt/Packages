@@ -1,48 +1,45 @@
 Package: red-cli
-Version: 0.0.9
+Version: 0.1.0
 Architecture: amd64
 Maintainer: Jeff Hägerman
-Installed-Size: 9084
+Installed-Size: 9184
 Recommends: less, nano
-Filename: ./red-cli_0.0.9_linux_amd64.deb
-Size: 3917274
-MD5sum: c7c4fc4db0635212fb658ab47c887904
-SHA1: 9f7d06caebf8ebf16fa30cb6d927eb60fdefe4a6
-SHA256: b869c01f5188ce93d1d3dcbd5d7080994ce8da83cd6a44b1a242dd53304a48b6
+Filename: ./red-cli_0.1.0_linux_amd64.deb
+Size: 3945330
+MD5sum: 214282983fa3b83dbdf3168821a0a95b
+SHA1: a0676c65ae7bab0a40650a548564e988778ee2bd
+SHA256: de1bd304e35b532b1e50aaa84e35a7ee4edf2d8eacf71a4168a2bf71169ff613
 Priority: optional
 Homepage: https://github.com/mrjefflarry/redmine-cli
-Description: Drum rolls installer package.
- Software to create fast and easy drum rolls.
+Description: Redmine CLI for interacting with Redmine Servers
 
 Package: red-cli
-Version: 0.0.9
-Architecture: arm64
-Maintainer: Jeff Hägerman
-Installed-Size: 8704
-Recommends: less, nano
-Filename: ./red-cli_0.0.9_linux_arm64.deb
-Size: 3568024
-MD5sum: 51b3d0cd2d0fd5a48dbcd31b5fbd0274
-SHA1: 8dfb2939de5bb59693e37c37ea1a51a8128769e9
-SHA256: 6ed2a306e8bc8226faa0c64f2cf16a3e72a0604c6e9205ea420edf6c8b430ec6
-Priority: optional
-Homepage: https://github.com/mrjefflarry/redmine-cli
-Description: Drum rolls installer package.
- Software to create fast and easy drum rolls.
-
-Package: red-cli
-Version: 0.0.9
+Version: 0.1.0
 Architecture: i386
 Maintainer: Jeff Hägerman
-Installed-Size: 8652
+Installed-Size: 8748
 Recommends: less, nano
-Filename: ./red-cli_0.0.9_linux_386.deb
-Size: 3735722
-MD5sum: a782a661e36563d40688dcefcb24687c
-SHA1: 147ebe3ac094fa26d0dafcd0a0654b064d4dd8fe
-SHA256: 108f9de07a1107d550507d3383c86fb025a5bbf74953cf00bcdc4bce4179d306
+Filename: ./red-cli_0.1.0_linux_386.deb
+Size: 3765024
+MD5sum: 23d693c47456f4aa9b475b9999c64f0f
+SHA1: 33166e2443ec02ae3f6bd1a3bf03ce36b04d5854
+SHA256: 58374e32fbad06c82fc842c4323ae79d6b3ab3535f0cd58b57d41aa727976153
 Priority: optional
 Homepage: https://github.com/mrjefflarry/redmine-cli
-Description: Drum rolls installer package.
- Software to create fast and easy drum rolls.
+Description: Redmine CLI for interacting with Redmine Servers
+
+Package: red-cli
+Version: 0.1.0
+Architecture: arm64
+Maintainer: Jeff Hägerman
+Installed-Size: 8832
+Recommends: less, nano
+Filename: ./red-cli_0.1.0_linux_arm64.deb
+Size: 3596984
+MD5sum: 1d10b7c060c13ebbbc3466bcb7ab9255
+SHA1: 5562a161a495cc79c61261ec402a1bad776cb8b2
+SHA256: 333a067f555f6c35ec5820fd02dcff5e34ab6b25bc9303ce4a1b2fce2185298b
+Priority: optional
+Homepage: https://github.com/mrjefflarry/redmine-cli
+Description: Redmine CLI for interacting with Redmine Servers
 
