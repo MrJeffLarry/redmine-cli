@@ -16,12 +16,29 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func cmdIssueEditIssueTargetVersion(r *config.Red_t, projectID int, issue *newIssueHolder) error {
+	var err error
+	var idNames []util.IdName
+
+	if idNames, err = project.GetVersions(r, projectID); err != nil {
+		return err
+	}
+
+	id, _ := terminal.Choose("Target version", idNames)
+
+	if id >= 0 {
+		issue.Issue.FixedVersionID = id
+	}
+
+	return nil
+}
+
 func cmdIssueEditIssueAssign(r *config.Red_t, projectID int, issue *newIssueHolder) error {
 	var err error
 	var idNames []util.IdName
 
 	if idNames, err = project.GetAssigns(r, projectID); err != nil {
-		print.Error(err.Error())
+		return err
 	}
 
 	id, _ := terminal.Choose("Assign", idNames)
@@ -182,6 +199,7 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 		FIELD_TRACKER,
 		FIELD_NOTE,
 		FIELD_ASSIGN,
+		FIELD_TARGET_VERSION,
 		FIELD_PREVIEW,
 		FIELD_SAVE,
 		FIELD_EXIT}
@@ -247,6 +265,10 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 			}
 		case FIELD_ASSIGN:
 			if err = cmdIssueEditIssueAssign(r, viewIssue.Issue.Project.ID, &issue); err != nil {
+				print.Error(err.Error())
+			}
+		case FIELD_TARGET_VERSION:
+			if err = cmdIssueEditIssueTargetVersion(r, viewIssue.Issue.Project.ID, &issue); err != nil {
 				print.Error(err.Error())
 			}
 		case FIELD_SAVE:

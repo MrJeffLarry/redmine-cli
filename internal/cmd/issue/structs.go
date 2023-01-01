@@ -3,19 +3,19 @@ package issue
 import "github.com/MrJeffLarry/redmine-cli/internal/util"
 
 const (
-	FIELD_SUBJECT     = "Subject"
-	FIELD_DESCRIPTION = "Description"
-	FIELD_STATUS      = "Status"
-	FIELD_PRIORITY    = "Priority"
-	FIELD_TRACKER     = "Tracker"
-	FIELD_NOTE        = "Notes"
-	FIELD_VERSION     = "Version"
-	FIELD_PARENT_ID   = "Parent ID"
-	FIELD_ASSIGN      = "Assign"
-	FIELD_PREVIEW     = "Preview"
-	FIELD_SAVE        = "Save"
-	FIELD_EXIT        = "Exit"
-	FIELD_DEBUG       = "Print Debug"
+	FIELD_SUBJECT        = "Subject"
+	FIELD_DESCRIPTION    = "Description"
+	FIELD_STATUS         = "Status"
+	FIELD_PRIORITY       = "Priority"
+	FIELD_TRACKER        = "Tracker"
+	FIELD_NOTE           = "Notes"
+	FIELD_TARGET_VERSION = "Target Version"
+	FIELD_PARENT_ID      = "Parent ID"
+	FIELD_ASSIGN         = "Assign"
+	FIELD_PREVIEW        = "Preview"
+	FIELD_SAVE           = "Save"
+	FIELD_EXIT           = "Exit"
+	FIELD_DEBUG          = "Print Debug"
 )
 
 type viewIssue struct {

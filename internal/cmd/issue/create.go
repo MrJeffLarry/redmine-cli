@@ -50,7 +50,7 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 	var idNames []util.IdName
 	chooses := []string{
 		FIELD_SAVE,
-		FIELD_VERSION,
+		FIELD_TARGET_VERSION,
 		FIELD_PARENT_ID,
 		FIELD_ASSIGN,
 		FIELD_EXIT}
@@ -100,7 +100,7 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 			if cmdIssueCreateSave(r, &issue) {
 				return
 			}
-		case FIELD_VERSION:
+		case FIELD_TARGET_VERSION:
 			if idNames, err = project.GetVersions(r, projectID); err != nil {
 				print.Error(err.Error())
 			}
