@@ -16,6 +16,8 @@ import (
 )
 
 func cmdIssueCreateSave(r *config.Red_t, issue *newIssueHolder) bool {
+	var responseIssue viewIssue
+
 	body, err := json.Marshal(issue)
 	if err != nil {
 		print.Debug(r, err.Error())
@@ -40,7 +42,13 @@ func cmdIssueCreateSave(r *config.Red_t, issue *newIssueHolder) bool {
 		return false
 	}
 
-	print.OK("Issue created!")
+	if err := json.Unmarshal(response, &responseIssue); err != nil {
+		print.Error("Could not parse response %v", err)
+		return true
+	}
+
+	print.OK("Issue #%d created!\n", responseIssue.Issue.ID)
+	print.Info("%s/issues/%d\n", r.RedmineURL, responseIssue.Issue.ID)
 	return true
 }
 
