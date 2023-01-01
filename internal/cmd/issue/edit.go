@@ -16,6 +16,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func cmdIssueEditIssueAssign(r *config.Red_t, projectID int, issue *newIssueHolder) error {
+	var err error
+	var idNames []util.IdName
+
+	if idNames, err = project.GetAssigns(r, projectID); err != nil {
+		print.Error(err.Error())
+	}
+
+	id, _ := terminal.Choose("Assign", idNames)
+
+	if id >= 0 {
+		issue.Issue.AssignedToID = id
+	}
+	return nil
+}
+
 func cmdIssueEditIssueNote(r *config.Red_t, issue *newIssueHolder) error {
 	issue.Issue.Notes = editor.StartEdit("")
 	return nil
@@ -165,6 +181,7 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 		FIELD_PRIORITY,
 		FIELD_TRACKER,
 		FIELD_NOTE,
+		FIELD_ASSIGN,
 		FIELD_PREVIEW,
 		FIELD_SAVE,
 		FIELD_EXIT}
@@ -226,6 +243,10 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 			}
 		case FIELD_NOTE:
 			if err = cmdIssueEditIssueNote(r, &issue); err != nil {
+				print.Error(err.Error())
+			}
+		case FIELD_ASSIGN:
+			if err = cmdIssueEditIssueAssign(r, viewIssue.Issue.Project.ID, &issue); err != nil {
 				print.Error(err.Error())
 			}
 		case FIELD_SAVE:
