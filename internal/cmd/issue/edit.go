@@ -141,7 +141,7 @@ func cmdIssueEditIssueSubject(r *config.Red_t, subject string, issue *newIssueHo
 	return nil
 }
 
-func cmdIssueEditIssueSave(r *config.Red_t, path string, issue *newIssueHolder) {
+func cmdIssueEditIssueSave(r *config.Red_t, id, path string, issue *newIssueHolder) bool {
 	var body []byte
 	var err error
 	var errList util.Errors
@@ -150,25 +150,25 @@ func cmdIssueEditIssueSave(r *config.Red_t, path string, issue *newIssueHolder) 
 	if err != nil {
 		print.Debug(r, err.Error())
 		print.Error("Could not compose issue..")
-		return
+		return false
 	}
 
 	print.Debug(r, string(body))
 
-	if !terminal.Confirm("Confirm save issue?") {
-		return
-	}
-
 	if body, status, err := api.ClientPUT(r, path, body); err != nil || status != 204 {
 		if err = json.Unmarshal(body, &errList); err != nil {
 			print.Error("%d Could not read error response from server: %s", status, string(body))
-			return
+			return false
 		}
+
 		print.Debug(r, string(body))
 		print.Error("%d Could not save issue: %v", status, errList.Errors)
-		return
+		return false
 	}
-	print.OK("Issue saved!")
+
+	print.OK("Issue #%s saved!", id)
+
+	return true
 }
 
 func cmdIssueEditIssueDebug(r *config.Red_t, issue *newIssueHolder) {
@@ -272,8 +272,9 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 				print.Error(err.Error())
 			}
 		case FIELD_SAVE:
-			cmdIssueEditIssueSave(r, path, &issue)
-			return
+			if cmdIssueEditIssueSave(r, id, path, &issue) {
+				return
+			}
 		case FIELD_DEBUG:
 		case FIELD_PREVIEW:
 			cmdIssueEditIssueDebug(r, &issue)
