@@ -27,6 +27,9 @@ func ClientGET(r *config.Red_t, path string) ([]byte, int, error) {
 	client := &http.Client{}
 	statusCode = 0
 
+	r.Spinner.Start()
+	defer r.Spinner.Stop()
+
 	req, err = http.NewRequest(http.MethodGet, r.RedmineURL+path, nil)
 	if err != nil {
 		return res, statusCode, errors.New(ERR_CONN_CREATE)
@@ -62,6 +65,9 @@ func ClientPUT(r *config.Red_t, path string, body []byte) ([]byte, int, error) {
 
 	client := &http.Client{}
 	statusCode = 0
+
+	r.Spinner.Start()
+	defer r.Spinner.Stop()
 
 	req, err = http.NewRequest(http.MethodPut, r.RedmineURL+path, bytes.NewReader(body))
 	if err != nil {
@@ -104,6 +110,9 @@ func ClientPOST(r *config.Red_t, path string, body []byte) ([]byte, int, error) 
 	client := &http.Client{}
 	statusCode = 0
 
+	r.Spinner.Start()
+	defer r.Spinner.Stop()
+
 	req, err = http.NewRequest(http.MethodPost, r.RedmineURL+path, bytes.NewReader(body))
 	if err != nil {
 		print.Debug(r, err.Error())
@@ -145,6 +154,9 @@ func ClientAuthBasicGET(r *config.Red_t, path, server, username, password string
 	client := &http.Client{}
 	statusCode = 0
 
+	r.Spinner.Start()
+	defer r.Spinner.Stop()
+
 	req, err = http.NewRequest(http.MethodGet, server+path, nil)
 	if err != nil {
 		print.Debug(r, err.Error())
@@ -179,6 +191,9 @@ func ClientAuthApiKeyGET(r *config.Red_t, path, server, apikey string) ([]byte, 
 
 	client := &http.Client{}
 	statusCode = 0
+
+	r.Spinner.Start()
+	defer r.Spinner.Stop()
 
 	req, err = http.NewRequest(http.MethodGet, server+path, nil)
 	if err != nil {

@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 
+	"github.com/briandowns/spinner"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
@@ -38,16 +40,11 @@ type Red_t struct {
 	RedmineProject   string
 	RedmineProjectID int
 	RedmineUserID    int
+	Spinner          *spinner.Spinner
 	Debug            bool
 	All              bool
 }
 
-//
-//
-//
-//
-//
-//
 func exEnv(name string, defValue string) string {
 	if eValue, exName := os.LookupEnv(name); exName {
 		return eValue
@@ -56,9 +53,6 @@ func exEnv(name string, defValue string) string {
 	}
 }
 
-//
-//
-//
 func (r *Red_t) IsConfigBad() bool {
 	if len(r.RedmineURL) <= 0 {
 		return true
@@ -69,37 +63,22 @@ func (r *Red_t) IsConfigBad() bool {
 	return false
 }
 
-//
-//
-//
 func (r *Red_t) SetServer(server string) {
 	r.RedmineURL = server
 }
 
-//
-//
-//
 func (r *Red_t) SetApiKey(apiKey string) {
 	r.RedmineApiKey = apiKey
 }
 
-//
-//
-//
 func (r *Red_t) SetProject(id string) {
 	r.RedmineProject = id
 }
 
-//
-//
-//
 func (r *Red_t) SetProjectID(id int) {
 	r.RedmineProjectID = id
 }
 
-//
-//
-//
 func (r *Red_t) SetUserID(id int) {
 	r.RedmineUserID = id
 }
@@ -208,9 +187,6 @@ func saveLocal(r *Red_t, name string, value interface{}) error {
 	return nil
 }
 
-//
-//
-//
 func (r *Red_t) Save() error {
 	var homePath string
 	var err error
@@ -238,16 +214,10 @@ func (r *Red_t) Save() error {
 	return nil
 }
 
-//
-//
-//
 func (r *Red_t) SaveLocalProject(projectID int) error {
 	return saveLocal(r, CONFIG_REDMINE_PROJECT_ID, projectID)
 }
 
-//
-//
-//
 func (r *Red_t) LoadConfig() {
 	sep := string(os.PathSeparator)
 
@@ -313,11 +283,10 @@ func (r *Red_t) localConfig() {
 	}
 }
 
-//
-//
-//
 func InitConfig() *Red_t {
 	red := &Red_t{}
+
+	red.Spinner = spinner.New(spinner.CharSets[11], 100*time.Millisecond)
 
 	red.RedmineURL = exEnv(RED_CONFIG_REDMINE_URL, "")
 	red.RedmineApiKey = exEnv(RED_CONFIG_REDMINE_API_KEY, "")

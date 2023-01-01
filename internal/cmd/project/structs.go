@@ -28,3 +28,16 @@ type project struct {
 	DefaultAssignee util.IdName   `json:"default_assignee,omitempty"`
 	Trackers        []util.IdName `json:"trackers,omitempty"`
 }
+
+type versions struct {
+	Versions []version `json:"versions"`
+}
+
+type version struct {
+	ID          int         `json:"id,omitempty"`
+	Project     util.IdName `json:"project"`
+	Name        string      `json:"name,omitempty"`
+	Description string      `json:"description"`
+	Status      string      `json:"status"`
+	DueDate     string      `json:"due_date"`
+}

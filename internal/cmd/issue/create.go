@@ -15,10 +15,45 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func cmdIssueCreateSave(r *config.Red_t, issue *newIssueHolder) bool {
+	body, err := json.Marshal(issue)
+	if err != nil {
+		print.Debug(r, err.Error())
+		print.Error("Could not compose issue..")
+		return false
+	}
+
+	print.Debug(r, string(body))
+
+	response, status, err := api.ClientPOST(r, "/issues.json", body)
+	if err != nil {
+		print.Error("Error %v", err)
+		return false
+	}
+
+	print.Debug(r, string(response))
+
+	if status != 201 {
+		errors := api.ParseResponseError(response)
+		print.Error("Could not save issue")
+		print.Error("%s", errors.Errors)
+		return false
+	}
+
+	print.OK("Issue created!")
+	return true
+}
+
 func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 	var err error
 	var projectID int
 	var trackers []util.IdName
+	var versions []util.IdName
+	chooses := []string{
+		FIELD_SAVE,
+		FIELD_VERSION,
+		FIELD_PARENT_ID,
+		FIELD_EXIT}
 
 	issue := newIssueHolder{}
 
@@ -44,40 +79,48 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 
 	fmt.Printf("Create new issue in project %s\n\n", text.FgGreen.Sprint(projectID))
 
-	if terminal.Confirm("Add as subtask?") {
-		issue.Issue.ParentIssueID, _ = terminal.PromptInt("Parent Issue ID", -1)
-	}
-
 	issue.Issue.TrackerID, _ = terminal.Choose("Tracker", trackers)
 	issue.Issue.Subject, _ = terminal.PromptStringRequire("Subject", "")
-
 	if terminal.Confirm("Write Body") {
 		issue.Issue.Description = editor.StartEdit("")
 	}
 
-	if r.RedmineUserID > 0 && terminal.Confirm("Assign to me") {
-		issue.Issue.AssignedToID = r.RedmineUserID
-	}
+	//
+	for {
+		choose, i := terminal.ChooseString("Options", chooses)
+		if i == -1 {
+			if !terminal.Confirm("Exit") {
+				continue
+			}
+			return
+		}
 
-	body, err := json.Marshal(issue)
-	if err != nil {
-		print.Debug(r, err.Error())
-		print.Error("Could not compose issue..")
-		return
+		switch choose {
+		case FIELD_SAVE:
+			if cmdIssueCreateSave(r, &issue) {
+				return
+			}
+		case FIELD_VERSION:
+			if versions, err = project.GetVersions(r, projectID); err != nil {
+				print.Error(err.Error())
+			}
+			issue.Issue.FixedVersionID, _ = terminal.Choose("Version", versions)
+		case FIELD_PARENT_ID:
+			parentID, _ := terminal.PromptInt("Parent ID (-1 means none)", -1)
+			if parentID > 0 {
+				issue.Issue.ParentIssueID = parentID
+			}
+		case FIELD_ASSIGN:
+			if r.RedmineUserID > 0 && terminal.Confirm("Assign to me") {
+				issue.Issue.AssignedToID = r.RedmineUserID
+			}
+		case FIELD_EXIT:
+			if !terminal.Confirm("Exit") {
+				continue
+			}
+			return
+		}
 	}
-
-	print.Debug(r, string(body))
-
-	if !terminal.Confirm("Create issue") {
-		return
-	}
-
-	if body, status, err := api.ClientPOST(r, "/issues.json", body); err != nil || status != 201 {
-		print.Debug(r, string(body))
-		print.Error("%d Could not send issue", status)
-		return
-	}
-	print.OK("Issue created!")
 }
 
 func cmdIssueCreate(r *config.Red_t) *cobra.Command {
