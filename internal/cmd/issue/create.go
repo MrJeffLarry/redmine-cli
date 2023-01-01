@@ -44,15 +44,15 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 
 	fmt.Printf("Create new issue in project %s\n\n", text.FgGreen.Sprint(projectID))
 
-	if terminal.Confirm("Add as subtask?") {
-		issue.Issue.ParentIssueID, _ = terminal.PromptInt("Parent Issue ID", -1)
-	}
-
 	issue.Issue.TrackerID, _ = terminal.Choose("Tracker", trackers)
 	issue.Issue.Subject, _ = terminal.PromptStringRequire("Subject", "")
-
 	if terminal.Confirm("Write Body") {
 		issue.Issue.Description = editor.StartEdit("")
+	}
+
+	parentID, _ := terminal.PromptInt("Parent ID (-1 means none)", -1)
+	if parentID > 0 {
+		issue.Issue.ParentIssueID = parentID
 	}
 
 	if r.RedmineUserID > 0 && terminal.Confirm("Assign to me") {
