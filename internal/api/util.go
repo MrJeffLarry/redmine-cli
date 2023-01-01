@@ -1,8 +1,23 @@
 package api
 
 import (
+	"encoding/json"
 	"errors"
 )
+
+type ResponseError struct {
+	Errors []string `json:"errors"`
+}
+
+func ParseResponseError(body []byte) ResponseError {
+	var response ResponseError
+
+	if err := json.Unmarshal(body, &response); err != nil {
+		response.Errors = append(response.Errors, "Could not parse response from server!")
+	}
+
+	return response
+}
 
 func StatusCode(status int) error {
 	switch status {

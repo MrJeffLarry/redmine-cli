@@ -16,19 +16,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const (
-	FIELD_SUBJECT     = "Subject"
-	FIELD_DESCRIPTION = "Description"
-	FIELD_STATUS      = "Status"
-	FIELD_PRIORITY    = "Priority"
-	FIELD_TRACKER     = "Tracker"
-	FIELD_NOTE        = "Notes"
-	FIELD_PREVIEW     = "Preview"
-	FIELD_SAVE        = "Save"
-	FIELD_EXIT        = "Exit"
-	FIELD_DEBUG       = "Print Debug"
-)
-
 func cmdIssueEditIssueNote(r *config.Red_t, issue *newIssueHolder) error {
 	issue.Issue.Notes = editor.StartEdit("")
 	return nil
