@@ -8,11 +8,13 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.14.0
-	golang.org/x/term v0.0.0-20220526004731-065cf7ba2467
+	golang.org/x/term v0.1.0
 )
 
 require (
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect
+	github.com/briandowns/spinner v1.20.0 // indirect
+	github.com/fatih/color v1.13.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-openapi/errors v0.20.2 // indirect
 	github.com/go-openapi/strfmt v0.21.2 // indirect
