@@ -63,6 +63,7 @@ func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
 
 	fmt.Printf(
 		"------------ %s %s - %s [%s] ---------\n"+
+			text.FgGreen.Sprint("Author")+" %s\n"+
 			text.FgGreen.Sprint("Start Date")+" %s\n"+
 			text.FgGreen.Sprint("Due Date")+" %s\n"+
 			text.FgGreen.Sprint("Done")+" %s %d%%\n\n"+
@@ -78,6 +79,7 @@ func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
 		print.PrintID(issue.ID),
 		issue.Subject,
 		closed,
+		issue.Author.Name,
 		issue.StartDate,
 		issue.DueDate,
 		displayProgressBar(issue.DoneRatio),
