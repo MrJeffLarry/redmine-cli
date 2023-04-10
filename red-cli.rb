@@ -5,11 +5,11 @@
 class RedCli < Formula
   desc "Redmine CLI"
   homepage "https://github.com/mrjefflarry/redmine-cli"
-  version "0.1.1"
+  version "0.1.2"
 
   on_macos do
-    url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.1.1/red-cli_0.1.1_Darwin_all.tar.gz"
-    sha256 "6fe16a0ef07c9b38eba0d1da390a9722e18f144cfc6ca07e356b4522c1e3d401"
+    url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.1.2/red-cli_0.1.2_Darwin_all.tar.gz"
+    sha256 "6f8336aa3f25d8657a83a1c085cf46bae78c0596bfc28ea12d5ec1aa9f1862c4"
 
     def install
       bin.install "red-cli"
@@ -18,16 +18,16 @@ class RedCli < Formula
 
   on_linux do
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.1.1/red-cli_0.1.1_Linux_arm64.tar.gz"
-      sha256 "637a3e8d06f80e93d02fbb54c497edab1fc309d4b3ced43104a947d99fa5354e"
+      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.1.2/red-cli_0.1.2_Linux_arm64.tar.gz"
+      sha256 "580b35c0eeeccc0780f427dc22229abd8f62507e89a3fc9667840cb3d3e8d9fe"
 
       def install
         bin.install "red-cli"
       end
     end
     if Hardware::CPU.intel?
-      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.1.1/red-cli_0.1.1_Linux_x86_64.tar.gz"
-      sha256 "b6ce278f8986a17c0687ec811a7fa5f893c6ff341884a0d88c3a92e04dd6d33c"
+      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.1.2/red-cli_0.1.2_Linux_x86_64.tar.gz"
+      sha256 "11782a827c02003ce249ade08a5d1a96c8127ea315089ddb6631f93eb7475f3c"
 
       def install
         bin.install "red-cli"
