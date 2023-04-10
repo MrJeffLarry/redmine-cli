@@ -13,6 +13,8 @@ func configGlobal(r *config.Red_t) *cobra.Command {
 	}
 
 	cmd.AddCommand(globalProject(r))
+	cmd.AddCommand(globalEditor(r))
+	cmd.AddCommand(globalPager(r))
 
 	return cmd
 }
@@ -35,6 +37,10 @@ func NewCmdConfig(r *config.Red_t) *cobra.Command {
 		Short: "get or set config",
 		Long:  "get or set local or global config",
 	}
+
+	cmd.AddCommand(globalProject(r))
+	cmd.AddCommand(globalEditor(r))
+	cmd.AddCommand(globalPager(r))
 
 	cmd.AddCommand(configGlobal(r))
 	cmd.AddCommand(configLocal(r))

@@ -91,7 +91,7 @@ func child(l *List, parentI int) {
 	}
 }
 
-func (l *List) Render() {
+func (l *List) Render() string {
 
 	if l.ParentIssueGrouping {
 		for i, row := range l.rows {
@@ -138,11 +138,14 @@ func (l *List) Render() {
 		}
 	}
 
+	output := ""
+
 	for i, head := range l.headers {
-		fmt.Printf("%s  %s", head, strings.Repeat(" ", l.maxLens[i]-utf8.RuneCountInString(head)))
+
+		output += fmt.Sprintf("%s  %s", head, strings.Repeat(" ", l.maxLens[i]-utf8.RuneCountInString(head)))
 	}
 
-	fmt.Printf("\n")
+	output += "\n"
 
 	for _, row := range l.newRows {
 		for i, field := range row.Columns {
@@ -154,13 +157,13 @@ func (l *List) Render() {
 				parentSize = field.ParentSize
 			}
 
-			fmt.Printf("%s%s  %s",
+			output += fmt.Sprintf("%s%s  %s",
 				strings.Repeat("‣ ", parentSize),
 				field.FgColor.Color(field.Content),
 				strings.Repeat(" ", pad),
 			)
 		}
-		fmt.Printf("\n")
+		output += "\n"
 	}
 	if l.TotalCount == 0 {
 		l.TotalCount = len(l.newRows)
@@ -172,9 +175,11 @@ func (l *List) Render() {
 		l.Offset = 0
 	}
 
-	fmt.Println(text.FgHiBlack.Sprintf("- - - - %d to %d (Total %d) - - - -",
+	output += fmt.Sprintln(text.FgHiBlack.Sprintf("- - - - %d to %d (Total %d) - - - -",
 		l.Offset,
 		l.Offset+l.Limit,
 		l.TotalCount,
 	))
+
+	return output
 }

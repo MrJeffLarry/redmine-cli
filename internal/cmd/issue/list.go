@@ -6,6 +6,7 @@ import (
 
 	"github.com/MrJeffLarry/redmine-cli/internal/api"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
+	"github.com/MrJeffLarry/redmine-cli/internal/editor"
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
 	"github.com/MrJeffLarry/redmine-cli/internal/util"
 	"github.com/spf13/cobra"
@@ -92,7 +93,7 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	l.SetOffset(issues.Offset)
 	l.SetTotal(issues.TotalCount)
 
-	l.Render()
+	editor.StartPage(r.Pager, l.Render())
 }
 
 func cmdIssueList(r *config.Red_t) *cobra.Command {

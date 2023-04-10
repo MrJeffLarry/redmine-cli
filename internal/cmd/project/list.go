@@ -6,6 +6,7 @@ import (
 
 	"github.com/MrJeffLarry/redmine-cli/internal/api"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
+	"github.com/MrJeffLarry/redmine-cli/internal/editor"
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
 	"github.com/MrJeffLarry/redmine-cli/internal/util"
 	"github.com/spf13/cobra"
@@ -53,7 +54,7 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	l.SetOffset(projects.Offset)
 	l.SetTotal(projects.TotalCount)
 
-	l.Render()
+	editor.StartPage(r.Pager, l.Render())
 }
 
 func cmdProjectList(r *config.Red_t) *cobra.Command {

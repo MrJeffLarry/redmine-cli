@@ -1,6 +1,7 @@
 package editor
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"runtime"
@@ -9,9 +10,12 @@ import (
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
 )
 
-func StartEdit(body string) string {
+func StartEdit(exec, body string) string {
 	edit := "nano"
-	if runtime.GOOS == "windows" {
+
+	if exec != "" {
+		edit = exec
+	} else if runtime.GOOS == "windows" {
 		edit = "notepad"
 	} else if g := os.Getenv("GIT_EDITOR"); g != "" {
 		edit = g
@@ -23,8 +27,44 @@ func StartEdit(body string) string {
 	return editor(edit, body)
 }
 
-func StartView(body string) {
-	viewer("less", body)
+func StartPage(exec, body string) {
+	var path string
+	var err error
+	var args []string
+
+	view := ""
+
+	if exec == "" {
+		fmt.Println(body)
+		return
+	} else if exec != "" {
+		view = exec
+	} else if g := os.Getenv("LESS"); g != "" {
+		view = "less"
+		args = append(args, "-f")
+	} else if runtime.GOOS == "windows" {
+		view = "notepad"
+	} else {
+		// did not found any viewer
+		fmt.Println(body)
+		return
+	}
+
+	if path, err = config.CreateTmpFile(body); err != nil {
+		print.Error(err.Error())
+		return
+	}
+
+	args = append(args, path)
+
+	if err = createFile(view, args, body); err != nil {
+		print.Error(err.Error())
+		return
+	}
+
+	if err = os.Remove(path); err != nil {
+		print.Error(err.Error())
+	}
 }
 
 func createFile(editor string, arg []string, body string) error {
@@ -45,25 +85,6 @@ func createFile(editor string, arg []string, body string) error {
 		return err
 	}
 	return nil
-}
-
-func viewer(viewer string, body string) {
-	var path string
-	var err error
-
-	if path, err = config.CreateTmpFile(body); err != nil {
-		print.Error(err.Error())
-		return
-	}
-
-	if err = createFile(viewer, []string{"-f", path}, body); err != nil {
-		print.Error(err.Error())
-		return
-	}
-
-	if err = os.Remove(path); err != nil {
-		print.Error(err.Error())
-	}
 }
 
 func editor(editor, body string) string {

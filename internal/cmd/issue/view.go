@@ -8,6 +8,7 @@ import (
 
 	"github.com/MrJeffLarry/redmine-cli/internal/api"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
+	"github.com/MrJeffLarry/redmine-cli/internal/editor"
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
@@ -61,7 +62,7 @@ func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
 
 	sid := strconv.FormatInt(int64(issue.ID), 10)
 
-	fmt.Printf(
+	response := fmt.Sprintf(
 		"------------ %s %s - %s [%s] ---------\n"+
 			text.FgGreen.Sprint("Author")+" %s\n"+
 			text.FgGreen.Sprint("Start Date")+" %s\n"+
@@ -108,7 +109,7 @@ func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
 				notes += journal.Notes + "\n"
 			}
 
-			fmt.Printf(" %s %s\n"+
+			response += fmt.Sprintf(" %s %s\n"+
 				"%s"+
 				"%s\n",
 				text.FgGreen.Sprintf("#%d", journal.ID),
@@ -119,7 +120,9 @@ func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
 		}
 	}
 
-	fmt.Println(text.FgHiBlack.Sprintf("View issue: %s", r.RedmineURL+"/issues/"+sid))
+	response += fmt.Sprintln(text.FgHiBlack.Sprintf("View issue: %s", r.RedmineURL+"/issues/"+sid))
+
+	editor.StartPage(r.Pager, response)
 }
 
 func cmdIssueView(r *config.Red_t) *cobra.Command {

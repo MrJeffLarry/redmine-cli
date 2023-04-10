@@ -18,12 +18,16 @@ const (
 	RED_CONFIG_REDMINE_PROJECT    = "RED_CONFIG_REDMINE_PROJECT"
 	RED_CONFIG_REDMINE_PROJECT_ID = "RED_CONFIG_REDMINE_PROJECT_ID"
 	RED_CONFIG_REDMINE_USER_ID    = "RED_CONFIG_REDMINE_USER_ID"
+	RED_CONFIG_EDITOR             = "RED_CONFIG_EDITOR"
+	RED_CONFIG_PAGER              = "RED_CONFIG_PAGER"
 
 	CONFIG_REDMINE_URL        = "server"
 	CONFIG_REDMINE_API_KEY    = "api-key"
 	CONFIG_REDMINE_PROJECT    = "project"
 	CONFIG_REDMINE_PROJECT_ID = "project-id"
 	CONFIG_REDMINE_USER_ID    = "user-id"
+	CONFIG_EDITOR             = "editor"
+	CONFIG_PAGER              = "pager"
 
 	CONFIG_FILE   = "config.json"
 	CONFIG_FOLDER = ".red"
@@ -40,6 +44,8 @@ type Red_t struct {
 	RedmineProject   string
 	RedmineProjectID int
 	RedmineUserID    int
+	Editor           string
+	Pager            string
 	Spinner          *spinner.Spinner
 	Debug            bool
 	All              bool
@@ -83,12 +89,22 @@ func (r *Red_t) SetUserID(id int) {
 	r.RedmineUserID = id
 }
 
+func (r *Red_t) SetEditor(v string) {
+	r.Editor = v
+}
+
+func (r *Red_t) SetPager(v string) {
+	r.Pager = v
+}
+
 func (r *Red_t) ClearAll() {
 	r.RedmineURL = ""
 	r.RedmineApiKey = ""
 	r.RedmineUserID = 0
 	r.RedmineProject = ""
 	r.RedmineProjectID = 0
+	r.Editor = ""
+	r.Pager = ""
 }
 
 func createFolderPath(path string) error {
@@ -205,6 +221,8 @@ func (r *Red_t) Save() error {
 	viper.Set(CONFIG_REDMINE_PROJECT, r.RedmineProject)
 	viper.Set(CONFIG_REDMINE_PROJECT_ID, r.RedmineProjectID)
 	viper.Set(CONFIG_REDMINE_USER_ID, r.RedmineUserID)
+	viper.Set(CONFIG_EDITOR, r.Editor)
+	viper.Set(CONFIG_PAGER, r.Pager)
 
 	if err := viper.WriteConfig(); err != nil {
 		if err := viper.SafeWriteConfig(); err != nil {
@@ -240,6 +258,8 @@ func (r *Red_t) LoadConfig() {
 	r.RedmineProject = viper.GetString(CONFIG_REDMINE_PROJECT)
 	r.RedmineProjectID = viper.GetInt(CONFIG_REDMINE_PROJECT_ID)
 	r.RedmineUserID = viper.GetInt(CONFIG_REDMINE_USER_ID)
+	r.Editor = viper.GetString(CONFIG_EDITOR)
+	r.Pager = viper.GetString(CONFIG_PAGER)
 }
 
 func (r *Red_t) localConfig() {
@@ -293,6 +313,8 @@ func InitConfig() *Red_t {
 	red.RedmineProject = exEnv(RED_CONFIG_REDMINE_PROJECT, "")
 	red.RedmineProjectID, _ = strconv.Atoi(exEnv(RED_CONFIG_REDMINE_PROJECT_ID, ""))
 	red.RedmineUserID, _ = strconv.Atoi(exEnv(RED_CONFIG_REDMINE_USER_ID, ""))
+	red.Editor = exEnv(RED_CONFIG_EDITOR, "")
+	red.Pager = exEnv(RED_CONFIG_PAGER, "")
 
 	red.LoadConfig()
 	red.localConfig()

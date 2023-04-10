@@ -90,7 +90,7 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 	issue.Issue.TrackerID, _ = terminal.Choose("Tracker", idNames)
 	issue.Issue.Subject, _ = terminal.PromptStringRequire("Subject", "")
 	if terminal.Confirm("Write Body") {
-		issue.Issue.Description = editor.StartEdit("")
+		issue.Issue.Description = editor.StartEdit(r.Editor, "")
 	}
 
 	//
