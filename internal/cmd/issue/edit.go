@@ -228,7 +228,7 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 		return
 	}
 
-	fmt.Printf("Edit issue #%s\n\n", text.FgGreen.Sprint(id))
+	fmt.Printf("Edit issue %s - %s\n\n", print.PrintID(viewIssue.Issue.ID), viewIssue.Issue.Subject)
 
 	for {
 		choose, i := terminal.ChooseString("Issue", chooses)

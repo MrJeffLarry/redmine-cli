@@ -27,7 +27,7 @@ func PrintRow(r *config.Red_t, format string, a ...any) {
 }
 
 func PrintID(id int) string {
-	return text.FgGreen.Sprint("#", id)
+	return text.FgGreen.Sprint(id)
 }
 
 func PrintTimeAgo(ago string) string {
