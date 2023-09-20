@@ -30,15 +30,15 @@ func ClientGET(r *config.Red_t, path string) ([]byte, int, error) {
 	r.Spinner.Start()
 	defer r.Spinner.Stop()
 
-	req, err = http.NewRequest(http.MethodGet, r.RedmineURL+path, nil)
+	req, err = http.NewRequest(http.MethodGet, r.Config.Server+path, nil)
 	if err != nil {
 		return res, statusCode, errors.New(ERR_CONN_CREATE)
 	}
 
-	req.Header.Add("X-Redmine-API-Key", r.RedmineApiKey)
+	req.Header.Add("X-Redmine-API-Key", r.Config.ApiKey)
 	resp, err = client.Do(req)
 	if err != nil {
-		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.RedmineURL + "]")
+		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.Config.Server + "]")
 	}
 	defer resp.Body.Close()
 
@@ -69,19 +69,19 @@ func ClientPUT(r *config.Red_t, path string, body []byte) ([]byte, int, error) {
 	r.Spinner.Start()
 	defer r.Spinner.Stop()
 
-	req, err = http.NewRequest(http.MethodPut, r.RedmineURL+path, bytes.NewReader(body))
+	req, err = http.NewRequest(http.MethodPut, r.Config.Server+path, bytes.NewReader(body))
 	if err != nil {
 		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_CREATE)
 	}
 
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("X-Redmine-API-Key", r.RedmineApiKey)
+	req.Header.Add("X-Redmine-API-Key", r.Config.ApiKey)
 
 	resp, err = client.Do(req)
 	if err != nil {
 		print.Debug(r, err.Error())
-		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.RedmineURL + "]")
+		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.Config.Server + "]")
 	}
 	defer resp.Body.Close()
 
@@ -113,19 +113,19 @@ func ClientPOST(r *config.Red_t, path string, body []byte) ([]byte, int, error) 
 	r.Spinner.Start()
 	defer r.Spinner.Stop()
 
-	req, err = http.NewRequest(http.MethodPost, r.RedmineURL+path, bytes.NewReader(body))
+	req, err = http.NewRequest(http.MethodPost, r.Config.Server+path, bytes.NewReader(body))
 	if err != nil {
 		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_CREATE)
 	}
 
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("X-Redmine-API-Key", r.RedmineApiKey)
+	req.Header.Add("X-Redmine-API-Key", r.Config.ApiKey)
 
 	resp, err = client.Do(req)
 	if err != nil {
 		print.Debug(r, err.Error())
-		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.RedmineURL + "]")
+		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.Config.Server + "]")
 	}
 	defer resp.Body.Close()
 

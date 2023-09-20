@@ -50,7 +50,7 @@ func cmdIssueEditIssueAssign(r *config.Red_t, projectID int, issue *newIssueHold
 }
 
 func cmdIssueEditIssueNote(r *config.Red_t, issue *newIssueHolder) error {
-	issue.Issue.Notes = editor.StartEdit(r.Editor, "")
+	issue.Issue.Notes = editor.StartEdit(r.Config.Editor, "")
 	return nil
 }
 
@@ -129,7 +129,7 @@ func cmdIssueEditIssueTracker(r *config.Red_t, projectID int, issue *newIssueHol
 }
 
 func cmdIssueEditIssueDescription(r *config.Red_t, description string, issue *newIssueHolder) error {
-	issue.Issue.Description = editor.StartEdit(r.Editor, description)
+	issue.Issue.Description = editor.StartEdit(r.Config.Editor, description)
 	return nil
 }
 

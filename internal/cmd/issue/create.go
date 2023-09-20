@@ -48,7 +48,7 @@ func cmdIssueCreateSave(r *config.Red_t, issue *newIssueHolder) bool {
 	}
 
 	print.OK("Issue #%d created!\n", responseIssue.Issue.ID)
-	print.Info("%s/issues/%d\n", r.RedmineURL, responseIssue.Issue.ID)
+	print.Info("%s/issues/%d\n", r.Config.Server, responseIssue.Issue.ID)
 	return true
 }
 
@@ -65,8 +65,8 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 
 	issue := newIssueHolder{}
 
-	if r.RedmineProjectID > 0 {
-		projectID = r.RedmineProjectID
+	if r.Config.ProjectID > 0 {
+		projectID = r.Config.ProjectID
 	}
 
 	if proID, _ := cmd.Flags().GetInt("project"); proID > 0 {
@@ -90,7 +90,7 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 	issue.Issue.TrackerID, _ = terminal.Choose("Tracker", idNames)
 	issue.Issue.Subject, _ = terminal.PromptStringRequire("Subject", "")
 	if terminal.Confirm("Write Body") {
-		issue.Issue.Description = editor.StartEdit(r.Editor, "")
+		issue.Issue.Description = editor.StartEdit(r.Config.Editor, "")
 	}
 
 	//

@@ -54,7 +54,7 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	l.SetOffset(projects.Offset)
 	l.SetTotal(projects.TotalCount)
 
-	editor.StartPage(r.Pager, l.Render())
+	editor.StartPage(r.Config.Pager, l.Render())
 }
 
 func cmdProjectList(r *config.Red_t) *cobra.Command {

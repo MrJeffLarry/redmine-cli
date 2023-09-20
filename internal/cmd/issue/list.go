@@ -36,7 +36,7 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	projectID := 0
 
 	if !r.All {
-		projectID = r.RedmineProjectID
+		projectID = r.Config.ProjectID
 	}
 
 	if dispProject, _ = cmd.Flags().GetBool(FLAG_DISPLAY_PROJECT); dispProject {
@@ -93,7 +93,7 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	l.SetOffset(issues.Offset)
 	l.SetTotal(issues.TotalCount)
 
-	editor.StartPage(r.Pager, l.Render())
+	editor.StartPage(r.Config.Pager, l.Render())
 }
 
 func cmdIssueList(r *config.Red_t) *cobra.Command {
@@ -112,7 +112,7 @@ func cmdIssueList(r *config.Red_t) *cobra.Command {
 		Short: "List all issues",
 		Long:  "List all issues and ignores project ID",
 		Run: func(cmd *cobra.Command, args []string) {
-			r.RedmineProjectID = 0 // ignore ID if we want too see all
+			r.Config.ProjectID = 0 // ignore ID if we want too see all
 			displayListGET(r, cmd, "/issues.json?")
 		},
 	})

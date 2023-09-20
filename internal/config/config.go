@@ -20,6 +20,7 @@ const (
 	RED_CONFIG_REDMINE_USER_ID    = "RED_CONFIG_REDMINE_USER_ID"
 	RED_CONFIG_EDITOR             = "RED_CONFIG_EDITOR"
 	RED_CONFIG_PAGER              = "RED_CONFIG_PAGER"
+	RED_CONFIG_ISSUE_VIEW_JOURNAL = "RED_CONFIG_ISSUE_VIEW_JOURNAL"
 
 	CONFIG_REDMINE_URL        = "server"
 	CONFIG_REDMINE_API_KEY    = "api-key"
@@ -28,6 +29,7 @@ const (
 	CONFIG_REDMINE_USER_ID    = "user-id"
 	CONFIG_EDITOR             = "editor"
 	CONFIG_PAGER              = "pager"
+	CONFIG_ISSUE              = "issue"
 
 	CONFIG_FILE   = "config.json"
 	CONFIG_FOLDER = ".red"
@@ -38,17 +40,26 @@ const (
 	ALL_FLAG = "all"
 )
 
+type ConfigIssue_t struct {
+	ViewJournalAlways bool `json:"view-journal"`
+}
+
+type Config_t struct {
+	Server    string        `json:"server"`
+	ApiKey    string        `mapstructure:"api-key"`
+	Project   string        `json:"project"`
+	ProjectID int           `mapstructure:"project-id"`
+	UserID    int           `mapstructure:"user-id"`
+	Editor    string        `json:"editor"`
+	Pager     string        `json:"pager"`
+	Issue     ConfigIssue_t `json:"issue"`
+}
+
 type Red_t struct {
-	RedmineURL       string
-	RedmineApiKey    string
-	RedmineProject   string
-	RedmineProjectID int
-	RedmineUserID    int
-	Editor           string
-	Pager            string
-	Spinner          *spinner.Spinner
-	Debug            bool
-	All              bool
+	Spinner *spinner.Spinner
+	Debug   bool     `json:"debug"`
+	All     bool     `json:"all"`
+	Config  Config_t `json:"config"`
 }
 
 func exEnv(name string, defValue string) string {
@@ -60,51 +71,51 @@ func exEnv(name string, defValue string) string {
 }
 
 func (r *Red_t) IsConfigBad() bool {
-	if len(r.RedmineURL) <= 0 {
+	if len(r.Config.Server) <= 0 {
 		return true
 	}
-	if len(r.RedmineApiKey) <= 0 {
+	if len(r.Config.ApiKey) <= 0 {
 		return true
 	}
 	return false
 }
 
 func (r *Red_t) SetServer(server string) {
-	r.RedmineURL = server
+	r.Config.Server = server
 }
 
 func (r *Red_t) SetApiKey(apiKey string) {
-	r.RedmineApiKey = apiKey
+	r.Config.ApiKey = apiKey
 }
 
 func (r *Red_t) SetProject(id string) {
-	r.RedmineProject = id
+	r.Config.Project = id
 }
 
 func (r *Red_t) SetProjectID(id int) {
-	r.RedmineProjectID = id
+	r.Config.ProjectID = id
 }
 
 func (r *Red_t) SetUserID(id int) {
-	r.RedmineUserID = id
+	r.Config.UserID = id
 }
 
 func (r *Red_t) SetEditor(v string) {
-	r.Editor = v
+	r.Config.Editor = v
 }
 
 func (r *Red_t) SetPager(v string) {
-	r.Pager = v
+	r.Config.Pager = v
 }
 
 func (r *Red_t) ClearAll() {
-	r.RedmineURL = ""
-	r.RedmineApiKey = ""
-	r.RedmineUserID = 0
-	r.RedmineProject = ""
-	r.RedmineProjectID = 0
-	r.Editor = ""
-	r.Pager = ""
+	r.Config.Server = ""
+	r.Config.ApiKey = ""
+	r.Config.UserID = 0
+	r.Config.Project = ""
+	r.Config.ProjectID = 0
+	r.Config.Editor = ""
+	r.Config.Pager = ""
 }
 
 func createFolderPath(path string) error {
@@ -216,13 +227,13 @@ func (r *Red_t) Save() error {
 	viper.SetConfigFile(filePath)
 	viper.SetConfigType("json")
 
-	viper.Set(CONFIG_REDMINE_URL, r.RedmineURL)
-	viper.Set(CONFIG_REDMINE_API_KEY, r.RedmineApiKey)
-	viper.Set(CONFIG_REDMINE_PROJECT, r.RedmineProject)
-	viper.Set(CONFIG_REDMINE_PROJECT_ID, r.RedmineProjectID)
-	viper.Set(CONFIG_REDMINE_USER_ID, r.RedmineUserID)
-	viper.Set(CONFIG_EDITOR, r.Editor)
-	viper.Set(CONFIG_PAGER, r.Pager)
+	viper.Set(CONFIG_REDMINE_URL, r.Config.Server)
+	viper.Set(CONFIG_REDMINE_API_KEY, r.Config.ApiKey)
+	viper.Set(CONFIG_REDMINE_PROJECT, r.Config.Project)
+	viper.Set(CONFIG_REDMINE_PROJECT_ID, r.Config.ProjectID)
+	viper.Set(CONFIG_REDMINE_USER_ID, r.Config.UserID)
+	viper.Set(CONFIG_EDITOR, r.Config.Editor)
+	viper.Set(CONFIG_PAGER, r.Config.Pager)
 
 	if err := viper.WriteConfig(); err != nil {
 		if err := viper.SafeWriteConfig(); err != nil {
@@ -236,12 +247,12 @@ func (r *Red_t) SaveLocalProject(projectID int) error {
 	return saveLocal(r, CONFIG_REDMINE_PROJECT_ID, projectID)
 }
 
-func (r *Red_t) LoadConfig() {
+func (r *Red_t) LoadConfig() error {
 	sep := string(os.PathSeparator)
 
 	home, err := homedir.Dir()
 	if err != nil {
-		return //errors.New("Can't find home directory")
+		return errors.New("Can't find home directory")
 	}
 
 	filePath := home + sep + CONFIG_FOLDER + sep + CONFIG_FILE
@@ -250,19 +261,17 @@ func (r *Red_t) LoadConfig() {
 	viper.SetConfigType("json")
 
 	if err := viper.ReadInConfig(); err != nil {
-		return // errors.New("Can't read config file in root")
+		return errors.New("Can't read config file in root")
 	}
 
-	r.RedmineURL = viper.GetString(CONFIG_REDMINE_URL)
-	r.RedmineApiKey = viper.GetString(CONFIG_REDMINE_API_KEY)
-	r.RedmineProject = viper.GetString(CONFIG_REDMINE_PROJECT)
-	r.RedmineProjectID = viper.GetInt(CONFIG_REDMINE_PROJECT_ID)
-	r.RedmineUserID = viper.GetInt(CONFIG_REDMINE_USER_ID)
-	r.Editor = viper.GetString(CONFIG_EDITOR)
-	r.Pager = viper.GetString(CONFIG_PAGER)
+	if err := viper.Unmarshal(&r.Config); err != nil {
+		return errors.New("Can't unmarshal config file")
+	}
+
+	return nil
 }
 
-func (r *Red_t) localConfig() {
+func (r *Red_t) localConfig() error {
 	var pwd string
 	var err error
 	var configPath string
@@ -270,37 +279,43 @@ func (r *Red_t) localConfig() {
 	sep := string(os.PathSeparator)
 
 	if pwd, err = os.Getwd(); err != nil {
-		return
+		return errors.New("Can't find current directory")
 	}
 
 	configPath = pwd + sep + CONFIG_FOLDER + sep + CONFIG_FILE
 
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		return
+		return nil
 	}
 
 	viper.SetConfigFile(configPath)
 	viper.SetConfigType("json")
 
 	if err = viper.ReadInConfig(); err != nil {
-		return
+		return errors.New("Can't read config file in local")
 	}
 
-	if redmineURL := viper.GetString(CONFIG_REDMINE_URL); len(redmineURL) > 0 {
-		r.RedmineURL = redmineURL
+	var c Config_t
+	if err := viper.Unmarshal(&c); err != nil {
+		return errors.New("Can't unmarshal config file")
 	}
-	if redmineApiKey := viper.GetString(CONFIG_REDMINE_API_KEY); len(redmineApiKey) > 0 {
-		r.RedmineApiKey = redmineApiKey
+
+	if len(c.Server) > 0 {
+		r.Config.Server = c.Server
 	}
-	if redmineProject := viper.GetString(CONFIG_REDMINE_PROJECT); len(redmineProject) > 0 {
-		r.RedmineProject = redmineProject
+	if len(c.ApiKey) > 0 {
+		r.Config.ApiKey = c.ApiKey
 	}
-	if redmineProjectID := viper.GetInt(CONFIG_REDMINE_PROJECT_ID); redmineProjectID > 0 {
-		r.RedmineProjectID = redmineProjectID
+	if len(c.Project) > 0 {
+		r.Config.Project = c.Project
 	}
-	if redmineUserID := viper.GetInt(CONFIG_REDMINE_USER_ID); redmineUserID > 0 {
-		r.RedmineUserID = redmineUserID
+	if c.ProjectID > 0 {
+		r.Config.ProjectID = c.ProjectID
 	}
+	if c.UserID > 0 {
+		r.Config.UserID = c.UserID
+	}
+	return nil
 }
 
 func InitConfig() *Red_t {
@@ -308,16 +323,20 @@ func InitConfig() *Red_t {
 
 	red.Spinner = spinner.New(spinner.CharSets[11], 100*time.Millisecond)
 
-	red.RedmineURL = exEnv(RED_CONFIG_REDMINE_URL, "")
-	red.RedmineApiKey = exEnv(RED_CONFIG_REDMINE_API_KEY, "")
-	red.RedmineProject = exEnv(RED_CONFIG_REDMINE_PROJECT, "")
-	red.RedmineProjectID, _ = strconv.Atoi(exEnv(RED_CONFIG_REDMINE_PROJECT_ID, ""))
-	red.RedmineUserID, _ = strconv.Atoi(exEnv(RED_CONFIG_REDMINE_USER_ID, ""))
-	red.Editor = exEnv(RED_CONFIG_EDITOR, "")
-	red.Pager = exEnv(RED_CONFIG_PAGER, "")
+	red.Config.Server = exEnv(RED_CONFIG_REDMINE_URL, "")
+	red.Config.ApiKey = exEnv(RED_CONFIG_REDMINE_API_KEY, "")
+	red.Config.Project = exEnv(RED_CONFIG_REDMINE_PROJECT, "")
+	red.Config.ProjectID, _ = strconv.Atoi(exEnv(RED_CONFIG_REDMINE_PROJECT_ID, ""))
+	red.Config.UserID, _ = strconv.Atoi(exEnv(RED_CONFIG_REDMINE_USER_ID, ""))
+	red.Config.Editor = exEnv(RED_CONFIG_EDITOR, "")
+	red.Config.Pager = exEnv(RED_CONFIG_PAGER, "")
 
-	red.LoadConfig()
-	red.localConfig()
+	if err := red.LoadConfig(); err != nil {
+		fmt.Println(err)
+	}
+	if err := red.localConfig(); err != nil {
+		fmt.Println(err)
+	}
 
 	return red
 }
