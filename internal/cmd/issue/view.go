@@ -120,9 +120,9 @@ func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
 		}
 	}
 
-	response += fmt.Sprintln(text.FgHiBlack.Sprintf("View issue: %s", r.RedmineURL+"/issues/"+sid))
+	response += fmt.Sprintln(text.FgHiBlack.Sprintf("View issue: %s", r.Config.Server+"/issues/"+sid))
 
-	editor.StartPage(r.Pager, response)
+	editor.StartPage(r.Config.Pager, response)
 }
 
 func cmdIssueView(r *config.Red_t) *cobra.Command {
