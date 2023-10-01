@@ -3,12 +3,14 @@ package config
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"strconv"
 	"time"
 
 	"github.com/briandowns/spinner"
 	homedir "github.com/mitchellh/go-homedir"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -57,9 +59,11 @@ type Config_t struct {
 
 type Red_t struct {
 	Spinner *spinner.Spinner
+	Client  *http.Client
 	Debug   bool     `json:"debug"`
 	All     bool     `json:"all"`
 	Config  Config_t `json:"config"`
+	Cmd     *cobra.Command
 }
 
 func exEnv(name string, defValue string) string {
@@ -321,6 +325,7 @@ func (r *Red_t) localConfig() error {
 func InitConfig() *Red_t {
 	red := &Red_t{}
 
+	red.Client = &http.Client{}
 	red.Spinner = spinner.New(spinner.CharSets[11], 100*time.Millisecond)
 
 	red.Config.Server = exEnv(RED_CONFIG_REDMINE_URL, "")

@@ -3,7 +3,7 @@ package api
 import (
 	"bytes"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
@@ -24,7 +24,6 @@ func ClientGET(r *config.Red_t, path string) ([]byte, int, error) {
 	var req *http.Request
 	var resp *http.Response
 
-	client := &http.Client{}
 	statusCode = 0
 
 	r.Spinner.Start()
@@ -36,7 +35,7 @@ func ClientGET(r *config.Red_t, path string) ([]byte, int, error) {
 	}
 
 	req.Header.Add("X-Redmine-API-Key", r.Config.ApiKey)
-	resp, err = client.Do(req)
+	resp, err = r.Client.Do(req)
 	if err != nil {
 		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.Config.Server + "]")
 	}
@@ -44,7 +43,7 @@ func ClientGET(r *config.Red_t, path string) ([]byte, int, error) {
 
 	statusCode = resp.StatusCode
 
-	res, err = ioutil.ReadAll(resp.Body)
+	res, err = io.ReadAll(resp.Body)
 	if err != nil {
 		return res, statusCode, errors.New(ERR_CONN_RES)
 	}
@@ -63,7 +62,6 @@ func ClientPUT(r *config.Red_t, path string, body []byte) ([]byte, int, error) {
 	var req *http.Request
 	var resp *http.Response
 
-	client := &http.Client{}
 	statusCode = 0
 
 	r.Spinner.Start()
@@ -78,7 +76,7 @@ func ClientPUT(r *config.Red_t, path string, body []byte) ([]byte, int, error) {
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("X-Redmine-API-Key", r.Config.ApiKey)
 
-	resp, err = client.Do(req)
+	resp, err = r.Client.Do(req)
 	if err != nil {
 		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.Config.Server + "]")
@@ -87,7 +85,7 @@ func ClientPUT(r *config.Red_t, path string, body []byte) ([]byte, int, error) {
 
 	statusCode = resp.StatusCode
 
-	res, err = ioutil.ReadAll(resp.Body)
+	res, err = io.ReadAll(resp.Body)
 	if err != nil {
 		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_RES)
@@ -107,7 +105,6 @@ func ClientPOST(r *config.Red_t, path string, body []byte) ([]byte, int, error) 
 	var req *http.Request
 	var resp *http.Response
 
-	client := &http.Client{}
 	statusCode = 0
 
 	r.Spinner.Start()
@@ -122,7 +119,7 @@ func ClientPOST(r *config.Red_t, path string, body []byte) ([]byte, int, error) 
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("X-Redmine-API-Key", r.Config.ApiKey)
 
-	resp, err = client.Do(req)
+	resp, err = r.Client.Do(req)
 	if err != nil {
 		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.Config.Server + "]")
@@ -131,7 +128,7 @@ func ClientPOST(r *config.Red_t, path string, body []byte) ([]byte, int, error) 
 
 	statusCode = resp.StatusCode
 
-	res, err = ioutil.ReadAll(resp.Body)
+	res, err = io.ReadAll(resp.Body)
 	if err != nil {
 		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_RES)
@@ -151,7 +148,6 @@ func ClientAuthBasicGET(r *config.Red_t, path, server, username, password string
 	var req *http.Request
 	var resp *http.Response
 
-	client := &http.Client{}
 	statusCode = 0
 
 	r.Spinner.Start()
@@ -164,7 +160,7 @@ func ClientAuthBasicGET(r *config.Red_t, path, server, username, password string
 	}
 	req.SetBasicAuth(username, password)
 
-	resp, err = client.Do(req)
+	resp, err = r.Client.Do(req)
 	if err != nil {
 		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + server + "]")
@@ -173,7 +169,7 @@ func ClientAuthBasicGET(r *config.Red_t, path, server, username, password string
 
 	statusCode = resp.StatusCode
 
-	res, err = ioutil.ReadAll(resp.Body)
+	res, err = io.ReadAll(resp.Body)
 	if err != nil {
 		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_RES)
@@ -189,7 +185,6 @@ func ClientAuthApiKeyGET(r *config.Red_t, path, server, apikey string) ([]byte, 
 	var req *http.Request
 	var resp *http.Response
 
-	client := &http.Client{}
 	statusCode = 0
 
 	r.Spinner.Start()
@@ -203,7 +198,7 @@ func ClientAuthApiKeyGET(r *config.Red_t, path, server, apikey string) ([]byte, 
 
 	req.Header.Add("X-Redmine-API-Key", apikey)
 
-	resp, err = client.Do(req)
+	resp, err = r.Client.Do(req)
 	if err != nil {
 		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + server + "]")
@@ -212,7 +207,7 @@ func ClientAuthApiKeyGET(r *config.Red_t, path, server, apikey string) ([]byte, 
 
 	statusCode = resp.StatusCode
 
-	res, err = ioutil.ReadAll(resp.Body)
+	res, err = io.ReadAll(resp.Body)
 	if err != nil {
 		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_RES)
