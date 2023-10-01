@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func loginApiKey(r *config.Red_t, cmd *cobra.Command, server, apikey string) {
+func loginApiKey(r *config.Red_t, cmd *cobra.Command, server, apikey string) bool {
 	var err error
 	var res []byte
 	var status int
@@ -19,20 +19,20 @@ func loginApiKey(r *config.Red_t, cmd *cobra.Command, server, apikey string) {
 
 	if res, status, err = api.ClientAuthApiKeyGET(r, "/users/current.json", server, apikey); err != nil {
 		print.Error("StatusCode %d, %s", status, err.Error())
-		return
+		return false
 	}
 
 	print.Debug(r, "%d %s", status, string(res))
 
 	if err = api.StatusCode(status); err != nil {
 		print.Error(err.Error())
-		return
+		return false
 	}
 
 	if err := json.Unmarshal(res, &user); err != nil {
 		print.Debug(r, err.Error())
 		print.Error("StatusCode %d, %s", status, "Could not parse and read response from server")
-		return
+		return false
 	}
 
 	r.SetApiKey(user.User.ApiKey)
@@ -40,10 +40,11 @@ func loginApiKey(r *config.Red_t, cmd *cobra.Command, server, apikey string) {
 	r.SetUserID(user.User.ID)
 	if err = r.Save(); err != nil {
 		print.Error(err.Error())
-		return
+		return false
 	}
 
 	print.OK("Login done!")
+	return true
 }
 
 func loginPassword(r *config.Red_t, cmd *cobra.Command, server, username string) {
