@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
+	expect "github.com/Netflix/go-expect"
 	"github.com/briandowns/spinner"
 	"github.com/spf13/cobra"
 )
@@ -17,14 +18,16 @@ type testConfig struct {
 	U *user
 	M *http.ServeMux
 	S *httptest.Server
+	t *testing.T
+	c *expect.Console
 }
 
-func common() *testConfig {
-	t := &testConfig{}
-	t.R = &config.Red_t{
+func common(t *testing.T) *testConfig {
+	tc := &testConfig{}
+	tc.R = &config.Red_t{
 		Spinner: spinner.New(spinner.CharSets[9], 100*time.Millisecond),
 	}
-	t.U = &user{
+	tc.U = &user{
 		User: userInfo{
 			ID:          1,
 			Login:       "test",
@@ -37,16 +40,30 @@ func common() *testConfig {
 		},
 	}
 
-	t.M = http.NewServeMux()
-	t.S = httptest.NewServer(t.M)
+	tc.M = http.NewServeMux()
+	tc.S = httptest.NewServer(tc.M)
+	tc.R.Client = tc.S.Client()
+	tc.t = t
 
-	t.R.Client = t.S.Client()
+	return tc
+}
 
-	return t
+func (tc *testConfig) ExpectString(s string) {
+	if _, err := tc.c.ExpectString(s); err != nil {
+		tc.t.Helper()
+		tc.t.Fatalf("ExpectString(%q) = %v", s, err)
+	}
+}
+
+func (tc *testConfig) SendLine(s string) {
+	if _, err := tc.c.SendLine(s); err != nil {
+		tc.t.Helper()
+		tc.t.Fatalf("SendLine(%q) = %v", s, err)
+	}
 }
 
 func TestAuthLoginApiKeyNoServer(t *testing.T) {
-	tc := common()
+	tc := common(t)
 	defer tc.S.Close()
 
 	tc.M.HandleFunc("/users/current.json", func(w http.ResponseWriter, r *http.Request) {
@@ -66,7 +83,7 @@ func TestAuthLoginApiKeyNoServer(t *testing.T) {
 }
 
 func TestAuthLoginApiKeyBadServer(t *testing.T) {
-	tc := common()
+	tc := common(t)
 	defer tc.S.Close()
 
 	if loginApiKey(tc.R, &cobra.Command{}, "", tc.U.User.ApiKey) {
@@ -80,7 +97,7 @@ func TestAuthLoginApiKeyBadServer(t *testing.T) {
 }
 
 func TestAuthLoginApiKeyBadCred(t *testing.T) {
-	tc := common()
+	tc := common(t)
 	defer tc.S.Close()
 
 	tc.M.HandleFunc("/users/current.json", func(w http.ResponseWriter, r *http.Request) {
@@ -101,7 +118,7 @@ func TestAuthLoginApiKeyBadCred(t *testing.T) {
 }
 
 func TestAuthLoginApiKeyOk(t *testing.T) {
-	tc := common()
+	tc := common(t)
 	defer tc.S.Close()
 
 	tc.M.HandleFunc("/users/current.json", func(w http.ResponseWriter, r *http.Request) {
