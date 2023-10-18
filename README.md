@@ -33,8 +33,8 @@ scoop install mrjefflarry/redmine-cli/red-cli
 **apt**
 
 ```bash
-curl -s --compressed "https://mrjefflarry.github.io/redmine-cli/apt/public_key.gpg" | sudo apt-key add -
-sudo curl -s --compressed -o /etc/apt/sources.list.d/redmine-cli.list "https://mrjefflarry.github.io/redmine-cli/apt/redmine-cli.list"
+curl -s --compressed "https://raw.githubusercontent.com/MrJeffLarry/redmine-cli/main/apt/public_key.gpg" | sudo apt-key add -
+sudo curl -s --compressed -o /etc/apt/sources.list.d/redmine-cli.list "https://raw.githubusercontent.com/MrJeffLarry/redmine-cli/main/apt/redmine-cli.list"
 sudo apt update
 sudo apt install red-cli
 ```

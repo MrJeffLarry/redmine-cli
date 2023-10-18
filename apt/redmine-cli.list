@@ -1,1 +1,1 @@
-deb https://mrjefflarry.github.io/redmine-cli/apt ./
+deb https://raw.githubusercontent.com/MrJeffLarry/redmine-cli/main/apt ./
