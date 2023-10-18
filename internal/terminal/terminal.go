@@ -9,7 +9,35 @@ import (
 	"github.com/MrJeffLarry/redmine-cli/internal/util"
 )
 
-func Choose(label string, chooses []util.IdName) (int, string) {
+type Terminal struct {
+	Stdin  *os.File
+	Stdout *os.File
+	Stderr *os.File
+}
+
+func New(stdin *os.File, stdout *os.File, stderr *os.File) *Terminal {
+	t := &Terminal{
+		Stdin:  os.Stdin,
+		Stdout: os.Stdout,
+		Stderr: os.Stderr,
+	}
+
+	if stdin == nil {
+		t.Stdin = os.Stdin
+	}
+
+	if stdout == nil {
+		t.Stdout = os.Stdout
+	}
+
+	if stderr == nil {
+		t.Stderr = os.Stderr
+	}
+
+	return t
+}
+
+func (t *Terminal) Choose(label string, chooses []util.IdName) (int, string) {
 	options := make([]string, len(chooses))
 
 	for i, m := range chooses {
@@ -21,9 +49,11 @@ func Choose(label string, chooses []util.IdName) (int, string) {
 		Options: options,
 	}
 
+	stdio := survey.WithStdio(t.Stdin, t.Stdout, t.Stderr)
+
 	index := 0
 
-	if err := survey.AskOne(choose, &index); err != nil {
+	if err := survey.AskOne(choose, &index, stdio); err != nil {
 		if err == terminal.InterruptErr {
 			os.Exit(0)
 			return -1, ""
@@ -35,16 +65,19 @@ func Choose(label string, chooses []util.IdName) (int, string) {
 	return chooses[index].ID, chooses[index].Name
 }
 
-func ChooseString(label string, chooses []string) (string, int) {
+func (t *Terminal) ChooseString(label string, chooses []string) (string, int) {
 
 	choose := &survey.Select{
 		Message: label + ":",
 		Options: chooses,
 	}
 
+	stdio := survey.WithStdio(t.Stdin, t.Stdout, t.Stderr)
+
 	index := 0
 
-	if err := survey.AskOne(choose, &index); err != nil {
+	if err := survey.AskOne(choose, &index, stdio); err != nil {
+
 		if err == terminal.InterruptErr {
 			os.Exit(0)
 			return "", -1
@@ -56,13 +89,16 @@ func ChooseString(label string, chooses []string) (string, int) {
 	return chooses[index], index
 }
 
-func PromptPassword(label string, def string) (string, error) {
+func (t *Terminal) PromptPassword(label string, def string) (string, error) {
 	pass := ""
 	ask := &survey.Password{
 		Message: label,
 	}
 
-	if err := survey.AskOne(ask, &pass); err != nil {
+	stdio := survey.WithStdio(t.Stdin, t.Stdout, t.Stderr)
+
+	if err := survey.AskOne(ask, &pass, stdio); err != nil {
+
 		if err == terminal.InterruptErr {
 			os.Exit(0)
 			return def, nil
@@ -74,15 +110,18 @@ func PromptPassword(label string, def string) (string, error) {
 	return pass, nil
 }
 
-func PromptStringRequire(label string, def string) (string, error) {
+func (t *Terminal) PromptStringRequire(label string, def string) (string, error) {
 	ask := &survey.Input{
 		Message: label + ":",
 		Default: def,
 	}
 
+	stdio := survey.WithStdio(t.Stdin, t.Stdout, t.Stderr)
+
 	resp := ""
 
-	if err := survey.AskOne(ask, &resp, survey.WithValidator(survey.Required)); err != nil {
+	if err := survey.AskOne(ask, &resp, survey.WithValidator(survey.Required), stdio); err != nil {
+
 		if err == terminal.InterruptErr {
 			os.Exit(0)
 			return def, nil
@@ -94,15 +133,18 @@ func PromptStringRequire(label string, def string) (string, error) {
 	return resp, nil
 }
 
-func PromptString(label string, def string) (string, error) {
+func (t *Terminal) PromptString(label string, def string) (string, error) {
 	ask := &survey.Input{
 		Message: label + ":",
 		Default: def,
 	}
 
+	stdio := survey.WithStdio(t.Stdin, t.Stdout, t.Stderr)
+
 	resp := ""
 
-	if err := survey.AskOne(ask, &resp, survey.WithValidator(survey.Required)); err != nil {
+	if err := survey.AskOne(ask, &resp, survey.WithValidator(survey.Required), stdio); err != nil {
+
 		if err == terminal.InterruptErr {
 			os.Exit(0)
 			return def, nil
@@ -114,7 +156,7 @@ func PromptString(label string, def string) (string, error) {
 	return resp, nil
 }
 
-func PromptInt(label string, def int) (int, error) {
+func (t *Terminal) PromptInt(label string, def int) (int, error) {
 	var resp int
 
 	ask := &survey.Input{
@@ -122,7 +164,10 @@ func PromptInt(label string, def int) (int, error) {
 		Default: "-1",
 	}
 
-	if err := survey.AskOne(ask, &resp, survey.WithValidator(survey.Required)); err != nil {
+	stdio := survey.WithStdio(t.Stdin, t.Stdout, t.Stderr)
+
+	if err := survey.AskOne(ask, &resp, survey.WithValidator(survey.Required), stdio); err != nil {
+
 		if err == terminal.InterruptErr {
 			os.Exit(0)
 			return def, nil
@@ -134,14 +179,17 @@ func PromptInt(label string, def int) (int, error) {
 	return resp, nil
 }
 
-func Confirm(label string) bool {
+func (t *Terminal) Confirm(label string) bool {
 	confirm := false
 
 	prompt := &survey.Confirm{
 		Message: label,
 	}
 
-	if err := survey.AskOne(prompt, &confirm); err != nil {
+	stdio := survey.WithStdio(t.Stdin, t.Stdout, t.Stderr)
+
+	if err := survey.AskOne(prompt, &confirm, stdio); err != nil {
+
 		if err == terminal.InterruptErr {
 			os.Exit(0)
 			return confirm

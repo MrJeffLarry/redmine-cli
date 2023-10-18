@@ -10,6 +10,7 @@ import (
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/project"
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/user"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
+	"github.com/MrJeffLarry/redmine-cli/internal/terminal"
 	"github.com/spf13/cobra"
 )
 
@@ -28,6 +29,8 @@ func IsAuthCmd(cmd *cobra.Command) bool {
 func CmdInit(Version, GitCommit, BuildTime string) *config.Red_t {
 
 	r := config.InitConfig()
+
+	r.Term = terminal.New(nil, nil, nil)
 
 	r.Cmd = &cobra.Command{
 		Use:           "red-cli <command> <subcommand> [flags]",

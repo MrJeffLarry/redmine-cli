@@ -10,7 +10,6 @@ import (
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
 	"github.com/MrJeffLarry/redmine-cli/internal/editor"
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
-	"github.com/MrJeffLarry/redmine-cli/internal/terminal"
 	"github.com/MrJeffLarry/redmine-cli/internal/util"
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
@@ -24,7 +23,7 @@ func cmdIssueEditIssueTargetVersion(r *config.Red_t, projectID int, issue *newIs
 		return err
 	}
 
-	id, _ := terminal.Choose("Target version", idNames)
+	id, _ := r.Term.Choose("Target version", idNames)
 
 	if id >= 0 {
 		issue.Issue.FixedVersionID = id
@@ -41,7 +40,7 @@ func cmdIssueEditIssueAssign(r *config.Red_t, projectID int, issue *newIssueHold
 		return err
 	}
 
-	id, _ := terminal.Choose("Assign", idNames)
+	id, _ := r.Term.Choose("Assign", idNames)
 
 	if id >= 0 {
 		issue.Issue.AssignedToID = id
@@ -82,7 +81,7 @@ func cmdIssueEditIssueStatus(r *config.Red_t, issue *newIssueHolder) error {
 		idNames = append(idNames, idname)
 	}
 
-	issue.Issue.StatusID, _ = terminal.Choose("Choose Status", idNames)
+	issue.Issue.StatusID, _ = r.Term.Choose("Choose Status", idNames)
 	return nil
 }
 
@@ -112,7 +111,7 @@ func cmdIssueEditIssuePriority(r *config.Red_t, issue *newIssueHolder) error {
 		idNames = append(idNames, idname)
 	}
 
-	issue.Issue.PriorityID, _ = terminal.Choose("Choose Priority", idNames)
+	issue.Issue.PriorityID, _ = r.Term.Choose("Choose Priority", idNames)
 	return nil
 }
 
@@ -124,7 +123,7 @@ func cmdIssueEditIssueTracker(r *config.Red_t, projectID int, issue *newIssueHol
 		return err
 	}
 
-	issue.Issue.TrackerID, _ = terminal.Choose("Tracker", trackers)
+	issue.Issue.TrackerID, _ = r.Term.Choose("Tracker", trackers)
 	return nil
 }
 
@@ -135,7 +134,7 @@ func cmdIssueEditIssueDescription(r *config.Red_t, description string, issue *ne
 
 func cmdIssueEditIssueSubject(r *config.Red_t, subject string, issue *newIssueHolder) error {
 	var err error
-	if issue.Issue.Subject, err = terminal.PromptString("Subject", subject); err != nil {
+	if issue.Issue.Subject, err = r.Term.PromptString("Subject", subject); err != nil {
 		return err
 	}
 	return nil
@@ -231,9 +230,9 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 	fmt.Printf("Edit issue %s - %s\n\n", print.PrintID(viewIssue.Issue.ID), viewIssue.Issue.Subject)
 
 	for {
-		choose, i := terminal.ChooseString("Issue", chooses)
+		choose, i := r.Term.ChooseString("Issue", chooses)
 		if i == -1 {
-			if !terminal.Confirm("Exit") {
+			if !r.Term.Confirm("Exit") {
 				continue
 			}
 			return
@@ -279,7 +278,7 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 		case FIELD_PREVIEW:
 			cmdIssueEditIssueDebug(r, &issue)
 		case FIELD_EXIT:
-			if !terminal.Confirm("Exit") {
+			if !r.Term.Confirm("Exit") {
 				continue
 			}
 			return
