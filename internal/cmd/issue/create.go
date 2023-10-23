@@ -9,7 +9,6 @@ import (
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
 	"github.com/MrJeffLarry/redmine-cli/internal/editor"
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
-	"github.com/MrJeffLarry/redmine-cli/internal/terminal"
 	"github.com/MrJeffLarry/redmine-cli/internal/util"
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
@@ -87,17 +86,17 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 
 	fmt.Printf("Create new issue in project %s\n\n", text.FgGreen.Sprint(projectID))
 
-	issue.Issue.TrackerID, _ = terminal.Choose("Tracker", idNames)
-	issue.Issue.Subject, _ = terminal.PromptStringRequire("Subject", "")
-	if terminal.Confirm("Write Body") {
+	issue.Issue.TrackerID, _ = r.Term.Choose("Tracker", idNames)
+	issue.Issue.Subject, _ = r.Term.PromptStringRequire("Subject", "")
+	if r.Term.Confirm("Write Body") {
 		issue.Issue.Description = editor.StartEdit(r.Config.Editor, "")
 	}
 
 	//
 	for {
-		choose, i := terminal.ChooseString("Options", chooses)
+		choose, i := r.Term.ChooseString("Options", chooses)
 		if i == -1 {
-			if !terminal.Confirm("Exit") {
+			if !r.Term.Confirm("Exit") {
 				continue
 			}
 			return
@@ -113,13 +112,13 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 				print.Error(err.Error())
 			}
 
-			id, _ := terminal.Choose("Version", idNames)
+			id, _ := r.Term.Choose("Version", idNames)
 
 			if id >= 0 {
 				issue.Issue.FixedVersionID = id
 			}
 		case FIELD_PARENT_ID:
-			parentID, _ := terminal.PromptInt("Parent ID (-1 means none)", -1)
+			parentID, _ := r.Term.PromptInt("Parent ID (-1 means none)", -1)
 			if parentID > 0 {
 				issue.Issue.ParentIssueID = parentID
 			}
@@ -128,13 +127,13 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 				print.Error(err.Error())
 			}
 
-			id, _ := terminal.Choose("Assign", idNames)
+			id, _ := r.Term.Choose("Assign", idNames)
 
 			if id >= 0 {
 				issue.Issue.AssignedToID = id
 			}
 		case FIELD_EXIT:
-			if !terminal.Confirm("Exit") {
+			if !r.Term.Confirm("Exit") {
 				continue
 			}
 			return

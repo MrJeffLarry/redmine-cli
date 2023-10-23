@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"errors"
@@ -10,6 +10,7 @@ import (
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/project"
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/user"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
+	"github.com/MrJeffLarry/redmine-cli/internal/terminal"
 	"github.com/spf13/cobra"
 )
 
@@ -25,11 +26,13 @@ func IsAuthCmd(cmd *cobra.Command) bool {
 	return true
 }
 
-func CmdInit(Version, GitCommit, BuildTime string) error {
+func CmdInit(Version, GitCommit, BuildTime string) *config.Red_t {
 
 	r := config.InitConfig()
 
-	cmd := &cobra.Command{
+	r.Term = terminal.New(nil, nil, nil)
+
+	r.Cmd = &cobra.Command{
 		Use:           "red-cli <command> <subcommand> [flags]",
 		Short:         "Redmine CLI",
 		Long:          `Redmine CLI for integration with Redmine API`,
@@ -39,7 +42,7 @@ func CmdInit(Version, GitCommit, BuildTime string) error {
 		Run:           func(cmd *cobra.Command, args []string) { cmd.Help() },
 	}
 
-	cmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+	r.Cmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
 		// Debug flag check for more info
 		r.Debug, _ = cmd.Flags().GetBool(config.DEBUG_FLAG)
 		r.All, _ = cmd.Flags().GetBool(config.ALL_FLAG)
@@ -56,18 +59,14 @@ func CmdInit(Version, GitCommit, BuildTime string) error {
 		return nil
 	}
 
-	cmd.PersistentFlags().BoolP(config.DEBUG_FLAG, config.DEBUG_FLAG_S, false, "Show debug info and raw response")
-	cmd.PersistentFlags().Bool(config.ALL_FLAG, false, "Ignore project-id")
+	r.Cmd.PersistentFlags().BoolP(config.DEBUG_FLAG, config.DEBUG_FLAG_S, false, "Show debug info and raw response")
+	r.Cmd.PersistentFlags().Bool(config.ALL_FLAG, false, "Ignore project-id")
 
-	cmd.AddCommand(issue.NewCmdIssue(r))
-	cmd.AddCommand(project.NewCmdProject(r))
-	cmd.AddCommand(user.NewCmdUser(r))
-	cmd.AddCommand(auth.NewCmdAuth(r))
-	cmd.AddCommand(cmdConfig.NewCmdConfig(r))
+	r.Cmd.AddCommand(issue.NewCmdIssue(r))
+	r.Cmd.AddCommand(project.NewCmdProject(r))
+	r.Cmd.AddCommand(user.NewCmdUser(r))
+	r.Cmd.AddCommand(auth.NewCmdAuth(r))
+	r.Cmd.AddCommand(cmdConfig.NewCmdConfig(r))
 
-	if err := cmd.Execute(); err != nil {
-		fmt.Println(err)
-	}
-
-	return nil
+	return r
 }

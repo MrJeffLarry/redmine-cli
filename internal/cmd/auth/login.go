@@ -6,12 +6,11 @@ import (
 	"github.com/MrJeffLarry/redmine-cli/internal/api"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
-	"github.com/MrJeffLarry/redmine-cli/internal/terminal"
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 )
 
-func loginApiKey(r *config.Red_t, cmd *cobra.Command, server, apikey string) {
+func loginApiKey(r *config.Red_t, cmd *cobra.Command, server, apikey string) bool {
 	var err error
 	var res []byte
 	var status int
@@ -19,20 +18,20 @@ func loginApiKey(r *config.Red_t, cmd *cobra.Command, server, apikey string) {
 
 	if res, status, err = api.ClientAuthApiKeyGET(r, "/users/current.json", server, apikey); err != nil {
 		print.Error("StatusCode %d, %s", status, err.Error())
-		return
+		return false
 	}
 
 	print.Debug(r, "%d %s", status, string(res))
 
 	if err = api.StatusCode(status); err != nil {
 		print.Error(err.Error())
-		return
+		return false
 	}
 
 	if err := json.Unmarshal(res, &user); err != nil {
 		print.Debug(r, err.Error())
 		print.Error("StatusCode %d, %s", status, "Could not parse and read response from server")
-		return
+		return false
 	}
 
 	r.SetApiKey(user.User.ApiKey)
@@ -40,10 +39,11 @@ func loginApiKey(r *config.Red_t, cmd *cobra.Command, server, apikey string) {
 	r.SetUserID(user.User.ID)
 	if err = r.Save(); err != nil {
 		print.Error(err.Error())
-		return
+		return false
 	}
 
 	print.OK("Login done!")
+	return true
 }
 
 func loginPassword(r *config.Red_t, cmd *cobra.Command, server, username string) {
@@ -51,7 +51,7 @@ func loginPassword(r *config.Red_t, cmd *cobra.Command, server, username string)
 	var user user
 	var err error
 
-	if password, err = terminal.PromptPassword("Password", ""); err != nil {
+	if password, err = r.Term.PromptPassword("Password", ""); err != nil {
 		print.Error(err.Error())
 		return
 	}
@@ -96,16 +96,16 @@ func displayLogin(r *config.Red_t, cmd *cobra.Command) {
 	print.Info(text.FgGreen.Sprint("Welcome to Red an Redmine CLI\n") +
 		"Before login make sure you have enabled `Enable REST web service`\nfind it in Administration -> Settings -> API or use url /settings?tab=api\nYou find ApiKey (API access key) from /my/account\n\n")
 
-	if server, err = terminal.PromptStringRequire("Server URL (https://example.com)", ""); err != nil {
+	if server, err = r.Term.PromptStringRequire("Server URL (https://example.com)", ""); err != nil {
 		print.Debug(r, err.Error())
 		print.Error("Could not read input, please try again or submit issue")
 		return
 	}
 
-	_, chooseID := terminal.ChooseString("Login method", []string{"Apikey", "Username and Password"})
+	_, chooseID := r.Term.ChooseString("Login method", []string{"Apikey", "Username and Password"})
 
 	if chooseID == 0 {
-		if apikey, err = terminal.PromptPassword("ApiKey", ""); err != nil {
+		if apikey, err = r.Term.PromptPassword("ApiKey", ""); err != nil {
 			print.Debug(r, err.Error())
 			print.Error("Could not read input, please try again or submit issue")
 			return
@@ -114,7 +114,7 @@ func displayLogin(r *config.Red_t, cmd *cobra.Command) {
 		return
 	}
 
-	if username, err = terminal.PromptStringRequire("Username", ""); err != nil {
+	if username, err = r.Term.PromptStringRequire("Username", ""); err != nil {
 		print.Debug(r, err.Error())
 		print.Error("Could not read input, please try again or submit issue")
 		return
