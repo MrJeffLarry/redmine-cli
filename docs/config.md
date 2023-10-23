@@ -1,3 +1,5 @@
+# Config
+
 The red-cli tool supports both local and global configuration using the config.json file. You can override the global configuration with a local configuration.
 
 For example, if you use one repository for one project and another repository for a different project, you can create a folder called .red in the first repository and inside it, create a file called config.json. This file can contain and override one or more configuration options, as shown below:
