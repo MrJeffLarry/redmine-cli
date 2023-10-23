@@ -1,5 +1,3 @@
-# Start
-
 Redmine-cli (Command Line Interface) is a software program that allows you to interact with the Redmine project management system using the command line.
 With a Redmine CLI tool, you can perform a wide range of tasks, such as creating and managing issues, list projects, and more, all from the comfort of your terminal or command prompt.
 
@@ -33,8 +31,8 @@ scoop install mrjefflarry/redmine-cli/red-cli
 **apt**
 
 ```bash
-curl -s --compressed "https://mrjefflarry.github.io/redmine-cli/apt/public_key.gpg" | sudo apt-key add -
-sudo curl -s --compressed -o /etc/apt/sources.list.d/redmine-cli.list "https://mrjefflarry.github.io/redmine-cli/apt/redmine-cli.list"
+curl -s --compressed "https://raw.githubusercontent.com/MrJeffLarry/redmine-cli/main/apt/public_key.gpg" | sudo apt-key add -
+sudo curl -s --compressed -o /etc/apt/sources.list.d/redmine-cli.list "https://raw.githubusercontent.com/MrJeffLarry/redmine-cli/main/apt/redmine-cli.list"
 sudo apt update
 sudo apt install red-cli
 ```
