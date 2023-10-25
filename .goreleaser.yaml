@@ -51,8 +51,8 @@ changelog:
       - '^test:'
       - '^build:'
 
-scoop:
-  bucket:
+scoops:
+  - repository:
     owner: mrjefflarry
     name: redmine-cli
   homepage: "https://github.com/mrjefflarry/redmine-cli"
@@ -87,7 +87,7 @@ nfpms:
 #        plugs: [ "home", "network" ]
 
 brews:
-  - tap:
+  - repository:
       owner: mrjefflarry
       name: redmine-cli
     homepage: https://github.com/mrjefflarry/redmine-cli
