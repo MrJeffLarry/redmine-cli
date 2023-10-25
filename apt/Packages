@@ -1,44 +1,44 @@
 Package: red-cli
-Version: 0.1.2
+Version: 0.1.3
 Architecture: arm64
 Maintainer: Jeff Hägerman
-Installed-Size: 8832
+Installed-Size: 9472
 Recommends: less, nano
-Filename: ./red-cli_0.1.2_linux_arm64.deb
-Size: 3650346
-MD5sum: 98e1a4d7aee1b515ca5ee610b75ece62
-SHA1: f1d1c6e1e065a176770a62f4f8812e613a9c7187
-SHA256: c79e53e5a4a02eab3d7f761046782b9d86843e9fda1db3f26e0499fde0af6fb5
+Filename: ./red-cli_0.1.3_linux_arm64.deb
+Size: 3788934
+MD5sum: e900a3778b9752d58f67df4cf438fcfd
+SHA1: d6cd76c3630e90ef6e20e1bfaba786efa19c32c6
+SHA256: 00110182c76a5dcaf69d6f2e63726d871807f4b6fbc0eeea913843a87b3e86d6
 Priority: optional
 Homepage: https://github.com/mrjefflarry/redmine-cli
 Description: Redmine CLI for interacting with Redmine Servers
 
 Package: red-cli
-Version: 0.1.2
+Version: 0.1.3
 Architecture: amd64
 Maintainer: Jeff Hägerman
-Installed-Size: 9348
+Installed-Size: 9816
 Recommends: less, nano
-Filename: ./red-cli_0.1.2_linux_amd64.deb
-Size: 4038828
-MD5sum: 8b02ef8967f2853a50b4ba27d2456dac
-SHA1: 0427527195f62975fa9d6d1f31522a97e40a0df2
-SHA256: c1f13c09e63898bbe03559bbb03aae41f9cd8aa2935cd9909d093eb0a3e327f7
+Filename: ./red-cli_0.1.3_linux_amd64.deb
+Size: 4117012
+MD5sum: 5360ce5d198d861b37498f4a3d7b25ad
+SHA1: 84e49de1479677f066e5ec8e43746ebeb0853f4f
+SHA256: 9df7841abb03169e69bb09bf322a1bff3629ea3fcad285630f012fc295da1d8e
 Priority: optional
 Homepage: https://github.com/mrjefflarry/redmine-cli
 Description: Redmine CLI for interacting with Redmine Servers
 
 Package: red-cli
-Version: 0.1.2
+Version: 0.1.3
 Architecture: i386
 Maintainer: Jeff Hägerman
-Installed-Size: 8924
+Installed-Size: 9460
 Recommends: less, nano
-Filename: ./red-cli_0.1.2_linux_386.deb
-Size: 3826180
-MD5sum: 54da6bab7c37798f02546570492ca415
-SHA1: 07e0769f31512266e123db5b364f00db96861bb1
-SHA256: 81afd2f6cebb199cfb1006c49ac7883843f3b9839b63080d36ede46fed943627
+Filename: ./red-cli_0.1.3_linux_386.deb
+Size: 3896402
+MD5sum: b0cb791464071386e1fa7c72676e1d05
+SHA1: 88bd58203e32fd2e5ddb3368cfdc778758fd0665
+SHA256: 3bd39146be38a2b6d7e5f042da27b45787dce4a923be5c38f56227735c0ddff3
 Priority: optional
 Homepage: https://github.com/mrjefflarry/redmine-cli
 Description: Redmine CLI for interacting with Redmine Servers
