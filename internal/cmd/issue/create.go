@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/api"
+	"github.com/MrJeffLarry/redmine-cli/internal/cmd/global"
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/project"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
 	"github.com/MrJeffLarry/redmine-cli/internal/editor"
@@ -57,6 +58,7 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 	var idNames []util.IdName
 	chooses := []string{
 		FIELD_SAVE,
+		FIELD_PRIORITY,
 		FIELD_TARGET_VERSION,
 		FIELD_PARENT_ID,
 		FIELD_ASSIGN,
@@ -106,6 +108,16 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 		case FIELD_SAVE:
 			if cmdIssueCreateSave(r, &issue) {
 				return
+			}
+		case FIELD_PRIORITY:
+			if idNames, err = global.GetPriorities(r); err != nil {
+				print.Error(err.Error())
+			}
+
+			id, _ := r.Term.Choose("Priority", idNames)
+
+			if id >= 0 {
+				issue.Issue.PriorityID = id
 			}
 		case FIELD_TARGET_VERSION:
 			if idNames, err = project.GetVersions(r, projectID); err != nil {

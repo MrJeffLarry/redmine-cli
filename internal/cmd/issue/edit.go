@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/api"
+	"github.com/MrJeffLarry/redmine-cli/internal/cmd/global"
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/project"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
 	"github.com/MrJeffLarry/redmine-cli/internal/editor"
@@ -86,29 +87,11 @@ func cmdIssueEditIssueStatus(r *config.Red_t, issue *newIssueHolder) error {
 }
 
 func cmdIssueEditIssuePriority(r *config.Red_t, issue *newIssueHolder) error {
-	var body []byte
-	var status int
 	var err error
-	var priorityHolder issuePrioritiesHolder
-
-	body, status, err = api.ClientGET(r, "/enumerations/issue_priorities.json")
-	print.Debug(r, "%d %s", status, string(body))
-	if err != nil || status != 200 {
-		return errors.New("Could not get statuses from server, abort")
-	}
-
-	if err := json.Unmarshal(body, &priorityHolder); err != nil {
-		print.Debug(r, err.Error())
-		return errors.New("Could not parse and read response from server")
-	}
-
 	var idNames []util.IdName
-	for _, prio := range priorityHolder.IssuePriorities {
-		idname := util.IdName{
-			ID:   prio.ID,
-			Name: prio.Name,
-		}
-		idNames = append(idNames, idname)
+
+	if idNames, err = global.GetPriorities(r); err != nil {
+		return err
 	}
 
 	issue.Issue.PriorityID, _ = r.Term.Choose("Choose Priority", idNames)
