@@ -22,7 +22,7 @@ func setGlobalEditor(r *config.Red_t) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "set [id]",
 		Short: "set editor",
-		Long:  "this will set editor globaly in ~/.red/config.json",
+		Long:  "this will set editor globally in ~/.red/config.json",
 		Run: func(cmd *cobra.Command, args []string) {
 			var id string
 			var err error
@@ -45,7 +45,7 @@ func globalEditor(r *config.Red_t) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "editor",
 		Short: "set or get editor",
-		Long:  "set or get what editor to use globaly in ~/.red/config.json",
+		Long:  "set or get what editor to use globally in ~/.red/config.json",
 	}
 	cmd.AddCommand(setGlobalEditor(r))
 	return cmd

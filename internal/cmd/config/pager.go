@@ -22,7 +22,7 @@ func setGlobalPager(r *config.Red_t) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "set [id]",
 		Short: "set pager",
-		Long:  "this will set pager globaly in ~/.red/config.json",
+		Long:  "this will set pager globally in ~/.red/config.json",
 		Run: func(cmd *cobra.Command, args []string) {
 			var id string
 			var err error
@@ -45,7 +45,7 @@ func globalPager(r *config.Red_t) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "pager",
 		Short: "set or get pager",
-		Long:  "set or get what pager to use globaly in ~/.red/config.json",
+		Long:  "set or get what pager to use globally in ~/.red/config.json",
 	}
 	cmd.AddCommand(setGlobalPager(r))
 	return cmd

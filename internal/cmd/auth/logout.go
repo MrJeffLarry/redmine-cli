@@ -12,7 +12,7 @@ func displayLogout(r *config.Red_t, cmd *cobra.Command) {
 		print.Error(err.Error())
 		return
 	}
-	print.OK("you have successfuly logged out")
+	print.OK("you have successfully logged out")
 }
 
 func cmdAuthLogout(r *config.Red_t) *cobra.Command {
