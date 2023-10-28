@@ -2,6 +2,7 @@ package issue
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/api"
@@ -15,37 +16,40 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func cmdIssueEditIssueTargetVersion(r *config.Red_t, projectID int, issue *newIssueHolder) error {
+func cmdIssueEditIssueTargetVersion(r *config.Red_t, projectID int) (util.IdName, error) {
 	var err error
+	var idName util.IdName
 	var idNames []util.IdName
 
 	if idNames, err = project.GetVersions(r, projectID); err != nil {
-		return err
+		return idName, err
 	}
 
-	id, _ := r.Term.Choose("Target version", idNames)
+	idName.ID, idName.Name = r.Term.Choose("Target version", idNames)
 
-	if id >= 0 {
-		issue.Issue.FixedVersionID = id
+	if idName.ID < 0 {
+		return idName, errors.New("target version ID not valid")
 	}
 
-	return nil
+	return idName, nil
 }
 
-func cmdIssueEditIssueAssign(r *config.Red_t, projectID int, issue *newIssueHolder) error {
+func cmdIssueEditIssueAssign(r *config.Red_t, projectID int) (util.IdName, error) {
 	var err error
+	var idName util.IdName
 	var idNames []util.IdName
 
 	if idNames, err = project.GetAssigns(r, projectID); err != nil {
-		return err
+		return idName, err
 	}
 
-	id, _ := r.Term.Choose("Assign", idNames)
+	idName.ID, idName.Name = r.Term.Choose("Assign", idNames)
 
-	if id >= 0 {
-		issue.Issue.AssignedToID = id
+	if idName.ID < 0 {
+		return idName, errors.New("assigne ID not valid")
 	}
-	return nil
+
+	return idName, nil
 }
 
 func cmdIssueEditIssueNote(r *config.Red_t, issue *newIssueHolder) error {
@@ -53,9 +57,10 @@ func cmdIssueEditIssueNote(r *config.Red_t, issue *newIssueHolder) error {
 	return nil
 }
 
-func cmdIssueEditIssueStatus(r *config.Red_t, allowedStatus []global.IssueStatus, issue *newIssueHolder) error {
+func cmdIssueEditIssueStatus(r *config.Red_t, allowedStatus []global.IssueStatus) (global.IssueStatus, error) {
 	var err error
 	var idNames []util.IdName
+	var issueStatus global.IssueStatus
 
 	if len(allowedStatus) > 0 {
 		for _, item := range allowedStatus {
@@ -69,49 +74,38 @@ func cmdIssueEditIssueStatus(r *config.Red_t, allowedStatus []global.IssueStatus
 		fmt.Println(text.FgHiBlack.Sprint("allowed_statuses is missing or empty, Redmine 5.0.x > supports allowed_statuses so we can read what status possible to change to, we will serve you all the global statuses instead"))
 
 		if idNames, err = global.GetIssueStatus(r); err != nil {
-			return err
+			return issueStatus, err
 		}
 	}
 
-	issue.Issue.StatusID, _ = r.Term.Choose("Choose Status", idNames)
-	return nil
+	issueStatus.ID, issueStatus.Name = r.Term.Choose("Choose Status", idNames)
+	return issueStatus, nil
 }
 
-func cmdIssueEditIssuePriority(r *config.Red_t, issue *newIssueHolder) error {
+func cmdIssueEditIssuePriority(r *config.Red_t) (util.IdName, error) {
 	var err error
+	var idName util.IdName
 	var idNames []util.IdName
 
 	if idNames, err = global.GetPriorities(r); err != nil {
-		return err
+		return idName, err
 	}
 
-	issue.Issue.PriorityID, _ = r.Term.Choose("Choose Priority", idNames)
-	return nil
+	idName.ID, idName.Name = r.Term.Choose("Choose Priority", idNames)
+	return idName, nil
 }
 
-func cmdIssueEditIssueTracker(r *config.Red_t, projectID int, issue *newIssueHolder) error {
+func cmdIssueEditIssueTracker(r *config.Red_t, projectID int) (util.IdName, error) {
 	var err error
+	var idName util.IdName
 	var trackers []util.IdName
 
 	if trackers, err = project.GetTrackers(r, projectID); err != nil {
-		return err
+		return idName, err
 	}
 
-	issue.Issue.TrackerID, _ = r.Term.Choose("Tracker", trackers)
-	return nil
-}
-
-func cmdIssueEditIssueDescription(r *config.Red_t, description string, issue *newIssueHolder) error {
-	issue.Issue.Description = editor.StartEdit(r.Config.Editor, description)
-	return nil
-}
-
-func cmdIssueEditIssueSubject(r *config.Red_t, subject string, issue *newIssueHolder) error {
-	var err error
-	if issue.Issue.Subject, err = r.Term.PromptString("Subject", subject); err != nil {
-		return err
-	}
-	return nil
+	idName.ID, idName.Name = r.Term.Choose("Tracker", trackers)
+	return idName, nil
 }
 
 func cmdIssueEditIssueSave(r *config.Red_t, id, path string, issue *newIssueHolder) bool {
@@ -144,27 +138,14 @@ func cmdIssueEditIssueSave(r *config.Red_t, id, path string, issue *newIssueHold
 	return true
 }
 
-func cmdIssueEditIssueDebug(r *config.Red_t, issue *newIssueHolder) {
-	print.Debug(r, "\n"+
-		"Subject: %s\n"+
-		"TrackerID: %d\n"+
-		"StatusID: %d\n"+
-		"Notes: %s\n"+
-		"Description: %s\n",
-		issue.Issue.Subject,
-		issue.Issue.TrackerID,
-		issue.Issue.StatusID,
-		issue.Issue.Notes,
-		issue.Issue.Description,
-	)
-}
-
 func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 	var err error
 	var body []byte
 	var status int
 	var viewIssue viewIssue
+
 	chooses := []string{
+		FIELD_SAVE,
 		FIELD_SUBJECT,
 		FIELD_DESCRIPTION,
 		FIELD_STATUS,
@@ -174,7 +155,6 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 		FIELD_ASSIGN,
 		FIELD_TARGET_VERSION,
 		FIELD_PREVIEW,
-		FIELD_SAVE,
 		FIELD_EXIT}
 
 	if r.Debug {
@@ -213,36 +193,65 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 		}
 		switch choose {
 		case FIELD_SUBJECT:
-			if err = cmdIssueEditIssueSubject(r, viewIssue.Issue.Subject, &issue); err != nil {
+			subject, err := r.Term.PromptString("Subject", viewIssue.Issue.Subject)
+
+			if err != nil {
 				print.Error(err.Error())
+			} else {
+				issue.Issue.Subject = subject
+				viewIssue.Issue.Subject = subject
 			}
 		case FIELD_STATUS:
-			if err = cmdIssueEditIssueStatus(r, viewIssue.Issue.AllowedStatuses, &issue); err != nil {
+			idName, err := cmdIssueEditIssueStatus(r, viewIssue.Issue.AllowedStatuses)
+
+			if err != nil {
 				print.Error(err.Error())
+			} else {
+				issue.Issue.StatusID = idName.ID
+				viewIssue.Issue.Status = idName
 			}
 		case FIELD_PRIORITY:
-			if err = cmdIssueEditIssuePriority(r, &issue); err != nil {
+			idName, err := cmdIssueEditIssuePriority(r)
+
+			if err != nil {
 				print.Error(err.Error())
+			} else {
+				issue.Issue.PriorityID = idName.ID
+				viewIssue.Issue.Priority = idName
 			}
 		case FIELD_TRACKER:
-			if err = cmdIssueEditIssueTracker(r, viewIssue.Issue.Project.ID, &issue); err != nil {
+			idName, err := cmdIssueEditIssueTracker(r, viewIssue.Issue.Project.ID)
+
+			if err != nil {
 				print.Error(err.Error())
+			} else {
+				issue.Issue.TrackerID = idName.ID
+				viewIssue.Issue.Tracker = idName
 			}
 		case FIELD_DESCRIPTION:
-			if err = cmdIssueEditIssueDescription(r, viewIssue.Issue.Description, &issue); err != nil {
-				print.Error(err.Error())
-			}
+			issue.Issue.Description = editor.StartEdit(r.Config.Editor, viewIssue.Issue.Description)
+			viewIssue.Issue.Description = issue.Issue.Description
 		case FIELD_NOTE:
 			if err = cmdIssueEditIssueNote(r, &issue); err != nil {
 				print.Error(err.Error())
 			}
 		case FIELD_ASSIGN:
-			if err = cmdIssueEditIssueAssign(r, viewIssue.Issue.Project.ID, &issue); err != nil {
+			idName, err := cmdIssueEditIssueAssign(r, viewIssue.Issue.Project.ID)
+
+			if err != nil {
 				print.Error(err.Error())
+			} else {
+				issue.Issue.AssignedToID = idName.ID
+				viewIssue.Issue.AssignedTo = idName
 			}
 		case FIELD_TARGET_VERSION:
-			if err = cmdIssueEditIssueTargetVersion(r, viewIssue.Issue.Project.ID, &issue); err != nil {
+			idName, err := cmdIssueEditIssueTargetVersion(r, viewIssue.Issue.Project.ID)
+
+			if err != nil {
 				print.Error(err.Error())
+			} else {
+				issue.Issue.FixedVersionID = idName.ID
+				viewIssue.Issue.FixedVersion = idName
 			}
 		case FIELD_SAVE:
 			if cmdIssueEditIssueSave(r, id, path, &issue) {
@@ -250,7 +259,7 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 			}
 		case FIELD_DEBUG:
 		case FIELD_PREVIEW:
-			cmdIssueEditIssueDebug(r, &issue)
+			displayIssue(r, viewIssue.Issue, false)
 		case FIELD_EXIT:
 			if !r.Term.Confirm("Exit") {
 				continue
