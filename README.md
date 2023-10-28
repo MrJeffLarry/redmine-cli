@@ -1,5 +1,7 @@
 # Redmine-cli
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/MrJeffLarry/redmine-cli)](https://goreportcard.com/report/github.com/MrJeffLarry/redmine-cli)
+
 Redmine-cli (Command Line Interface) is a software program that allows you to interact with the Redmine project management system using the command line.
 With a Redmine CLI tool, you can perform a wide range of tasks, such as creating and managing issues, list projects, and more, all from the comfort of your terminal or command prompt.
 
