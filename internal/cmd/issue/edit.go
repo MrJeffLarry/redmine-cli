@@ -2,7 +2,6 @@ package issue
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/api"
@@ -54,32 +53,24 @@ func cmdIssueEditIssueNote(r *config.Red_t, issue *newIssueHolder) error {
 	return nil
 }
 
-func cmdIssueEditIssueStatus(r *config.Red_t, issue *newIssueHolder) error {
-	var body []byte
-	var status int
+func cmdIssueEditIssueStatus(r *config.Red_t, allowedStatus []global.IssueStatus, issue *newIssueHolder) error {
 	var err error
-	var statusHolder issueStatusHolder
-
-	body, status, err = api.ClientGET(r, "/issue_statuses.json")
-	print.Debug(r, "%d %s", status, string(body))
-	if err != nil || status != 200 {
-		return errors.New("Could not get statuses from server, abort")
-	}
-
-	if err := json.Unmarshal(body, &statusHolder); err != nil {
-		print.Debug(r, err.Error())
-		return errors.New("Could not parse and read response from server")
-	}
-
-	fmt.Println(text.FgHiBlack.Sprint("Do check what status is allowed to change from status to status, as there is rules we can not read, so double check status got set"))
-
 	var idNames []util.IdName
-	for _, status := range statusHolder.IssueStatus {
-		idname := util.IdName{
-			ID:   status.ID,
-			Name: status.Name,
+
+	if len(allowedStatus) > 0 {
+		for _, item := range allowedStatus {
+			row := util.IdName{
+				ID:   item.ID,
+				Name: item.Name,
+			}
+			idNames = append(idNames, row)
 		}
-		idNames = append(idNames, idname)
+	} else {
+		fmt.Println(text.FgHiBlack.Sprint("allowed_statuses is missing or empty, Redmine 5.0.x > supports allowed_statuses so we can read what status possible to change to, we will serve you all the global statuses instead"))
+
+		if idNames, err = global.GetIssueStatus(r); err != nil {
+			return err
+		}
 	}
 
 	issue.Issue.StatusID, _ = r.Term.Choose("Choose Status", idNames)
@@ -226,7 +217,7 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 				print.Error(err.Error())
 			}
 		case FIELD_STATUS:
-			if err = cmdIssueEditIssueStatus(r, &issue); err != nil {
+			if err = cmdIssueEditIssueStatus(r, viewIssue.Issue.AllowedStatuses, &issue); err != nil {
 				print.Error(err.Error())
 			}
 		case FIELD_PRIORITY:
@@ -282,7 +273,7 @@ func cmdIssueEdit(r *config.Red_t) *cobra.Command {
 				fmt.Println("Please specify what issue you would like to edit, usage: edit [id]")
 				return
 			}
-			cmdIssueEditIssue(r, cmd, id, "/issues/"+id+".json")
+			cmdIssueEditIssue(r, cmd, id, "/issues/"+id+".json?include=allowed_statuses")
 		},
 	}
 

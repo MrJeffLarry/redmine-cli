@@ -1,6 +1,9 @@
 package issue
 
-import "github.com/MrJeffLarry/redmine-cli/internal/util"
+import (
+	"github.com/MrJeffLarry/redmine-cli/internal/cmd/global"
+	"github.com/MrJeffLarry/redmine-cli/internal/util"
+)
 
 const (
 	FIELD_SUBJECT        = "Subject"
@@ -24,14 +27,6 @@ type viewIssue struct {
 
 type newIssueHolder struct {
 	Issue newIssue `json:"issue,omitempty"`
-}
-
-type issueStatusHolder struct {
-	IssueStatus []issueStatus `json:"issue_statuses,omitempty"`
-}
-
-type issuePrioritiesHolder struct {
-	IssuePriorities []issuePriorities `json:"issue_priorities,omitempty"`
 }
 
 type issues struct {
@@ -58,30 +53,30 @@ type newIssue struct {
 }
 
 type issue struct {
-	ID                  int            `json:"id,omitempty"`
-	Project             util.IdName    `json:"project,omitempty"`
-	Tracker             util.IdName    `json:"tracker,omitempty"`
-	Status              issueStatus    `json:"status,omitempty"`
-	Priority            util.IdName    `json:"priority,omitempty"`
-	Author              util.IdName    `json:"author,omitempty"`
-	AssignedTo          util.IdName    `json:"assigned_to,omitempty"`
-	FixedVersion        util.IdName    `json:"fixed_version,omitempty"`
-	Parent              util.Id        `json:"parent,omitempty"`
-	Subject             string         `json:"subject,omitempty"`
-	Description         string         `json:"description,omitempty"`
-	StartDate           string         `json:"start_date,omitempty"`
-	DueDate             string         `json:"due_date,omitempty"`
-	DoneRatio           int            `json:"done_ratio,omitempty"`
-	IsPrivate           bool           `json:"is_private,omitempty"`
-	EstimatedHours      float32        `json:"estimated_hours,omitempty"`
-	TotalEstimatedHours float32        `json:"total_estimated_hours,omitempty"`
-	SpentHours          float32        `json:"spent_hours,omitempty"`
-	TotalSpentHours     float32        `json:"total_spent_hours,omitempty"`
-	CreatedOn           string         `json:"created_on,omitempty"`
-	UpdatedOn           string         `json:"updated_on,omitempty"`
-	Journals            []issueJournal `json:"journals,omitempty"`
-	AllowedStatuses     []issueStatus  `json:"allowed_statuses,omitempty"`
-	Notes               string         `json:"notes,omitempty"`
+	ID                  int                  `json:"id,omitempty"`
+	Project             util.IdName          `json:"project,omitempty"`
+	Tracker             util.IdName          `json:"tracker,omitempty"`
+	Status              global.IssueStatus   `json:"status,omitempty"`
+	Priority            util.IdName          `json:"priority,omitempty"`
+	Author              util.IdName          `json:"author,omitempty"`
+	AssignedTo          util.IdName          `json:"assigned_to,omitempty"`
+	FixedVersion        util.IdName          `json:"fixed_version,omitempty"`
+	Parent              util.Id              `json:"parent,omitempty"`
+	Subject             string               `json:"subject,omitempty"`
+	Description         string               `json:"description,omitempty"`
+	StartDate           string               `json:"start_date,omitempty"`
+	DueDate             string               `json:"due_date,omitempty"`
+	DoneRatio           int                  `json:"done_ratio,omitempty"`
+	IsPrivate           bool                 `json:"is_private,omitempty"`
+	EstimatedHours      float32              `json:"estimated_hours,omitempty"`
+	TotalEstimatedHours float32              `json:"total_estimated_hours,omitempty"`
+	SpentHours          float32              `json:"spent_hours,omitempty"`
+	TotalSpentHours     float32              `json:"total_spent_hours,omitempty"`
+	CreatedOn           string               `json:"created_on,omitempty"`
+	UpdatedOn           string               `json:"updated_on,omitempty"`
+	Journals            []issueJournal       `json:"journals,omitempty"`
+	AllowedStatuses     []global.IssueStatus `json:"allowed_statuses,omitempty"`
+	Notes               string               `json:"notes,omitempty"`
 }
 
 type issueJournal struct {
@@ -98,16 +93,4 @@ type issueJournalDetails struct {
 	Name     string `json:"name,omitempty"`
 	OldValue string `json:"old_value,omitempty"`
 	NewValue string `json:"new_value,omitempty"`
-}
-
-type issueStatus struct {
-	ID       int    `json:"id,omitempty"`
-	Name     string `json:"name,omitempty"`
-	IsClosed bool   `json:"is_closed,omitempty"`
-}
-
-type issuePriorities struct {
-	ID        int    `json:"id,omitempty"`
-	Name      string `json:"name,omitempty"`
-	IsDefault bool   `json:"is_default,omitempty"`
 }
