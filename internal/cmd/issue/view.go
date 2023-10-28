@@ -28,39 +28,14 @@ func displayProgressBar(ratio int) string {
 	return progress
 }
 
-func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
-	var err error
-	var body []byte
-	var status int
-
-	viewIssue := viewIssue{}
-
-	if body, status, err = api.ClientGET(r, path); err != nil {
-		print.Error("StatusCode %d, %s", status, err.Error())
-		return
-	}
-
-	print.Debug(r, "%d %s", status, string(body))
-
-	if err := api.StatusCode(status); err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	if err := json.Unmarshal(body, &viewIssue); err != nil {
-		print.Debug(r, err.Error())
-		print.Error("StatusCode %d, %s", status, "Could not parse and read response from server")
-		return
-	}
-
-	issue := viewIssue.Issue
+func displayIssue(r *config.Red_t, i issue, journalFlag bool) {
 	closed := text.FgGreen.Sprint("OPEN")
 
-	if issue.Status.IsClosed {
+	if i.Status.IsClosed {
 		closed = text.FgRed.Sprint("CLOSED")
 	}
 
-	sid := strconv.FormatInt(int64(issue.ID), 10)
+	sid := strconv.FormatInt(int64(i.ID), 10)
 
 	response := fmt.Sprintf(
 		"------------ %s %s - %s [%s] ---------\n"+
@@ -76,26 +51,26 @@ func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
 			text.FgGreen.Sprint("Priority")+" %s\n"+
 			text.FgGreen.Sprint("Description")+"\n"+
 			"\n%s\n\n",
-		text.FgYellow.Sprint(issue.Tracker.Name),
-		print.PrintID(issue.ID),
-		issue.Subject,
+		text.FgYellow.Sprint(i.Tracker.Name),
+		print.PrintID(i.ID),
+		i.Subject,
 		closed,
-		issue.Author.Name,
-		issue.StartDate,
-		issue.DueDate,
-		displayProgressBar(issue.DoneRatio),
-		issue.DoneRatio,
-		issue.AssignedTo.Name,
-		issue.CreatedOn,
-		issue.Project.Name,
-		issue.FixedVersion.Name,
-		issue.Status.Name,
-		issue.Priority.Name,
-		issue.Description,
+		i.Author.Name,
+		i.StartDate,
+		i.DueDate,
+		displayProgressBar(i.DoneRatio),
+		i.DoneRatio,
+		i.AssignedTo.Name,
+		i.CreatedOn,
+		i.Project.Name,
+		i.FixedVersion.Name,
+		i.Status.Name,
+		i.Priority.Name,
+		i.Description,
 	)
 
-	if journals, _ := cmd.Flags().GetBool(FLAG_JOURNALS); journals {
-		for _, journal := range issue.Journals {
+	if journalFlag {
+		for _, journal := range i.Journals {
 			status := ""
 			notes := ""
 			for _, detail := range journal.Details {
@@ -123,6 +98,36 @@ func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	response += fmt.Sprintln(text.FgHiBlack.Sprintf("View issue: %s", r.Config.Server+"/issues/"+sid))
 
 	editor.StartPage(r.Config.Pager, response)
+}
+
+func displayIssueGET(r *config.Red_t, cmd *cobra.Command, path string) {
+	var err error
+	var body []byte
+	var status int
+
+	viewIssue := viewIssue{}
+
+	if body, status, err = api.ClientGET(r, path); err != nil {
+		print.Error("StatusCode %d, %s", status, err.Error())
+		return
+	}
+
+	print.Debug(r, "%d %s", status, string(body))
+
+	if err := api.StatusCode(status); err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	if err := json.Unmarshal(body, &viewIssue); err != nil {
+		print.Debug(r, err.Error())
+		print.Error("StatusCode %d, %s", status, "Could not parse and read response from server")
+		return
+	}
+
+	journals, _ := cmd.Flags().GetBool(FLAG_JOURNALS)
+
+	displayIssue(r, viewIssue.Issue, journals)
 }
 
 func cmdIssueView(r *config.Red_t) *cobra.Command {
