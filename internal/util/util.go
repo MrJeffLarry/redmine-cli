@@ -1,7 +1,9 @@
 package util
 
 import (
+	"fmt"
 	"strconv"
+	"time"
 )
 
 type IdName struct {
@@ -31,4 +33,27 @@ func CheckID(id string) bool {
 		return false
 	}
 	return true
+}
+
+func TimeAgo(data string) string {
+	date, error := time.Parse(time.RFC3339, data)
+	if error != nil {
+		return data
+	}
+
+	timeDiff := time.Now().Unix() - date.Unix()
+
+	if timeDiff > (365 * 24 * 60 * 60) {
+		return date.Format("2006-01-02")
+	} else if timeDiff > (24 * 60 * 60) {
+		return date.Format("02 Jan")
+	} else if timeDiff > (60 * 60) {
+		return fmt.Sprint((timeDiff / 60 / 60)) + " hours ago"
+	} else if timeDiff > 60 {
+		return fmt.Sprint(timeDiff/60) + " min ago"
+	} else if timeDiff < 60 {
+		return fmt.Sprint(timeDiff) + " sec ago"
+	}
+
+	return data
 }

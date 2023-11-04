@@ -10,6 +10,7 @@ import (
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
 	"github.com/MrJeffLarry/redmine-cli/internal/editor"
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
+	"github.com/MrJeffLarry/redmine-cli/internal/util"
 	"github.com/jedib0t/go-pretty/text"
 	"github.com/spf13/cobra"
 )
@@ -61,7 +62,7 @@ func displayIssue(r *config.Red_t, i issue, journalFlag bool) {
 		displayProgressBar(i.DoneRatio),
 		i.DoneRatio,
 		i.AssignedTo.Name,
-		i.CreatedOn,
+		util.TimeAgo(i.CreatedOn),
 		i.Project.Name,
 		i.FixedVersion.Name,
 		i.Status.Name,
@@ -73,22 +74,26 @@ func displayIssue(r *config.Red_t, i issue, journalFlag bool) {
 		for _, journal := range i.Journals {
 			status := ""
 			notes := ""
+
 			for _, detail := range journal.Details {
 				status += text.FgGreen.Sprint("Update") + " "
 				status += detail.Name + " changed from "
 				status += detail.OldValue + " to "
 				status += detail.NewValue + "\n"
 			}
+
 			if len(journal.Notes) > 0 {
 				notes = text.FgGreen.Sprint("Notes") + " "
 				notes += journal.Notes + "\n"
 			}
 
-			response += fmt.Sprintf(" %s %s\n"+
-				"%s"+
-				"%s\n",
+			response += fmt.Sprintf(
+				"%s %s %s\n"+
+					"%s"+
+					"%s\n",
 				text.FgGreen.Sprintf("#%d", journal.ID),
 				journal.User.Name,
+				text.FgHiBlack.Sprint(util.TimeAgo(journal.CreatedOn)),
 				text.FgHiBlack.Sprint(notes),
 				text.FgHiBlack.Sprint(status),
 			)
