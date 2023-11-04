@@ -53,10 +53,10 @@ changelog:
 
 scoops:
   - repository:
-    owner: mrjefflarry
-    name: redmine-cli
-  homepage: "https://github.com/mrjefflarry/redmine-cli"
-  description: "Redmine CLI"
+      owner: mrjefflarry
+      name: redmine-cli
+    homepage: "https://github.com/mrjefflarry/redmine-cli"
+    description: "Redmine CLI"
 
 nfpms:
   - vendor: mrjefflarry
