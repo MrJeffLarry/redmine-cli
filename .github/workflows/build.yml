@@ -8,7 +8,7 @@ jobs:
     name: Build binary
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
@@ -16,7 +16,7 @@ jobs:
             ${{ runner.os }}-go-
 
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: '^1.21'
 
@@ -35,7 +35,7 @@ jobs:
       - name: Readme
         run: cp README.md build/
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: artifacts
           path: build
