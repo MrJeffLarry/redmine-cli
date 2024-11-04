@@ -5,12 +5,12 @@ go 1.21
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.7
 	github.com/Netflix/go-expect v0.0.0-20220104043353-73e0943537d2
-	github.com/briandowns/spinner v1.23.0
+	github.com/briandowns/spinner v1.23.1
 	github.com/jedib0t/go-pretty v4.3.0+incompatible
 	github.com/mitchellh/go-homedir v1.1.0
-	golang.org/x/term v0.16.0
-	github.com/spf13/viper v1.18.2
 	github.com/spf13/cobra v1.8.0
+	github.com/spf13/viper v1.18.2
+	golang.org/x/term v0.16.0
 )
 
 require (
