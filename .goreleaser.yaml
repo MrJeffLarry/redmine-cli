@@ -5,7 +5,6 @@ before:
   hooks:
     - go mod tidy
     - go generate ./...
-    - go generate ../../...
 
 release:
   prerelease: auto
