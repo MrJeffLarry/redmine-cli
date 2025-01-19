@@ -1,3 +1,4 @@
+version: 2
 project_name: red-cli
 
 before:
@@ -13,7 +14,8 @@ release:
   mode: "keep-existing"
 
 builds:
-  - main: ./cmd/red
+  - id: red-cli
+    main: ./cmd/red
     binary: red-cli
     env:
       - CGO_ENABLED=0
@@ -35,11 +37,16 @@ builds:
         goarch: arm64
 
 universal_binaries:
-  - name_template: red-cli
+  - id: red-cli
+    name_template: red-cli
     replace: true
 
 archives:
-  - files:
+  - id: red-cli
+    builds:
+      - red-cli
+    format: tar.gz
+    files:
       - README.md
       - LICENSE
 
@@ -63,11 +70,8 @@ nfpms:
     homepage: https://github.com/mrjefflarry/redmine-cli
     maintainer: Jeff Hägerman
     description: Redmine CLI for interacting with Redmine Servers
-
-    # Formats to be generated.
     formats:
       - deb
-
     recommends:
       - less
       - nano
