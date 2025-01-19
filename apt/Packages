@@ -1,44 +1,44 @@
 Package: red-cli
-Version: 0.1.4
-Architecture: arm64
-Maintainer: Jeff Hägerman
-Installed-Size: 9472
-Recommends: less, nano
-Filename: ./red-cli_0.1.4_linux_arm64.deb
-Size: 3790938
-MD5sum: 43bdc9bd6acee0495c11eb622c76e54e
-SHA1: 6b280441ca5efa8f77bf45eda6d1be8ef111f148
-SHA256: 06d270818a0868a9027dc2d5d6cf473a7c2daf7e5e936a1f792087b81b216dcc
-Priority: optional
-Homepage: https://github.com/mrjefflarry/redmine-cli
-Description: Redmine CLI for interacting with Redmine Servers
-
-Package: red-cli
-Version: 0.1.4
-Architecture: amd64
-Maintainer: Jeff Hägerman
-Installed-Size: 9816
-Recommends: less, nano
-Filename: ./red-cli_0.1.4_linux_amd64.deb
-Size: 4119520
-MD5sum: 061874348492dc0ed22f4b69fb65b8aa
-SHA1: e8130939dfa8fabd41049aa4a59af9b074849bcd
-SHA256: a607a8a02b2c2d606f0329bee4ff862d6dcefc31198401ce17efd5ed77f70772
-Priority: optional
-Homepage: https://github.com/mrjefflarry/redmine-cli
-Description: Redmine CLI for interacting with Redmine Servers
-
-Package: red-cli
-Version: 0.1.4
+Version: 0.1.6
 Architecture: i386
 Maintainer: Jeff Hägerman
-Installed-Size: 9468
+Installed-Size: 9988
 Recommends: less, nano
-Filename: ./red-cli_0.1.4_linux_386.deb
-Size: 3898560
-MD5sum: 88613f5252d782a4f94e12b0a9d15737
-SHA1: 8c33dd177a3547f6c720494642c05299b34b0b19
-SHA256: afcfc76f7f2993d57d018e8b4b201acf0fcc2de60cf026c3e48fc93981c22c7f
+Filename: ./red-cli_0.1.6_linux_386.deb
+Size: 4110902
+MD5sum: e6269950698a51b9eeb9f37a252f6d28
+SHA1: ab443989f3f685d0eaacac254a79659639e04bea
+SHA256: 8e5eddb8accf87a37c358de3e548f69d33564282bef0279a1557304aab9009be
+Priority: optional
+Homepage: https://github.com/mrjefflarry/redmine-cli
+Description: Redmine CLI for interacting with Redmine Servers
+
+Package: red-cli
+Version: 0.1.6
+Architecture: amd64
+Maintainer: Jeff Hägerman
+Installed-Size: 10504
+Recommends: less, nano
+Filename: ./red-cli_0.1.6_linux_amd64.deb
+Size: 4380680
+MD5sum: cfd1c856ddb694c7d9545ced6a9ab645
+SHA1: 345a5491120c0c6f11a3c8c502d1462f7ec20d17
+SHA256: 67d8f5e3c06d7e019525a14a0546bebc5edeb0f68836374d34b171c6aec3db1e
+Priority: optional
+Homepage: https://github.com/mrjefflarry/redmine-cli
+Description: Redmine CLI for interacting with Redmine Servers
+
+Package: red-cli
+Version: 0.1.6
+Architecture: arm64
+Maintainer: Jeff Hägerman
+Installed-Size: 10112
+Recommends: less, nano
+Filename: ./red-cli_0.1.6_linux_arm64.deb
+Size: 4032818
+MD5sum: 7a30dc57d00834fc1b47d9bd39dce8df
+SHA1: aa72c506d6c07ee41300c163c27c044a2a5ac00a
+SHA256: 9dfa80dce899fd964a6d8d2451cd1aa019b88fb2fc2e2b904aa58c51d5259080
 Priority: optional
 Homepage: https://github.com/mrjefflarry/redmine-cli
 Description: Redmine CLI for interacting with Redmine Servers
