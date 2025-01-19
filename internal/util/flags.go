@@ -28,6 +28,7 @@ const (
 	FLAG_FILTER_TARGET_VERSION_ID = "target_id"
 
 	FLAG_FILTER_STATUS_ID = "status_id"
+	FLAG_JSON             = "json"
 )
 
 func AddFlags(cmd *cobra.Command) {
@@ -39,6 +40,7 @@ func AddFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().IntP(FLAG_OFFSET, FLAG_OFFSET_P, 0, "skip this number of objects")
 	cmd.PersistentFlags().Int(FLAG_FILTER_TARGET_VERSION_ID, 0, "Filter on target version ID")
 	cmd.PersistentFlags().Int(FLAG_FILTER_STATUS_ID, 0, "Filter on status ID")
+	cmd.PersistentFlags().Bool(FLAG_JSON, false, "Output in JSON format")
 }
 
 func ParseFlags(cmd *cobra.Command, projectID int, sortFields []string) string {

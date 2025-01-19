@@ -24,6 +24,7 @@ const (
 	FLAG_DISPLAY_PROJECT = "project"
 	FLAG_QUERY           = "query"
 	FLAG_QUERY_SHORT     = "q"
+	FLAG_ISSUE_URLS      = "issue-urls"
 )
 
 func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
@@ -61,9 +62,21 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 
 	print.Debug(r, "%d %s", status, string(body))
 
+	if json, _ := cmd.Flags().GetBool(util.FLAG_JSON); json {
+		print.Info("%s", body)
+		return
+	}
+
 	if err := json.Unmarshal(body, &issues); err != nil {
 		print.Debug(r, err.Error())
 		print.Error("StatusCode %d, %s", status, "Could not parse and read response from server")
+		return
+	}
+
+	if issue_urls, _ := cmd.Flags().GetBool(FLAG_ISSUE_URLS); issue_urls {
+		for _, issue := range issues.Issues {
+			print.Info(r.Config.Server+"/issues/%d\n", issue.ID)
+		}
 		return
 	}
 
@@ -134,6 +147,7 @@ func cmdIssueList(r *config.Red_t) *cobra.Command {
 	})
 
 	cmd.PersistentFlags().Bool(FLAG_DISPLAY_PROJECT, false, "Display project column")
+	cmd.PersistentFlags().Bool(FLAG_ISSUE_URLS, false, "Show issue urls only")
 	cmd.PersistentFlags().StringP(FLAG_QUERY, FLAG_QUERY_SHORT, "", "Query for issues with subject")
 
 	util.AddFlags(cmd)
