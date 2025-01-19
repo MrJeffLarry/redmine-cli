@@ -22,6 +22,8 @@ const (
 	HEAD_SUBJECT        = "SUBJECT"
 
 	FLAG_DISPLAY_PROJECT = "project"
+	FLAG_QUERY           = "query"
+	FLAG_QUERY_SHORT     = "q"
 )
 
 func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
@@ -42,6 +44,10 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	if dispProject, _ = cmd.Flags().GetBool(FLAG_DISPLAY_PROJECT); dispProject {
 		head = append(head, HEAD_PROJECT)
 		sort = append(sort, "project")
+	}
+
+	if query, _ := cmd.Flags().GetString(FLAG_QUERY); query != "" {
+		path += "subject=~" + query + "&"
 	}
 
 	path += util.ParseFlags(cmd, projectID, sort)
@@ -128,6 +134,7 @@ func cmdIssueList(r *config.Red_t) *cobra.Command {
 	})
 
 	cmd.PersistentFlags().Bool(FLAG_DISPLAY_PROJECT, false, "Display project column")
+	cmd.PersistentFlags().StringP(FLAG_QUERY, FLAG_QUERY_SHORT, "", "Query for issues with subject")
 
 	util.AddFlags(cmd)
 

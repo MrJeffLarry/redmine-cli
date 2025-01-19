@@ -12,6 +12,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	FLAG_QUERY       = "query"
+	FLAG_QUERY_SHORT = "q"
+)
+
 func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	var err error
 	var body []byte
@@ -21,6 +26,12 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	projects := projects{}
 
 	path += util.ParseFlags(cmd, 0, []string{"id", "name"})
+
+	if query, _ := cmd.Flags().GetString(FLAG_QUERY); query != "" {
+		path += "name=~" + query + "&"
+	}
+
+	print.Debug(r, path)
 
 	if body, status, err = api.ClientGET(r, path); err != nil {
 		print.Error("StatusCode %d, %s", status, err.Error())
@@ -63,7 +74,7 @@ func cmdProjectList(r *config.Red_t) *cobra.Command {
 		Short: "List projects",
 		Long:  "List all projects",
 		Run: func(cmd *cobra.Command, args []string) {
-			displayListGET(r, cmd, "/projects.json?limit=1000")
+			displayListGET(r, cmd, "/projects.json?limit=1000&")
 		},
 	}
 
@@ -73,9 +84,11 @@ func cmdProjectList(r *config.Red_t) *cobra.Command {
 		Short: "List all projects",
 		Long:  "List all projects",
 		Run: func(cmd *cobra.Command, args []string) {
-			displayListGET(r, cmd, "/projects.json")
+			displayListGET(r, cmd, "/projects.json?")
 		},
 	})
+
+	cmd.PersistentFlags().StringP(FLAG_QUERY, FLAG_QUERY_SHORT, "", "Query for projects with name")
 
 	util.AddFlags(cmd)
 
