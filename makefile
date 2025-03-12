@@ -28,9 +28,9 @@ VERSION ?= $(shell git symbolic-ref -q --short HEAD || git describe --tags --exa
 
 BIN_TARGET=$(BIN_FOLDER)$(BIN_NAME)-$(VERSION)$(EXE)
 
-export FLAGS += -X "main.Version=$(VERSION)"
-export FLAGS += -X "main.GitCommit=$(GIT_COMMIT)"
-export FLAGS += -X "main.BuildTime=$(shell date)"
+export FLAGS += -X "main.version=$(VERSION)"
+export FLAGS += -X "main.commit=$(GIT_COMMIT)"
+export FLAGS += -X "main.date=$(shell date)"
 
 all: test build
 
