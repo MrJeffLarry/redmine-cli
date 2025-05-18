@@ -30,7 +30,6 @@ BIN_TARGET=$(BIN_FOLDER)$(BIN_NAME)$(EXE)
 
 export FLAGS += -X "main.version=$(VERSION)"
 export FLAGS += -X "main.commit=$(GIT_COMMIT)"
-export FLAGS += -X "main.BuildTime=$(shell date)"
 
 all: test build
 
