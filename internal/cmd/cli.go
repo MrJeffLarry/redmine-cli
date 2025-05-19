@@ -36,7 +36,7 @@ func CmdInit(Version, GitCommit, BuildTime string) *config.Red_t {
 		Use:           "red-cli <command> <subcommand> [flags]",
 		Short:         "Redmine CLI",
 		Long:          `Redmine CLI for integration with Redmine API`,
-		Version:       Version + "\nGit Commit: " + GitCommit + "\nBuild time: " + BuildTime,
+		Version:       Version + "\nGit Commit: " + GitCommit,
 		SilenceErrors: true,
 		SilenceUsage:  true,
 		Run:           func(cmd *cobra.Command, args []string) { cmd.Help() },

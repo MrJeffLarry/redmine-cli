@@ -26,11 +26,10 @@ BIN_FOLDER=build/
 GIT_COMMIT ?= $(shell { git stash create; git rev-parse HEAD; } | grep -Exm1 '[[:xdigit:]]{40}')
 VERSION ?= $(shell git symbolic-ref -q --short HEAD || git describe --tags --exact-match)
 
-BIN_TARGET=$(BIN_FOLDER)$(BIN_NAME)-$(VERSION)$(EXE)
+BIN_TARGET=$(BIN_FOLDER)$(BIN_NAME)$(EXE)
 
-export FLAGS += -X "main.Version=$(VERSION)"
-export FLAGS += -X "main.GitCommit=$(GIT_COMMIT)"
-export FLAGS += -X "main.BuildTime=$(shell date)"
+export FLAGS += -X "main.version=$(VERSION)"
+export FLAGS += -X "main.commit=$(GIT_COMMIT)"
 
 all: test build
 
