@@ -263,20 +263,24 @@ func (r *Red_t) LoadConfig() error {
 
 	home, err := homedir.Dir()
 	if err != nil {
-		return errors.New("Can't find home directory")
+		return errors.New("can't find home directory")
 	}
 
 	filePath := home + sep + CONFIG_FOLDER + sep + CONFIG_FILE
+
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		return nil
+	}
 
 	viper.SetConfigFile(filePath)
 	viper.SetConfigType("json")
 
 	if err := viper.ReadInConfig(); err != nil {
-		return errors.New("Can't read config file in root")
+		return err
 	}
 
 	if err := viper.Unmarshal(&r.Config); err != nil {
-		return errors.New("Can't unmarshal config file")
+		return errors.New("can't unmarshal config file")
 	}
 
 	return nil
@@ -290,7 +294,7 @@ func (r *Red_t) localConfig() error {
 	sep := string(os.PathSeparator)
 
 	if pwd, err = os.Getwd(); err != nil {
-		return errors.New("Can't find current directory")
+		return errors.New("can't find current directory")
 	}
 
 	configPath = pwd + sep + CONFIG_FOLDER + sep + CONFIG_FILE
@@ -303,12 +307,12 @@ func (r *Red_t) localConfig() error {
 	viper.SetConfigType("json")
 
 	if err = viper.ReadInConfig(); err != nil {
-		return errors.New("Can't read config file in local")
+		return errors.New("can't read config file in local")
 	}
 
 	var c Config_t
 	if err := viper.Unmarshal(&c); err != nil {
-		return errors.New("Can't unmarshal config file")
+		return errors.New("can't unmarshal config file")
 	}
 
 	if len(c.Server) > 0 {
