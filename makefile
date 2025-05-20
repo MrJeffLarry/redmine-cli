@@ -59,7 +59,7 @@ clean:
 	rm -r build
 
 run:
-	@$(GOBUILD) -o $(BIN_TARGET) $(SRC_TARGET)
+	@$(GOBUILD) -ldflags='$(FLAGS)' -o $(BIN_TARGET) $(SRC_TARGET)
 	$(BIN_TARGET) $(args)
 
 build-all:
