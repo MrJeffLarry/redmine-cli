@@ -41,6 +41,14 @@ sudo apt update
 sudo apt install red-cli
 ```
 
+**ArchLinux**
+
+Install from the [redmine-cli-go AUR package](https://aur.archlinux.org/packages/redmine-cli-go)
+
+```bash
+yay redmine-cli-go
+```
+
 ## Usage
 
 ```
