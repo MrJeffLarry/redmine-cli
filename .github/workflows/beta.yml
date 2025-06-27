@@ -27,7 +27,7 @@ jobs:
 
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: test-release
           fetch-depth: 0
 
       - name: Fetch all tags
