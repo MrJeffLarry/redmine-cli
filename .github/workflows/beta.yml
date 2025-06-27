@@ -3,7 +3,7 @@ name: Build release
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-beta[0-9]+'
 
 permissions:
   contents: write
@@ -47,12 +47,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
-
-      # - name: Update APT Release files
-      #   run: |
-      #     git pull
-      #     chmod +x ./script/*.sh
-      #     ./script/apt.sh
 
       - uses: EndBug/add-and-commit@v9
         with:
