@@ -6,34 +6,46 @@ before:
     - go mod tidy
     - go generate ./...
 
+after:
+  hooks:
+    - ./script/apt.sh
+
 release:
   prerelease: auto
   name_template: "v{{.Version}}"
   draft: false
   mode: "keep-existing"
 
+signs:
+  - artifacts: all
+    args: ["--batch", "-u", "{{ .Env.GPG_FINGERPRINT }}", "--output", "${signature}", "--detach-sign", "${artifact}"]
+
 builds:
-  - id: red-cli
-    main: ./cmd/red
+  - id: macos
+    goos: [darwin]
+    goarch: [amd64, arm64]
     binary: red-cli
+    main: ./cmd/red
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{time "2006-01-02"}}
+
+  - id: linux
+    goos: [linux]
+    goarch: [amd64, arm64, 386]
     env:
       - CGO_ENABLED=0
-    goos:
-      - linux
-      - darwin
-      - windows
-    goarch:
-      - amd64
-      - arm64
-      - 386
-    goarm:
-      - 6
-      - 7
-    ignore:
-      - goos: darwin
-        goarch: 386
-      - goos: windows
-        goarch: arm64
+    binary: red-cli
+    main: ./cmd/red
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{time "2006-01-02"}}
+
+  - id: windows
+    goos: [windows]
+    goarch: [amd64, arm64, 386]
+    binary: red-cli
+    main: ./cmd/red
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{time "2006-01-02"}}
 
 universal_binaries:
   - id: red-cli
@@ -42,9 +54,8 @@ universal_binaries:
 
 archives:
   - id: red-cli
-    builds:
-      - red-cli
-    format: tar.gz
+    ids: [macos, linux, windows]
+    formats: [tar.gz]
     files:
       - README.md
       - LICENSE
@@ -68,12 +79,16 @@ nfpms:
   - vendor: mrjefflarry
     homepage: https://github.com/mrjefflarry/redmine-cli
     maintainer: Jeff Hägerman
+    license: MIT
     description: Redmine CLI for interacting with Redmine Servers
     formats:
       - deb
+      - rpm
+      - archlinux
     recommends:
       - less
       - nano
+
 
 # sandbox with snap does not work well when open nano or less from red-cli
 # drop support as of now, use apt instead
@@ -99,3 +114,23 @@ brews:
       bin.install "red-cli"
     test: |
       system "#{bin}/red-cli -v"
+
+homebrew_casks:
+  - name: red-cli
+    repository:
+      owner: mrjefflarry
+      name: redmine-cli
+    homepage: https://github.com/mrjefflarry/redmine-cli
+    description: "Redmine CLI"
+    directory: Casks # or remove this option
+    # make the old formula conflict with the cask:
+    # conflicts:
+    #   formula: red-cli
+    # if your app/binary isn't signed and notarized, you'll need this:
+    hooks:
+      post:
+        install: |
+          if system_command("/usr/bin/xattr", args: ["-h"]).exit_status == 0
+            # replace 'red-cli' with the actual binary name
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/red-cli"]
+          end
