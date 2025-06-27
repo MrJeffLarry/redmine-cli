@@ -6,9 +6,9 @@ before:
     - go mod tidy
     - go generate ./...
 
-after:
-  hooks:
-    - ./script/apt.sh
+# after:
+#   hooks:
+#     - ./script/apt.sh
 
 release:
   prerelease: auto
