@@ -1,18 +1,25 @@
 #!/bin/bash
 
-export EMAIL=jeff@hagerman.io
-
-rm ./apt/*.deb
+set -e
 
 cp ./dist/*.deb ./apt/
 
-cd apt
+cd ./apt
 
 # Packages & Packages.gz
 dpkg-scanpackages --multiversion . > Packages
+
 gzip -k -f Packages
 
 # Release, Release.gpg & InRelease
 apt-ftparchive release . > Release
-gpg --default-key "$EMAIL" -abs -o - Release > Release.gpg
-gpg --default-key "$EMAIL" --clearsign -o - Release > InRelease
+gpg --batch --pinentry-mode loopback --default-key "$GPG_FINGERPRINT" -abs -o - Release > Release.gpg
+gpg --batch --pinentry-mode loopback --default-key "$GPG_FINGERPRINT" --clearsign -o - Release > InRelease
+
+# git commit and push
+git config --local user.name "GitHub Actions"
+git config --local user.email "<>"
+git pull
+git add .
+git commit -m "Update apt files"
+git push origin main
