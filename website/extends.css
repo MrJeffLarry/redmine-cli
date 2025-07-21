@@ -1,0 +1,13 @@
+.table-of-contents {
+  padding: 1rem;
+  background: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
+.table-of-contents ul {
+  list-style: none;
+  padding-left: 0;
+}
+.table-of-contents li {
+  margin: 0.5rem 0;
+}

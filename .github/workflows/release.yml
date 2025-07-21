@@ -7,6 +7,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
   build:
@@ -48,12 +50,43 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
 
-      # - name: Update APT Release files
-      #   run: |
-      #     git pull
-      #     chmod +x ./script/*.sh
-      #     ./script/apt.sh
+      - run: |
+          chmod +x ./script/*.sh
 
-      - uses: EndBug/add-and-commit@v9
+      - name: Update APT Release files
+        env:
+          GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
+        run: |
+          git pull
+          ./script/apt.sh
+
+      - name: Update site files
+        run: |
+          ./script/site.sh
+
+      - uses: baileyjm02/markdown-to-pdf@v1
         with:
-          message: Update APT release files
+          input_dir: out/
+          output_dir: site/
+          theme: website/extends.css
+          extend_default_theme: true
+          template: website/template.html
+          build_html: true
+          build_pdf: false
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          name: github-pages
+          path: site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

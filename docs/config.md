@@ -1,3 +1,5 @@
+[Home](../index.md)
+
 # Config
 
 The red-cli tool supports both local and global configuration using the config.json file. You can override the global configuration with a local configuration.
