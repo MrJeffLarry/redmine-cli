@@ -35,6 +35,9 @@ jobs:
       - name: Fetch all tags
         run: git fetch --force --tags
 
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
       - name: Import GPG key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v6
