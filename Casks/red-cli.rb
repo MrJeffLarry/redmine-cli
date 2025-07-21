@@ -2,7 +2,7 @@
 cask "red-cli" do
   desc "Redmine CLI"
   homepage "https://github.com/mrjefflarry/redmine-cli"
-  version "0.1.8-beta2"
+  version "0.1.8"
 
   livecheck do
     skip "Auto-generated on release."
@@ -12,23 +12,23 @@ cask "red-cli" do
 
   on_macos do
     on_intel do
-      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.1.8-beta2/red-cli_0.1.8-beta2_darwin_amd64.tar.gz"
-      sha256 "fa94b520f3248a18bc8701237b02a8d93f0c9ed2c4f79beebddb53d016f6ca8f"
+      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.1.8/red-cli_0.1.8_darwin_amd64.tar.gz"
+      sha256 "10eb2cd1712e6fd765c4697e24e475493135f8c1002f5ef7c07277ddd9fa22a7"
     end
     on_arm do
-      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.1.8-beta2/red-cli_0.1.8-beta2_darwin_arm64.tar.gz"
-      sha256 "ff8fa569d497279e65f3a9b7b9ed931ae3538247bfe69aec242595214fd96101"
+      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.1.8/red-cli_0.1.8_darwin_arm64.tar.gz"
+      sha256 "557ef6649fdda61a0f08a245a2f7e0aa86247bd3fc4b083aa37e37ff0df53a7f"
     end
   end
 
   on_linux do
     on_intel do
-      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.1.8-beta2/red-cli_0.1.8-beta2_linux_amd64.tar.gz"
-      sha256 "e2273f80034e9b9f655464569380cec34ca63dfb9040118edaa1287324630568"
+      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.1.8/red-cli_0.1.8_linux_amd64.tar.gz"
+      sha256 "d0a1832f8d76699043e15ef4ea000417900107f70adbd44152ed18379eac1189"
     end
     on_arm do
-      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.1.8-beta2/red-cli_0.1.8-beta2_linux_arm64.tar.gz"
-      sha256 "bc23af27ad218d406b5b7ccf97b51737a20397cbe14575ce3c09f778150bfc21"
+      url "https://github.com/MrJeffLarry/redmine-cli/releases/download/v0.1.8/red-cli_0.1.8_linux_arm64.tar.gz"
+      sha256 "58387e79d40f0b0dbbe504c8d2af30da895adaf5f60516acd49b59c3a69f96a0"
     end
   end
 
