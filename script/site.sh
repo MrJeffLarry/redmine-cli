@@ -17,5 +17,5 @@ else
     sed -i "s|\.\./|./|g" out/index.md
 fi
 cp docs/* out/
-# cp website/CNAME site/
-# cp -r apt site/apt
+cp website/CNAME site/
+cp -r apt site/apt
