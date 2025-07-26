@@ -27,7 +27,7 @@ brew install mrjefflarry/redmine-cli/red-cli
 
 ```powershell
 scoop bucket add org https://github.com/mrjefflarry/redmine-cli.git
-scoop install mrjefflarry/redmine-cli/red-cli
+scoop install red-cli
 ```
 
 ### Linux
