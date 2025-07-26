@@ -1,46 +1,46 @@
 Package: red-cli
-Version: 0.1.8
+Version: 0.1.9
 Architecture: i386
 Maintainer: Jeff Hägerman
 Installed-Size: 10628
 Recommends: less, nano
-Filename: ./red-cli_0.1.8_linux_386.deb
-Size: 4380908
-MD5sum: 624f079f9f79d10041e61c23eaf94f98
-SHA1: 4d5971528f5f33f4c71b789991741a71c41898b8
-SHA256: a25af8233ec628aa74f39411815d615b71d0f3268babb7ab005469f9cd0e2f74
+Filename: ./red-cli_0.1.9_linux_386.deb
+Size: 4380378
+MD5sum: cc35dc29379fbc20d6ae11ca6d4e538c
+SHA1: f252c07c27ab4a945040720da5d517a1c5115bd4
+SHA256: a64d49e25ee4136a8c3f9f614663007184cdb95b178e045b61bb2e48993d65fb
 Priority: optional
 Homepage: https://github.com/mrjefflarry/redmine-cli
 Description: Redmine CLI for interacting with Redmine Servers
 License: MIT
 
 Package: red-cli
-Version: 0.1.8
+Version: 0.1.9
 Architecture: amd64
 Maintainer: Jeff Hägerman
 Installed-Size: 11136
 Recommends: less, nano
-Filename: ./red-cli_0.1.8_linux_amd64.deb
-Size: 4582594
-MD5sum: cf0eaaa76b25a92712226cd9341b6457
-SHA1: 934af38b779acce77d0e856e25f542165a285c48
-SHA256: e269bb49eba383b99b986b9aae75292c980462a8e54895cb779c58dc07b11577
+Filename: ./red-cli_0.1.9_linux_amd64.deb
+Size: 4582664
+MD5sum: 2b80f7f7775a21979a6cd67dbe492800
+SHA1: 209fc3b9e3272faf045570080bce605833622e5c
+SHA256: 9a4d9ee5acbca7176ba0bb7d68cf252ba7040d20f58529e3c37865f8104319a7
 Priority: optional
 Homepage: https://github.com/mrjefflarry/redmine-cli
 Description: Redmine CLI for interacting with Redmine Servers
 License: MIT
 
 Package: red-cli
-Version: 0.1.8
+Version: 0.1.9
 Architecture: arm64
 Maintainer: Jeff Hägerman
 Installed-Size: 10624
 Recommends: less, nano
-Filename: ./red-cli_0.1.8_linux_arm64.deb
-Size: 4199884
-MD5sum: f44169a194479bcf0de9733e789a4504
-SHA1: 01b340fab171864dd62439099f9cdf01200ebf11
-SHA256: 7d59982ede1706a7a8ff1a6297961203942d76cb305dcef923c45b42c8a9c6d9
+Filename: ./red-cli_0.1.9_linux_arm64.deb
+Size: 4199400
+MD5sum: 3995727d39d8e78aebc6d6050ad33e5b
+SHA1: 9257e1c3555fe8ecbe8fe1142e740d2727bd6b5f
+SHA256: 46723b1e5c9b9d67259401636f3f46b763a2c5e7d725a8ab96a65067e4e6adaf
 Priority: optional
 Homepage: https://github.com/mrjefflarry/redmine-cli
 Description: Redmine CLI for interacting with Redmine Servers
