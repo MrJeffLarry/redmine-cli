@@ -3,6 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/auth"
 	cmdConfig "github.com/MrJeffLarry/redmine-cli/internal/cmd/config"
@@ -31,12 +32,20 @@ func CmdInit(Version, GitCommit, BuildTime string) *config.Red_t {
 	r := config.InitConfig()
 
 	r.Term = terminal.New(nil, nil, nil)
+	version := Version
+	if strings.TrimSpace(GitCommit) != "" {
+		version += "\nGit Commit: " + GitCommit
+	}
+
+	if strings.TrimSpace(BuildTime) != "" {
+		version += "\nBuild Time: " + BuildTime
+	}
 
 	r.Cmd = &cobra.Command{
 		Use:           "red-cli <command> <subcommand> [flags]",
 		Short:         "Redmine CLI",
 		Long:          `Redmine CLI for integration with Redmine API`,
-		Version:       Version + "\nGit Commit: " + GitCommit + "\nBuild time: " + BuildTime,
+		Version:       version,
 		SilenceErrors: true,
 		SilenceUsage:  true,
 		Run:           func(cmd *cobra.Command, args []string) { cmd.Help() },
