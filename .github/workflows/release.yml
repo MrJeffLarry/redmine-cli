@@ -78,7 +78,7 @@ jobs:
           build_pdf: false
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           name: github-pages
           path: site
