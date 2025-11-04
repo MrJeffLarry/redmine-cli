@@ -35,7 +35,7 @@ jobs:
       - name: Readme
         run: cp README.md build/
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: artifacts
           path: build
