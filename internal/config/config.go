@@ -20,6 +20,8 @@ const (
 	RED_CONFIG_REDMINE_API_KEY    = "RED_CONFIG_REDMINE_API_KEY"
 	RED_CONFIG_REDMINE_PROJECT    = "RED_CONFIG_REDMINE_PROJECT"
 	RED_CONFIG_REDMINE_PROJECT_ID = "RED_CONFIG_REDMINE_PROJECT_ID"
+	RED_CONFIG_REDMINE_CATEGORY    = "RED_CONFIG_REDMINE_CATEGORY"
+	RED_CONFIG_REDMINE_CATEGORY_ID = "RED_CONFIG_REDMINE_CATEGORY_ID"
 	RED_CONFIG_REDMINE_USER_ID    = "RED_CONFIG_REDMINE_USER_ID"
 	RED_CONFIG_EDITOR             = "RED_CONFIG_EDITOR"
 	RED_CONFIG_PAGER              = "RED_CONFIG_PAGER"
@@ -29,6 +31,8 @@ const (
 	CONFIG_REDMINE_API_KEY    = "api-key"
 	CONFIG_REDMINE_PROJECT    = "project"
 	CONFIG_REDMINE_PROJECT_ID = "project-id"
+	CONFIG_REDMINE_CATEGORY    = "category"
+	CONFIG_REDMINE_CATEGORY_ID = "category-id"
 	CONFIG_REDMINE_USER_ID    = "user-id"
 	CONFIG_EDITOR             = "editor"
 	CONFIG_PAGER              = "pager"
@@ -52,6 +56,8 @@ type Config_t struct {
 	ApiKey    string        `mapstructure:"api-key"`
 	Project   string        `json:"project"`
 	ProjectID int           `mapstructure:"project-id"`
+	Category   string        `json:"category"`
+	CategoryID int           `mapstructure:"category-id"`
 	UserID    int           `mapstructure:"user-id"`
 	Editor    string        `json:"editor"`
 	Pager     string        `json:"pager"`
@@ -103,6 +109,14 @@ func (r *Red_t) SetProjectID(id int) {
 	r.Config.ProjectID = id
 }
 
+func (r *Red_t) SetCategory(id string) {
+	r.Config.Category = id
+}
+
+func (r *Red_t) SetCategoryID(id int) {
+	r.Config.CategoryID = id
+}
+
 func (r *Red_t) SetUserID(id int) {
 	r.Config.UserID = id
 }
@@ -121,6 +135,8 @@ func (r *Red_t) ClearAll() {
 	r.Config.UserID = 0
 	r.Config.Project = ""
 	r.Config.ProjectID = 0
+	r.Config.Category = ""
+	r.Config.CategoryID = 0
 	r.Config.Editor = ""
 	r.Config.Pager = ""
 }
@@ -238,6 +254,8 @@ func (r *Red_t) Save() error {
 	viper.Set(CONFIG_REDMINE_API_KEY, r.Config.ApiKey)
 	viper.Set(CONFIG_REDMINE_PROJECT, r.Config.Project)
 	viper.Set(CONFIG_REDMINE_PROJECT_ID, r.Config.ProjectID)
+	viper.Set(CONFIG_REDMINE_CATEGORY, r.Config.Category)
+	viper.Set(CONFIG_REDMINE_CATEGORY_ID, r.Config.CategoryID)
 	viper.Set(CONFIG_REDMINE_USER_ID, r.Config.UserID)
 	viper.Set(CONFIG_EDITOR, r.Config.Editor)
 	viper.Set(CONFIG_PAGER, r.Config.Pager)
@@ -256,6 +274,10 @@ func (r *Red_t) Save() error {
 
 func (r *Red_t) SaveLocalProject(projectID int) error {
 	return saveLocal(r, CONFIG_REDMINE_PROJECT_ID, projectID)
+}
+
+func (r *Red_t) SaveLocalCategory(categoryID int) error {
+	return saveLocal(r, CONFIG_REDMINE_CATEGORY_ID, categoryID)
 }
 
 func (r *Red_t) LoadConfig() error {
@@ -327,6 +349,12 @@ func (r *Red_t) localConfig() error {
 	if c.ProjectID > 0 {
 		r.Config.ProjectID = c.ProjectID
 	}
+	if len(c.Category) > 0 {
+		r.Config.Category = c.Category
+	}
+	if c.CategoryID > 0 {
+		r.Config.CategoryID = c.CategoryID
+	}
 	if c.UserID > 0 {
 		r.Config.UserID = c.UserID
 	}
@@ -343,6 +371,8 @@ func InitConfig() *Red_t {
 	red.Config.ApiKey = exEnv(RED_CONFIG_REDMINE_API_KEY, "")
 	red.Config.Project = exEnv(RED_CONFIG_REDMINE_PROJECT, "")
 	red.Config.ProjectID, _ = strconv.Atoi(exEnv(RED_CONFIG_REDMINE_PROJECT_ID, ""))
+	red.Config.Category = exEnv(RED_CONFIG_REDMINE_CATEGORY, "")
+	red.Config.CategoryID, _ = strconv.Atoi(exEnv(RED_CONFIG_REDMINE_CATEGORY_ID, ""))
 	red.Config.UserID, _ = strconv.Atoi(exEnv(RED_CONFIG_REDMINE_USER_ID, ""))
 	red.Config.Editor = exEnv(RED_CONFIG_EDITOR, "")
 	red.Config.Pager = exEnv(RED_CONFIG_PAGER, "")

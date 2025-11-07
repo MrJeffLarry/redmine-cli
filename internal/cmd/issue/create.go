@@ -59,6 +59,7 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 	chooses := []string{
 		FIELD_SAVE,
 		FIELD_PRIORITY,
+		FIELD_CATEGORY,
 		FIELD_TARGET_VERSION,
 		FIELD_PARENT_ID,
 		FIELD_ASSIGN,
@@ -118,6 +119,16 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 
 			if id >= 0 {
 				issue.Issue.PriorityID = id
+			}
+		case FIELD_CATEGORY:
+			if idNames, err = global.GetCategories(r, projectID); err != nil {
+				print.Error(err.Error())
+			}
+
+			id, _ := r.Term.Choose("Category", idNames)
+
+			if id >= 0 {
+				issue.Issue.CategoryID = id
 			}
 		case FIELD_TARGET_VERSION:
 			if idNames, err = project.GetVersions(r, projectID); err != nil {
