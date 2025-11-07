@@ -46,7 +46,7 @@ func cmdIssueEditIssueAssign(r *config.Red_t, projectID int) (util.IdName, error
 	idName.ID, idName.Name = r.Term.Choose("Assign", idNames)
 
 	if idName.ID < 0 {
-		return idName, errors.New("assigne ID not valid")
+		return idName, errors.New("assignee ID not valid")
 	}
 
 	return idName, nil
@@ -80,6 +80,19 @@ func cmdIssueEditIssueStatus(r *config.Red_t, allowedStatus []global.IssueStatus
 
 	issueStatus.ID, issueStatus.Name = r.Term.Choose("Choose Status", idNames)
 	return issueStatus, nil
+}
+
+func cmdIssueEditIssueCategory(r *config.Red_t, projectID int) (util.IdName, error) {
+	var err error
+	var idName util.IdName
+	var idNames []util.IdName
+
+	if idNames, err = global.GetCategories(r, projectID); err != nil {
+		return idName, err
+	}
+
+	idName.ID, idName.Name = r.Term.Choose("Choose Category", idNames)
+	return idName, nil
 }
 
 func cmdIssueEditIssuePriority(r *config.Red_t) (util.IdName, error) {
@@ -148,6 +161,7 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 		FIELD_SAVE,
 		FIELD_SUBJECT,
 		FIELD_DESCRIPTION,
+		FIELD_CATEGORY,
 		FIELD_STATUS,
 		FIELD_PRIORITY,
 		FIELD_TRACKER,
@@ -231,6 +245,15 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 		case FIELD_DESCRIPTION:
 			issue.Issue.Description = editor.StartEdit(r.Config.Editor, viewIssue.Issue.Description)
 			viewIssue.Issue.Description = issue.Issue.Description
+		case FIELD_CATEGORY:
+			idName, err := cmdIssueEditIssueCategory(r, viewIssue.Issue.Project.ID)
+
+			if err != nil {
+				print.Error(err.Error())
+			} else {
+				issue.Issue.CategoryID = idName.ID
+				viewIssue.Issue.Category = idName
+			}
 		case FIELD_NOTE:
 			if err = cmdIssueEditIssueNote(r, &issue); err != nil {
 				print.Error(err.Error())
