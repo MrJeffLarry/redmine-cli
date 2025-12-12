@@ -69,12 +69,29 @@ Available Commands:
   user        Get users info
 
 Flags:
-      --all       Ignore project-id
-  -d, --debug     Show debug info and raw response
-  -h, --help      help for red
-  -v, --version   version for red
+      --all          Ignore project-id
+  -d, --debug        Show debug info and raw response
+  -h, --help         help for red
+      --rid string   Redmine instance ID (for multi-instance support)
+  -v, --version      version for red
 
 Use "red-cli [command] --help" for more information about a command.
 ```
+
+### Multi-Instance Support
+
+Red-cli now supports managing multiple Redmine instances! Use the `--rid` flag to work with different Redmine servers:
+
+```bash
+# Login to different instances
+red-cli auth login --rid 1
+red-cli auth login --rid 2
+
+# Use commands with specific instances
+red-cli issue list --rid 1
+red-cli issue create --rid 2
+```
+
+See the [configuration documentation](./docs/config.md) for more details.
 
 Documentation can be found [here](./docs/index.md)
