@@ -63,6 +63,8 @@ func (tc *testConfig) SendLine(s string) {
 }
 
 func TestAuthLoginApiKeyNoServer(t *testing.T) {
+	r := config.InitConfig()
+	defer r.Save()
 	tc := common(t)
 	defer tc.S.Close()
 
@@ -79,10 +81,11 @@ func TestAuthLoginApiKeyNoServer(t *testing.T) {
 	if tc.U.User.ApiKey == tc.R.Config.ApiKey {
 		t.Error("Wanted no ApiKey but got match")
 	}
-
 }
 
 func TestAuthLoginApiKeyBadServer(t *testing.T) {
+	r := config.InitConfig()
+	defer r.Save()
 	tc := common(t)
 	defer tc.S.Close()
 
@@ -93,10 +96,11 @@ func TestAuthLoginApiKeyBadServer(t *testing.T) {
 	if tc.U.User.ApiKey == tc.R.Config.ApiKey {
 		t.Error("Wanted bad ApiKey but got match")
 	}
-
 }
 
 func TestAuthLoginApiKeyBadCred(t *testing.T) {
+	r := config.InitConfig()
+	defer r.Save()
 	tc := common(t)
 	defer tc.S.Close()
 
@@ -114,10 +118,11 @@ func TestAuthLoginApiKeyBadCred(t *testing.T) {
 	if tc.U.User.ApiKey == tc.R.Config.ApiKey {
 		t.Error("Wanted bad ApiKey but got match")
 	}
-
 }
 
 func TestAuthLoginApiKeyOk(t *testing.T) {
+	r := config.InitConfig()
+	defer r.Save()
 	tc := common(t)
 	defer tc.S.Close()
 
