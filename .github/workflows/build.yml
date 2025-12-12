@@ -2,6 +2,7 @@ name: Alpha build
 on:
   pull_request:
     types: [ opened, synchronize, reopened ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -29,11 +30,17 @@ jobs:
       - name: Test
         run: make test
 
+      - name: Generate documentation
+        run: make gen-docs
+
       - name: Build
         run: make build-all
 
-      - name: Readme
-        run: cp README.md build/
+      - name: Documentation files to build directory
+        run: |
+          cp README.md build/
+          cp docs/*.md build/docs/
+
 
       - uses: actions/upload-artifact@v5
         with:
