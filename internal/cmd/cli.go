@@ -55,6 +55,18 @@ func CmdInit(Version, GitCommit, BuildTime string) *config.Red_t {
 		// Debug flag check for more info
 		r.Debug, _ = cmd.Flags().GetBool(config.DEBUG_FLAG)
 		r.All, _ = cmd.Flags().GetBool(config.ALL_FLAG)
+		
+		// Get RID flag if provided
+		if cmd.Flags().Changed(config.RID_FLAG) {
+			rid, _ := cmd.Flags().GetString(config.RID_FLAG)
+			if rid != "" {
+				r.SetRID(rid)
+				// Reload config with the specified RID
+				if err := r.LoadConfig(); err != nil {
+					return err
+				}
+			}
+		}
 
 		// require that the user is authenticated before running most commands
 		if IsAuthCmd(cmd) && r.IsConfigBad() {
@@ -70,6 +82,7 @@ func CmdInit(Version, GitCommit, BuildTime string) *config.Red_t {
 
 	r.Cmd.PersistentFlags().BoolP(config.DEBUG_FLAG, config.DEBUG_FLAG_S, false, "Show debug info and raw response")
 	r.Cmd.PersistentFlags().Bool(config.ALL_FLAG, false, "Ignore project-id")
+	r.Cmd.PersistentFlags().String(config.RID_FLAG, "", "Redmine instance ID (for multi-instance support)")
 
 	r.Cmd.AddCommand(issue.NewCmdIssue(r))
 	r.Cmd.AddCommand(project.NewCmdProject(r))

@@ -33,6 +33,8 @@ const (
 	CONFIG_EDITOR             = "editor"
 	CONFIG_PAGER              = "pager"
 	CONFIG_ISSUE              = "issue"
+	CONFIG_INSTANCES          = "instances"
+	CONFIG_DEFAULT_INSTANCE   = "default-instance"
 
 	CONFIG_FILE   = "config.json"
 	CONFIG_FOLDER = ".red"
@@ -41,6 +43,7 @@ const (
 	DEBUG_FLAG_S = "d"
 
 	ALL_FLAG = "all"
+	RID_FLAG = "rid"
 )
 
 type ConfigIssue_t struct {
@@ -58,15 +61,23 @@ type Config_t struct {
 	Issue     ConfigIssue_t `json:"issue"`
 }
 
+type MultiInstanceConfig_t struct {
+	Instances       map[string]Config_t `json:"instances"`
+	DefaultInstance string              `json:"default-instance"`
+}
+
 type Red_t struct {
-	Spinner *spinner.Spinner
-	Client  *http.Client
-	Debug   bool     `json:"debug"`
-	All     bool     `json:"all"`
-	Config  Config_t `json:"config"`
-	Cmd     *cobra.Command
-	Term    *terminal.Terminal
-	Test    bool
+	Spinner         *spinner.Spinner
+	Client          *http.Client
+	Debug           bool     `json:"debug"`
+	All             bool     `json:"all"`
+	Config          Config_t `json:"config"`
+	Cmd             *cobra.Command
+	Term            *terminal.Terminal
+	Test            bool
+	RID             string                `json:"rid"`
+	MultiConfig     MultiInstanceConfig_t `json:"multi-config"`
+	UseMultiMode    bool                  `json:"use-multi-mode"`
 }
 
 func exEnv(name string, defValue string) string {
@@ -115,7 +126,39 @@ func (r *Red_t) SetPager(v string) {
 	r.Config.Pager = v
 }
 
+func (r *Red_t) SetRID(rid string) {
+	r.RID = rid
+	r.UseMultiMode = true
+	
+	// Initialize multi-config if needed
+	if r.MultiConfig.Instances == nil {
+		r.MultiConfig.Instances = make(map[string]Config_t)
+	}
+	
+	// If no default instance set, make this one the default
+	if r.MultiConfig.DefaultInstance == "" {
+		r.MultiConfig.DefaultInstance = rid
+	}
+}
+
 func (r *Red_t) ClearAll() {
+	if r.UseMultiMode && r.RID != "" {
+		// Clear only the current instance
+		delete(r.MultiConfig.Instances, r.RID)
+		
+		// If clearing the default instance, reset it
+		if r.MultiConfig.DefaultInstance == r.RID {
+			// Find another instance to be default, or set to empty
+			for key := range r.MultiConfig.Instances {
+				r.MultiConfig.DefaultInstance = key
+				break
+			}
+			if len(r.MultiConfig.Instances) == 0 {
+				r.MultiConfig.DefaultInstance = ""
+			}
+		}
+	}
+	
 	r.Config.Server = ""
 	r.Config.ApiKey = ""
 	r.Config.UserID = 0
@@ -234,13 +277,21 @@ func (r *Red_t) Save() error {
 	viper.SetConfigFile(filePath)
 	viper.SetConfigType("json")
 
-	viper.Set(CONFIG_REDMINE_URL, r.Config.Server)
-	viper.Set(CONFIG_REDMINE_API_KEY, r.Config.ApiKey)
-	viper.Set(CONFIG_REDMINE_PROJECT, r.Config.Project)
-	viper.Set(CONFIG_REDMINE_PROJECT_ID, r.Config.ProjectID)
-	viper.Set(CONFIG_REDMINE_USER_ID, r.Config.UserID)
-	viper.Set(CONFIG_EDITOR, r.Config.Editor)
-	viper.Set(CONFIG_PAGER, r.Config.Pager)
+	if r.UseMultiMode {
+		// Save in multi-instance mode
+		r.MultiConfig.Instances[r.RID] = r.Config
+		viper.Set(CONFIG_INSTANCES, r.MultiConfig.Instances)
+		viper.Set(CONFIG_DEFAULT_INSTANCE, r.MultiConfig.DefaultInstance)
+	} else {
+		// Save in single-instance mode (backward compatible)
+		viper.Set(CONFIG_REDMINE_URL, r.Config.Server)
+		viper.Set(CONFIG_REDMINE_API_KEY, r.Config.ApiKey)
+		viper.Set(CONFIG_REDMINE_PROJECT, r.Config.Project)
+		viper.Set(CONFIG_REDMINE_PROJECT_ID, r.Config.ProjectID)
+		viper.Set(CONFIG_REDMINE_USER_ID, r.Config.UserID)
+		viper.Set(CONFIG_EDITOR, r.Config.Editor)
+		viper.Set(CONFIG_PAGER, r.Config.Pager)
+	}
 
 	if r.Test {
 		return nil
@@ -279,8 +330,34 @@ func (r *Red_t) LoadConfig() error {
 		return err
 	}
 
-	if err := viper.Unmarshal(&r.Config); err != nil {
-		return errors.New("can't unmarshal config file")
+	// Check if multi-instance config exists
+	if viper.IsSet(CONFIG_INSTANCES) {
+		r.UseMultiMode = true
+		r.MultiConfig.Instances = make(map[string]Config_t)
+		if err := viper.UnmarshalKey(CONFIG_INSTANCES, &r.MultiConfig.Instances); err != nil {
+			return errors.New("can't unmarshal multi-instance config")
+		}
+		r.MultiConfig.DefaultInstance = viper.GetString(CONFIG_DEFAULT_INSTANCE)
+		
+		// If no RID specified, use default or "1"
+		if r.RID == "" {
+			if r.MultiConfig.DefaultInstance != "" {
+				r.RID = r.MultiConfig.DefaultInstance
+			} else {
+				r.RID = "1"
+			}
+		}
+		
+		// Load the specific instance config
+		if cfg, ok := r.MultiConfig.Instances[r.RID]; ok {
+			r.Config = cfg
+		}
+	} else {
+		// Legacy single-instance mode
+		r.UseMultiMode = false
+		if err := viper.Unmarshal(&r.Config); err != nil {
+			return errors.New("can't unmarshal config file")
+		}
 	}
 
 	return nil
@@ -338,6 +415,11 @@ func InitConfig() *Red_t {
 
 	red.Client = &http.Client{}
 	red.Spinner = spinner.New(spinner.CharSets[11], 100*time.Millisecond)
+	
+	// Initialize multi-instance structures
+	red.MultiConfig.Instances = make(map[string]Config_t)
+	red.UseMultiMode = false
+	red.RID = ""
 
 	red.Config.Server = exEnv(RED_CONFIG_REDMINE_URL, "")
 	red.Config.ApiKey = exEnv(RED_CONFIG_REDMINE_API_KEY, "")

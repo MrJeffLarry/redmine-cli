@@ -37,6 +37,15 @@ func loginApiKey(r *config.Red_t, cmd *cobra.Command, server, apikey string) boo
 	r.SetApiKey(user.User.ApiKey)
 	r.SetServer(server)
 	r.SetUserID(user.User.ID)
+	
+	// If RID flag was provided via command, use it to enable multi-mode
+	if cmd.Flags().Changed(config.RID_FLAG) {
+		rid, _ := cmd.Flags().GetString(config.RID_FLAG)
+		if rid != "" {
+			r.SetRID(rid)
+		}
+	}
+	
 	if err = r.Save(); err != nil {
 		print.Error(err.Error())
 		return false
@@ -79,6 +88,15 @@ func loginPassword(r *config.Red_t, cmd *cobra.Command, server, username string)
 	r.SetApiKey(user.User.ApiKey)
 	r.SetServer(server)
 	r.SetUserID(user.User.ID)
+	
+	// If RID flag was provided via command, use it to enable multi-mode
+	if cmd.Flags().Changed(config.RID_FLAG) {
+		rid, _ := cmd.Flags().GetString(config.RID_FLAG)
+		if rid != "" {
+			r.SetRID(rid)
+		}
+	}
+	
 	if err = r.Save(); err != nil {
 		print.Error(err.Error())
 		return

@@ -158,3 +158,58 @@ func TestAuthLoginApiKeyOk(t *testing.T) {
 		t.Errorf("Wanted Server[%s] got[%s]", tc.S.URL, tc.R.Config.Server)
 	}
 }
+
+func TestAuthLoginApiKeyWithRID(t *testing.T) {
+	r := config.InitConfig()
+	defer r.Save()
+	tc := common(t)
+	defer tc.S.Close()
+
+	tc.M.HandleFunc("/users/current.json", func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+
+		if r.Method != "GET" {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			t.Errorf("Wanted Method[GET] got[%s]", r.Method)
+			return
+		}
+
+		if r.Header.Get("X-Redmine-API-Key") != tc.U.User.ApiKey {
+			w.WriteHeader(http.StatusUnauthorized)
+			t.Errorf("Wanted X-Redmine-API-Key[%s] got[%s]", tc.U.User.ApiKey, r.Header.Get("X-Redmine-API-Key"))
+			return
+		}
+
+		body, err := json.Marshal(tc.U)
+		if err != nil {
+			t.Errorf("Wanted err[<nil>] got[%s]", err.Error())
+		}
+		w.Write(body)
+	})
+
+	// Create a command with RID flag
+	cmd := &cobra.Command{}
+	cmd.Flags().String(config.RID_FLAG, "", "Redmine instance ID")
+	cmd.Flags().Set(config.RID_FLAG, "2")
+
+	loginApiKey(tc.R, cmd, tc.S.URL, tc.U.User.ApiKey)
+
+	// Verify multi-mode is enabled
+	if !tc.R.UseMultiMode {
+		t.Error("Expected UseMultiMode to be true when using --rid flag")
+	}
+
+	// Verify RID is set
+	if tc.R.RID != "2" {
+		t.Errorf("Wanted RID[2] got[%s]", tc.R.RID)
+	}
+
+	// Verify config is correct
+	if tc.U.User.ApiKey != tc.R.Config.ApiKey {
+		t.Errorf("Wanted ApiKey[%s] got[%s]", tc.U.User.ApiKey, tc.R.Config.ApiKey)
+	}
+
+	if tc.S.URL != tc.R.Config.Server {
+		t.Errorf("Wanted Server[%s] got[%s]", tc.S.URL, tc.R.Config.Server)
+	}
+}
