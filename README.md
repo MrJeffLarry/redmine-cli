@@ -77,4 +77,4 @@ Flags:
 Use "red-cli [command] --help" for more information about a command.
 ```
 
-Documentation can be found [here](./docs/config.md)
+Documentation can be found [here](./docs/index.md)

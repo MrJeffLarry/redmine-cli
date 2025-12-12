@@ -19,6 +19,8 @@ ifeq ($(GOOS),windows)
 	EXE=.exe
 endif
 
+DOC_SRC_TARGET=./cmd/docs/
+DOC_BIN_NAME=docs
 SRC_TARGET=./cmd/red/
 BIN_NAME=red-cli
 BIN_FOLDER=build/
@@ -27,6 +29,7 @@ GIT_COMMIT ?= $(shell { git stash create; git rev-parse HEAD; } | grep -Exm1 '[[
 VERSION ?= $(shell git symbolic-ref -q --short HEAD || git describe --tags --exact-match)
 
 BIN_TARGET=$(BIN_FOLDER)$(BIN_NAME)-$(VERSION)$(EXE)
+DOC_TARGET=$(BIN_FOLDER)$(DOC_BIN_NAME)-$(VERSION)$(EXE)
 
 export FLAGS += -X "main.version=$(VERSION)"
 export FLAGS += -X "main.commit=$(GIT_COMMIT)"
@@ -61,6 +64,10 @@ clean:
 run:
 	@$(GOBUILD) -ldflags='$(FLAGS)' -o $(BIN_TARGET) $(SRC_TARGET)
 	$(BIN_TARGET) $(args)
+
+gen-docs:
+	@$(GOBUILD) -ldflags='$(FLAGS)' -o $(DOC_TARGET) $(DOC_SRC_TARGET)
+	$(DOC_TARGET) $(args)
 
 build-all:
 	GOOS=linux GARCH=amd64 $(GOBUILD) -o $(BIN_FOLDER)$(BIN_NAME)_linux_amd64 $(SRC_TARGET)
