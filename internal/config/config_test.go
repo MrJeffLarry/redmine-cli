@@ -11,6 +11,10 @@ import (
 func TestMultiInstanceSetup(t *testing.T) {
 	r := InitConfig()
 	r.Test = true
+	
+	// Clear any existing default instance for clean test
+	r.MultiConfig.DefaultInstance = ""
+	r.UseMultiMode = false
 
 	// Test setting RID enables multi-mode
 	r.SetRID("1")
@@ -76,11 +80,8 @@ func TestMultiInstanceClearAll(t *testing.T) {
 }
 
 func TestBackwardCompatibility(t *testing.T) {
-	r := &Red_t{
-		Spinner: spinner.New(spinner.CharSets[11], 100*time.Millisecond),
-	}
+	r := InitConfig()
 	r.Test = true
-	r.MultiConfig.Instances = make(map[string]Config_t)
 
 	// Simulate legacy single-instance config
 	r.UseMultiMode = false
@@ -100,6 +101,10 @@ func TestBackwardCompatibility(t *testing.T) {
 func TestSetRIDMultipleTimes(t *testing.T) {
 	r := InitConfig()
 	r.Test = true
+	
+	// Clear any existing default instance for clean test
+	r.MultiConfig.DefaultInstance = ""
+	r.UseMultiMode = false
 
 	// Set first instance
 	r.SetRID("1")
@@ -118,11 +123,12 @@ func TestSetRIDMultipleTimes(t *testing.T) {
 }
 
 func TestIsConfigBadMultiMode(t *testing.T) {
-	r := &Red_t{
-		Spinner: spinner.New(spinner.CharSets[11], 100*time.Millisecond),
-	}
+	r := InitConfig()
 	r.Test = true
-	r.MultiConfig.Instances = make(map[string]Config_t)
+	
+	// Clear config to test empty state
+	r.Config.Server = ""
+	r.Config.ApiKey = ""
 
 	// Empty config should be bad
 	if !r.IsConfigBad() {
