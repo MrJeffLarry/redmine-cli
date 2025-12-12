@@ -8,6 +8,7 @@ import (
 const (
 	FIELD_SUBJECT        = "Subject"
 	FIELD_DESCRIPTION    = "Description"
+	FIELD_CATEGORY       = "Category"
 	FIELD_STATUS         = "Status"
 	FIELD_PRIORITY       = "Priority"
 	FIELD_TRACKER        = "Tracker"
@@ -55,6 +56,7 @@ type newIssue struct {
 type issue struct {
 	ID                  int                  `json:"id,omitempty"`
 	Project             util.IdName          `json:"project,omitempty"`
+	Category             util.IdName          `json:"category,omitempty"`
 	Tracker             util.IdName          `json:"tracker,omitempty"`
 	Status              global.IssueStatus   `json:"status,omitempty"`
 	Priority            util.IdName          `json:"priority,omitempty"`

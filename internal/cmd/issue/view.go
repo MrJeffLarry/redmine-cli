@@ -50,6 +50,7 @@ func displayIssue(r *config.Red_t, i issue, journalFlag bool) {
 			text.FgGreen.Sprint("Version")+" %s\n"+
 			text.FgGreen.Sprint("Status")+" %s\n"+
 			text.FgGreen.Sprint("Priority")+" %s\n"+
+			text.FgGreen.Sprint("Category")+" %s\n"+
 			text.FgGreen.Sprint("Description")+"\n"+
 			"\n%s\n\n",
 		text.FgYellow.Sprint(i.Tracker.Name),
@@ -67,6 +68,7 @@ func displayIssue(r *config.Red_t, i issue, journalFlag bool) {
 		i.FixedVersion.Name,
 		i.Status.Name,
 		i.Priority.Name,
+		i.Category.Name,
 		i.Description,
 	)
 

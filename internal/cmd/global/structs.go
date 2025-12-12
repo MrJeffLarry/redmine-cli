@@ -1,5 +1,20 @@
 package global
 
+import (
+	"github.com/MrJeffLarry/redmine-cli/internal/util"
+)
+
+type issueCategory struct {
+	ID        int    `json:"id"`
+	Name      string `json:"name"`
+	Project   util.IdName `json:"project"`
+	AssignedTo   util.IdName `json:"assignedTo"`
+}
+
+type issueCategories struct {
+	IssueCategories []issueCategory `json:"issue_categories"`
+}
+
 type issuePriorities struct {
 	IssuePriorities []issuePriority `json:"issue_priorities"`
 }
