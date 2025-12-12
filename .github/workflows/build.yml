@@ -39,8 +39,7 @@ jobs:
       - name: Documentation files to build directory
         run: |
           cp README.md build/
-          cp docs/*.md build/docs/
-
+          mv docs build/docs
 
       - uses: actions/upload-artifact@v5
         with:
