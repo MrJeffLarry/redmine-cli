@@ -76,6 +76,7 @@ func CmdInit(Version, GitCommit, BuildTime string) *config.Red_t {
 	r.Cmd.AddCommand(user.NewCmdUser(r))
 	r.Cmd.AddCommand(auth.NewCmdAuth(r))
 	r.Cmd.AddCommand(cmdConfig.NewCmdConfig(r))
+	r.Cmd.AddCommand(cmdCompletion(r))
 
 	return r
 }

@@ -20,9 +20,12 @@ func ParseResponseError(body []byte) ResponseError {
 }
 
 func StatusCode(status int) error {
-	switch status {
-	case 200:
+
+	if status >= 200 && status <= 299 {
 		return nil
+	}
+
+	switch status {
 	case 401:
 		return errors.New("Wrong login details, please try again")
 	case 404:

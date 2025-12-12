@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/api"
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/global"
@@ -138,6 +139,71 @@ func cmdIssueEditIssueSave(r *config.Red_t, id, path string, issue *newIssueHold
 	return true
 }
 
+func cmdIssueEditIssueFlags(r *config.Red_t, cmd *cobra.Command, issue *newIssueHolder, viewIssue *viewIssue) (bool, error) {
+	// process flags
+	edit := false
+
+	if statusFlag, _ := cmd.Flags().GetString("status"); statusFlag != "" {
+		var status global.IssueStatus
+
+		found := false
+		for _, s := range viewIssue.Issue.AllowedStatuses {
+			if strings.EqualFold(s.Name, statusFlag) || fmt.Sprintf("%d", s.ID) == statusFlag {
+				status = s
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			print.Error("Status '%s' is not allowed for this issue", statusFlag)
+			print.Info("Allowed statuses are:\n")
+			for _, s := range viewIssue.Issue.AllowedStatuses {
+				print.Info(" - %d: %s\n", s.ID, s.Name)
+			}
+			return false, errors.New("status not valid")
+		}
+
+		issue.Issue.StatusID = status.ID
+		viewIssue.Issue.Status = status
+		edit = true
+	}
+
+	if priorityFlag, _ := cmd.Flags().GetString("priority"); priorityFlag != "" {
+		var priority util.IdName
+
+		priorityList, err := global.GetPriorities(r)
+		if err != nil {
+			print.Error("Could not get priorities: %s", err.Error())
+			return false, err
+		}
+
+		found := false
+		for _, p := range priorityList {
+			if strings.EqualFold(p.Name, priorityFlag) || fmt.Sprintf("%d", p.ID) == priorityFlag {
+				priority = p
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			print.Error("Priority '%s' is not valid", priorityFlag)
+			print.Info("Valid priorities are:\n")
+			for _, p := range priorityList {
+				print.Info(" - %d: %s\n", p.ID, p.Name)
+			}
+			return false, errors.New("priority not valid")
+		}
+
+		issue.Issue.PriorityID = priority.ID
+		viewIssue.Issue.Priority = priority
+		edit = true
+	}
+
+	return edit, nil
+}
+
 func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 	var err error
 	var body []byte
@@ -155,7 +221,8 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 		FIELD_ASSIGN,
 		FIELD_TARGET_VERSION,
 		FIELD_PREVIEW,
-		FIELD_EXIT}
+		FIELD_EXIT,
+	}
 
 	if r.Debug {
 		chooses = append(chooses, FIELD_DEBUG)
@@ -182,6 +249,17 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 	}
 
 	fmt.Printf("Edit issue %s - %s\n\n", print.PrintID(viewIssue.Issue.ID), viewIssue.Issue.Subject)
+
+	// process flags
+	edit, err := cmdIssueEditIssueFlags(r, cmd, &issue, &viewIssue)
+	if err != nil {
+		return
+	}
+	if edit {
+		if cmdIssueEditIssueSave(r, id, path, &issue) {
+			return
+		}
+	}
 
 	for {
 		choose, i := r.Term.ChooseString("Issue", chooses)
@@ -279,12 +357,19 @@ func cmdIssueEdit(r *config.Red_t) *cobra.Command {
 			id := cmd.Flags().Arg(0)
 
 			if !util.CheckID(id) {
-				fmt.Println("Please specify what issue you would like to edit, usage: edit [id]")
+				print.Info("Please specify what issue you would like to edit, usage: edit [id]")
+
+				if err := cmd.Help(); err != nil {
+					print.Error("Could not print help")
+				}
 				return
 			}
 			cmdIssueEditIssue(r, cmd, id, "/issues/"+id+".json?include=allowed_statuses")
 		},
 	}
+
+	cmd.Flags().StringP("status", "s", "", "Set status directly without prompt")
+	cmd.Flags().String("priority", "", "Set priority directly without prompt")
 
 	return cmd
 }
