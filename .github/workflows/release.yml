@@ -72,7 +72,7 @@ jobs:
         run: |
           ./script/site.sh
 
-      - uses: baileyjm02/markdown-to-pdf@v1
+      - uses: baileyjm02/markdown-to-pdf@v2
         with:
           input_dir: out/
           output_dir: site/
