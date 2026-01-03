@@ -22,7 +22,7 @@ jobs:
           go-version: '^1.23'
 
       - name: Check out code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Install deps
         run: make deps
