@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func loginApiKey(r *config.Red_t, cmd *cobra.Command, server, apikey string) bool {
+func loginApiKey(r *config.Red_t, cmd *cobra.Command, rid, server, apikey string) bool {
 	var err error
 	var res []byte
 	var status int
@@ -37,15 +37,8 @@ func loginApiKey(r *config.Red_t, cmd *cobra.Command, server, apikey string) boo
 	r.SetApiKey(user.User.ApiKey)
 	r.SetServer(server)
 	r.SetUserID(user.User.ID)
-	
-	// If RID flag was provided via command, use it to enable multi-mode
-	if cmd.Flags().Changed(config.RID_FLAG) {
-		rid, _ := cmd.Flags().GetString(config.RID_FLAG)
-		if rid != "" {
-			r.SetRID(rid)
-		}
-	}
-	
+	r.SetRID(rid)
+
 	if err = r.Save(); err != nil {
 		print.Error(err.Error())
 		return false
@@ -55,7 +48,7 @@ func loginApiKey(r *config.Red_t, cmd *cobra.Command, server, apikey string) boo
 	return true
 }
 
-func loginPassword(r *config.Red_t, cmd *cobra.Command, server, username string) {
+func loginPassword(r *config.Red_t, cmd *cobra.Command, rid, server, username string) {
 	var password string
 	var user user
 	var err error
@@ -88,15 +81,8 @@ func loginPassword(r *config.Red_t, cmd *cobra.Command, server, username string)
 	r.SetApiKey(user.User.ApiKey)
 	r.SetServer(server)
 	r.SetUserID(user.User.ID)
-	
-	// If RID flag was provided via command, use it to enable multi-mode
-	if cmd.Flags().Changed(config.RID_FLAG) {
-		rid, _ := cmd.Flags().GetString(config.RID_FLAG)
-		if rid != "" {
-			r.SetRID(rid)
-		}
-	}
-	
+	r.SetRID(rid)
+
 	if err = r.Save(); err != nil {
 		print.Error(err.Error())
 		return
@@ -106,6 +92,7 @@ func loginPassword(r *config.Red_t, cmd *cobra.Command, server, username string)
 }
 
 func displayLogin(r *config.Red_t, cmd *cobra.Command) {
+	var alias string
 	var server string
 	var username string
 	var apikey string
@@ -113,6 +100,12 @@ func displayLogin(r *config.Red_t, cmd *cobra.Command) {
 
 	print.Info(text.FgGreen.Sprint("Welcome to Red an Redmine CLI\n") +
 		"Before login make sure you have enabled `Enable REST web service`\nfind it in Administration -> Settings -> API or use url /settings?tab=api\nYou find ApiKey (API access key) from /my/account\n\n")
+
+	if alias, err = r.Term.PromptStringRequire("Redmine server alias (Used for multi redmine server support)", ""); err != nil {
+		print.Debug(r, err.Error())
+		print.Error("Could not read input, please try again or submit issue")
+		return
+	}
 
 	if server, err = r.Term.PromptStringRequire("Server URL (https://example.com)", ""); err != nil {
 		print.Debug(r, err.Error())
@@ -128,7 +121,7 @@ func displayLogin(r *config.Red_t, cmd *cobra.Command) {
 			print.Error("Could not read input, please try again or submit issue")
 			return
 		}
-		loginApiKey(r, cmd, server, apikey)
+		loginApiKey(r, cmd, alias, server, apikey)
 		return
 	}
 
@@ -137,7 +130,7 @@ func displayLogin(r *config.Red_t, cmd *cobra.Command) {
 		print.Error("Could not read input, please try again or submit issue")
 		return
 	}
-	loginPassword(r, cmd, server, username)
+	loginPassword(r, cmd, alias, server, username)
 }
 
 func cmdAuthLogin(r *config.Red_t) *cobra.Command {
