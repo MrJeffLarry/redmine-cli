@@ -100,7 +100,7 @@ func displayIssue(r *config.Red_t, i issue, journalFlag bool) {
 		}
 	}
 
-	response += fmt.Sprintln(text.FgHiBlack.Sprintf("View issue: %s", r.Config.Server+"/issues/"+sid))
+	response += fmt.Sprintln(text.FgHiBlack.Sprintf("View issue: %s", r.Server.Server+"/issues/"+sid))
 
 	editor.StartPage(r.Config.Pager, response)
 }

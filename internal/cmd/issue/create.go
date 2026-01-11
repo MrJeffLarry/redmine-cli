@@ -48,7 +48,7 @@ func cmdIssueCreateSave(r *config.Red_t, issue *newIssueHolder) bool {
 	}
 
 	print.OK("Issue #%d created!\n", responseIssue.Issue.ID)
-	print.Info("%s/issues/%d\n", r.Config.Server, responseIssue.Issue.ID)
+	print.Info("%s/issues/%d\n", r.Server.Server, responseIssue.Issue.ID)
 	return true
 }
 
@@ -66,8 +66,8 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 
 	issue := newIssueHolder{}
 
-	if r.Config.ProjectID > 0 {
-		projectID = r.Config.ProjectID
+	if r.Server.ProjectID > 0 {
+		projectID = r.Server.ProjectID
 	}
 
 	if proID, _ := cmd.Flags().GetInt("project"); proID > 0 {

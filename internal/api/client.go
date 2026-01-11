@@ -29,15 +29,26 @@ func ClientGET(r *config.Red_t, path string) ([]byte, int, error) {
 	r.Spinner.Start()
 	defer r.Spinner.Stop()
 
-	req, err = http.NewRequest(http.MethodGet, r.Config.Server+path, nil)
+	// determine active server and api key
+	serverURL := ""
+	apiKey := ""
+	if len(r.Config.Servers) > 0 {
+		serverURL = r.Config.Servers[r.Config.DefaultServer].Server
+		apiKey = r.Config.Servers[r.Config.DefaultServer].ApiKey
+	} else if r.Server != nil {
+		serverURL = r.Server.Server
+		apiKey = r.Server.ApiKey
+	}
+
+	req, err = http.NewRequest(http.MethodGet, serverURL+path, nil)
 	if err != nil {
 		return res, statusCode, errors.New(ERR_CONN_CREATE)
 	}
 
-	req.Header.Add("X-Redmine-API-Key", r.Config.ApiKey)
+	req.Header.Add("X-Redmine-API-Key", apiKey)
 	resp, err = r.Client.Do(req)
 	if err != nil {
-		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.Config.Server + "]")
+		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + serverURL + "]")
 	}
 	defer resp.Body.Close()
 
@@ -67,19 +78,29 @@ func ClientPUT(r *config.Red_t, path string, body []byte) ([]byte, int, error) {
 	r.Spinner.Start()
 	defer r.Spinner.Stop()
 
-	req, err = http.NewRequest(http.MethodPut, r.Config.Server+path, bytes.NewReader(body))
+	serverURL := ""
+	apiKey := ""
+	if len(r.Config.Servers) > 0 {
+		serverURL = r.Config.Servers[r.Config.DefaultServer].Server
+		apiKey = r.Config.Servers[r.Config.DefaultServer].ApiKey
+	} else if r.Server != nil {
+		serverURL = r.Server.Server
+		apiKey = r.Server.ApiKey
+	}
+
+	req, err = http.NewRequest(http.MethodPut, serverURL+path, bytes.NewReader(body))
 	if err != nil {
 		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_CREATE)
 	}
 
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("X-Redmine-API-Key", r.Config.ApiKey)
+	req.Header.Add("X-Redmine-API-Key", apiKey)
 
 	resp, err = r.Client.Do(req)
 	if err != nil {
 		print.Debug(r, err.Error())
-		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.Config.Server + "]")
+		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + serverURL + "]")
 	}
 	defer resp.Body.Close()
 
@@ -110,19 +131,29 @@ func ClientPOST(r *config.Red_t, path string, body []byte) ([]byte, int, error) 
 	r.Spinner.Start()
 	defer r.Spinner.Stop()
 
-	req, err = http.NewRequest(http.MethodPost, r.Config.Server+path, bytes.NewReader(body))
+	serverURL := ""
+	apiKey := ""
+	if len(r.Config.Servers) > 0 {
+		serverURL = r.Config.Servers[r.Config.DefaultServer].Server
+		apiKey = r.Config.Servers[r.Config.DefaultServer].ApiKey
+	} else if r.Server != nil {
+		serverURL = r.Server.Server
+		apiKey = r.Server.ApiKey
+	}
+
+	req, err = http.NewRequest(http.MethodPost, serverURL+path, bytes.NewReader(body))
 	if err != nil {
 		print.Debug(r, err.Error())
 		return res, statusCode, errors.New(ERR_CONN_CREATE)
 	}
 
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("X-Redmine-API-Key", r.Config.ApiKey)
+	req.Header.Add("X-Redmine-API-Key", apiKey)
 
 	resp, err = r.Client.Do(req)
 	if err != nil {
 		print.Debug(r, err.Error())
-		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + r.Config.Server + "]")
+		return res, statusCode, errors.New(ERR_CONN_SILENCE + " [" + serverURL + "]")
 	}
 	defer resp.Body.Close()
 

@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func loginApiKey(r *config.Red_t, cmd *cobra.Command, rid, server, apikey string) bool {
+func loginApiKey(r *config.Red_t, cmd *cobra.Command, name, server, apikey string) bool {
 	var err error
 	var res []byte
 	var status int
@@ -34,10 +34,7 @@ func loginApiKey(r *config.Red_t, cmd *cobra.Command, rid, server, apikey string
 		return false
 	}
 
-	r.SetApiKey(user.User.ApiKey)
-	r.SetServer(server)
-	r.SetUserID(user.User.ID)
-	r.SetRID(rid)
+	r.AddServer(name, server, user.User.ApiKey, "", 0, user.User.ID)
 
 	if err = r.Save(); err != nil {
 		print.Error(err.Error())
@@ -48,40 +45,55 @@ func loginApiKey(r *config.Red_t, cmd *cobra.Command, rid, server, apikey string
 	return true
 }
 
-func loginPassword(r *config.Red_t, cmd *cobra.Command, rid, server, username string) {
+func loginPassword(r *config.Red_t, cmd *cobra.Command, name, server, username string) {
 	var password string
 	var user user
 	var err error
+	var retry bool
 
-	if password, err = r.Term.PromptPassword("Password", ""); err != nil {
-		print.Error(err.Error())
-		return
+	for true {
+
+		if retry {
+			if !r.Term.Confirm("Try again?") {
+				return
+			}
+		}
+		retry = true
+
+		if username, err = r.Term.PromptStringRequire("Username", ""); err != nil {
+			print.Debug(r, err.Error())
+			print.Error("Could not read input, please try again or submit issue")
+			continue
+		}
+
+		if password, err = r.Term.PromptPassword("Password", ""); err != nil {
+			print.Error(err.Error())
+			continue
+		}
+
+		res, status, err := api.ClientAuthBasicGET(r, "/users/current.json", server, username, password)
+		if err != nil {
+			print.Error("StatusCode %d, %s", status, err.Error())
+			continue
+		}
+
+		print.Debug(r, "%d %s", status, string(res))
+
+		if err = api.StatusCode(status); err != nil {
+			print.Info("If Two-factor authentication is enabled, this login method will not work as it is not supported, please use Apikey instead, you will find the Apikey (Api access key) at /my/account\n")
+			print.Error(err.Error())
+			continue
+		}
+
+		if err := json.Unmarshal(res, &user); err != nil {
+			print.Debug(r, err.Error())
+			print.Error("StatusCode %d, %s", status, "Could not parse and read response from server")
+			return
+		}
+		break
 	}
 
-	res, status, err := api.ClientAuthBasicGET(r, "/users/current.json", server, username, password)
-	if err != nil {
-		print.Error("StatusCode %d, %s", status, err.Error())
-		return
-	}
-
-	print.Debug(r, "%d %s", status, string(res))
-
-	if err = api.StatusCode(status); err != nil {
-		print.Info("If Two-factor authentication is enabled, this login method will not work as it is not supported, please use Apikey instead, you will find the Apikey (Api access key) at /my/account\n")
-		print.Error(err.Error())
-		return
-	}
-
-	if err := json.Unmarshal(res, &user); err != nil {
-		print.Debug(r, err.Error())
-		print.Error("StatusCode %d, %s", status, "Could not parse and read response from server")
-		return
-	}
-
-	r.SetApiKey(user.User.ApiKey)
-	r.SetServer(server)
-	r.SetUserID(user.User.ID)
-	r.SetRID(rid)
+	r.AddServer(name, server, user.User.ApiKey, "", 0, user.User.ID)
 
 	if err = r.Save(); err != nil {
 		print.Error(err.Error())
@@ -125,11 +137,6 @@ func displayLogin(r *config.Red_t, cmd *cobra.Command) {
 		return
 	}
 
-	if username, err = r.Term.PromptStringRequire("Username", ""); err != nil {
-		print.Debug(r, err.Error())
-		print.Error("Could not read input, please try again or submit issue")
-		return
-	}
 	loginPassword(r, cmd, alias, server, username)
 }
 

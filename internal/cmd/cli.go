@@ -3,6 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/auth"
@@ -55,16 +56,16 @@ func CmdInit(Version, GitCommit, BuildTime string) *config.Red_t {
 		// Debug flag check for more info
 		r.Debug, _ = cmd.Flags().GetBool(config.DEBUG_FLAG)
 		r.All, _ = cmd.Flags().GetBool(config.ALL_FLAG)
-		
+
 		// Get RID flag if provided
-		if cmd.Flags().Changed(config.RID_FLAG) {
-			rid, _ := cmd.Flags().GetString(config.RID_FLAG)
-			if rid != "" {
-				r.SetRID(rid)
-				// Reload config with the specified RID
-				if err := r.LoadConfig(); err != nil {
-					return err
-				}
+		if rid, _ := cmd.Flags().GetString(config.RID_FLAG); rid != "" {
+			id, err := strconv.Atoi(rid)
+			if err != nil {
+				return errors.New("Redmine Instance ID must be a number")
+			}
+			err = r.SetDefaultServer(id)
+			if err != nil {
+				return err
 			}
 		}
 

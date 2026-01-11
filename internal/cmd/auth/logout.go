@@ -7,7 +7,7 @@ import (
 )
 
 func displayLogout(r *config.Red_t, cmd *cobra.Command) {
-	r.ClearAll()
+	r.RemoveCurrentServer()
 	if err := r.Save(); err != nil {
 		print.Error(err.Error())
 		return

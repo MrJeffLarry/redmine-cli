@@ -9,137 +9,120 @@ import (
 )
 
 func TestMultiInstanceSetup(t *testing.T) {
-	r := InitConfig()
+	// Build a Red_t directly and use current API (Servers slice)
+	r := &Red_t{}
 	r.Test = true
-	
-	// Clear any existing default instance for clean test
-	r.MultiConfig.DefaultInstance = ""
-	r.UseMultiMode = false
 
-	// Test setting RID enables multi-mode
-	r.SetRID("1")
-	if !r.UseMultiMode {
-		t.Error("Expected UseMultiMode to be true after SetRID")
+	// Add a server and verify servers slice and default server
+	if err := r.AddServer("default", "https://redmine1.example.com", "", "", 0, 0); err != nil {
+		t.Fatalf("AddServer failed: %v", err)
 	}
 
-	if r.MultiConfig.Instances == nil {
-		t.Error("Expected Instances map to be initialized")
+	if len(r.Config.Servers) == 0 {
+		t.Error("Expected Servers slice to be initialized and contain at least one server")
 	}
 
-	if r.MultiConfig.DefaultInstance != "1" {
-		t.Errorf("Expected default instance to be '1', got '%s'", r.MultiConfig.DefaultInstance)
+	if r.Config.DefaultServer != 0 {
+		t.Errorf("Expected default server index to be 0, got %d", r.Config.DefaultServer)
 	}
 }
 
 func TestMultiInstanceSave(t *testing.T) {
-	r := InitConfig()
+	r := &Red_t{}
 	r.Test = true
-	r.SetRID("2")
 
-	r.SetServer("https://redmine2.example.com")
-	r.SetApiKey("test-key-2")
-	r.SetUserID(2)
-
-	// Verify config is set
-	if r.Config.Server != "https://redmine2.example.com" {
-		t.Errorf("Expected server 'https://redmine2.example.com', got '%s'", r.Config.Server)
+	// Add server and set values using available methods
+	if err := r.AddServer("inst2", "https://redmine2.example.com", "", "", 0, 2); err != nil {
+		t.Fatalf("AddServer failed: %v", err)
 	}
 
-	// Verify multi-mode is enabled
-	if !r.UseMultiMode {
-		t.Error("Expected UseMultiMode to be true")
+	// Set API key for default (which is 0)
+	r.Config.Servers[0].ApiKey = "multi-key-123"
+	r.Config.Servers[0].Project = "multi-project-456"
+	r.Config.Servers[0].UserID = 2
+
+	// Verify config is set
+	if r.Config.Servers[0].Server != "https://redmine2.example.com" {
+		t.Errorf("Expected server 'https://redmine2.example.com', got '%s'", r.Config.Servers[0].Server)
 	}
 }
 
 func TestMultiInstanceClearAll(t *testing.T) {
-	r := InitConfig()
+	r := &Red_t{}
 	r.Test = true
-	
-	// Add multiple instances
-	r.SetRID("1")
-	r.SetServer("https://redmine1.example.com")
-	r.SetApiKey("key1")
-	r.Save()
-	
-	r.SetRID("2")
-	r.SetServer("https://redmine2.example.com")
-	r.SetApiKey("key2")
-	r.Save()
 
-	// Clear instance 2
-	r.ClearAll()
-
-	if r.Config.Server != "" {
-		t.Error("Expected server to be cleared")
+	// Add multiple servers
+	if err := r.AddServer("one", "https://redmine1.example.com", "key1", "", 0, 0); err != nil {
+		t.Fatalf("AddServer failed: %v", err)
+	}
+	if err := r.AddServer("two", "https://redmine2.example.com", "key2", "", 0, 0); err != nil {
+		t.Fatalf("AddServer failed: %v", err)
 	}
 
-	// Verify instance 2 is removed from map
-	if _, exists := r.MultiConfig.Instances["2"]; exists {
-		t.Error("Expected instance 2 to be removed from map")
+	// Clear all
+	r.ClearAll()
+
+	if len(r.Config.Servers) != 0 {
+		t.Error("Expected servers to be cleared")
 	}
 }
 
 func TestBackwardCompatibility(t *testing.T) {
-	r := InitConfig()
+	r := &Red_t{}
 	r.Test = true
 
-	// Simulate legacy single-instance config
-	r.UseMultiMode = false
-	r.Config.Server = "https://legacy.example.com"
-	r.Config.ApiKey = "legacy-key"
-
-	// Verify it still works
-	if r.Config.Server != "https://legacy.example.com" {
-		t.Error("Expected legacy config to work")
+	// Legacy: empty/old config should be considered bad
+	r.Config = ConfigV2_t{}
+	if !r.IsConfigBad() {
+		t.Error("Expected empty config to be considered bad")
 	}
 
-	if r.UseMultiMode {
-		t.Error("Expected UseMultiMode to be false for legacy config")
+	// Migrate / valid config
+	if err := r.AddServer("default", "https://legacy.example.com", "legacy-key", "", 0, 0); err != nil {
+		t.Fatalf("AddServer failed: %v", err)
+	}
+	r.Config.Version = "2.0"
+	if r.IsConfigBad() {
+		t.Error("Expected non-empty config to be good")
 	}
 }
 
 func TestSetRIDMultipleTimes(t *testing.T) {
-	r := InitConfig()
+	r := &Red_t{}
 	r.Test = true
-	
-	// Clear any existing default instance for clean test
-	r.MultiConfig.DefaultInstance = ""
-	r.UseMultiMode = false
 
-	// Set first instance
-	r.SetRID("1")
-	r.SetServer("https://redmine1.example.com")
-	r.SetApiKey("key1")
-	
-	if r.MultiConfig.DefaultInstance != "1" {
-		t.Errorf("Expected default instance '1', got '%s'", r.MultiConfig.DefaultInstance)
+	// Add first server and ensure default remains index 0
+	if err := r.AddServer("one", "https://redmine1.example.com", "key1", "", 0, 0); err != nil {
+		t.Fatalf("AddServer failed: %v", err)
+	}
+	if r.Config.DefaultServer != 0 {
+		t.Errorf("Expected default server 0, got %d", r.Config.DefaultServer)
 	}
 
-	// Set second instance - should NOT change default
-	r.SetRID("2")
-	if r.MultiConfig.DefaultInstance != "1" {
-		t.Errorf("Expected default instance to remain '1', got '%s'", r.MultiConfig.DefaultInstance)
+	// Add second server - default should still be 0 until explicitly changed
+	if err := r.AddServer("two", "https://redmine2.example.com", "key2", "", 0, 0); err != nil {
+		t.Fatalf("AddServer failed: %v", err)
+	}
+	if r.Config.DefaultServer != 0 {
+		t.Errorf("Expected default server to remain 0, got %d", r.Config.DefaultServer)
 	}
 }
 
 func TestIsConfigBadMultiMode(t *testing.T) {
-	r := InitConfig()
+	r := &Red_t{}
 	r.Test = true
-	
-	// Clear config to test empty state
-	r.Config.Server = ""
-	r.Config.ApiKey = ""
 
-	// Empty config should be bad
+	// Empty config
+	r.Config = ConfigV2_t{}
 	if !r.IsConfigBad() {
 		t.Error("Expected empty config to be bad")
 	}
 
-	// Set valid config
-	r.SetRID("1")
-	r.SetServer("https://redmine.example.com")
-	r.SetApiKey("valid-key")
-
+	// Valid config
+	if err := r.AddServer("one", "https://redmine.example.com", "valid-key", "", 0, 0); err != nil {
+		t.Fatalf("AddServer failed: %v", err)
+	}
+	r.Config.Version = "2.0"
 	if r.IsConfigBad() {
 		t.Error("Expected valid config to be good")
 	}
@@ -149,28 +132,30 @@ func TestDefaultInstanceEnvironment(t *testing.T) {
 	// Clean up any existing config first
 	os.Unsetenv(RED_CONFIG_REDMINE_URL)
 	os.Unsetenv(RED_CONFIG_REDMINE_API_KEY)
-	
+
 	// Set environment variable
 	os.Setenv(RED_CONFIG_REDMINE_URL, "https://env.example.com")
 	os.Setenv(RED_CONFIG_REDMINE_API_KEY, "env-key")
 	defer os.Unsetenv(RED_CONFIG_REDMINE_URL)
 	defer os.Unsetenv(RED_CONFIG_REDMINE_API_KEY)
-
 	r := &Red_t{
 		Spinner: spinner.New(spinner.CharSets[11], 100*time.Millisecond),
 	}
 	r.Test = true
-	r.MultiConfig.Instances = make(map[string]Config_t)
-	
-	r.Config.Server = exEnv(RED_CONFIG_REDMINE_URL, "")
-	r.Config.ApiKey = exEnv(RED_CONFIG_REDMINE_API_KEY, "")
+
+	// Load env into a server entry
+	srv := Server_t{
+		Server: exEnv(RED_CONFIG_REDMINE_URL, ""),
+		ApiKey: exEnv(RED_CONFIG_REDMINE_API_KEY, ""),
+	}
+	r.Config.Servers = []Server_t{srv}
 
 	// Verify environment variables are loaded
-	if r.Config.Server != "https://env.example.com" {
-		t.Errorf("Expected server from env, got '%s'", r.Config.Server)
+	if r.Config.Servers[0].Server != "https://env.example.com" {
+		t.Errorf("Expected server from env, got '%s'", r.Config.Servers[0].Server)
 	}
 
-	if r.Config.ApiKey != "env-key" {
-		t.Errorf("Expected API key from env, got '%s'", r.Config.ApiKey)
+	if r.Config.Servers[0].ApiKey != "env-key" {
+		t.Errorf("Expected API key from env, got '%s'", r.Config.Servers[0].ApiKey)
 	}
 }
