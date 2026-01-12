@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 	"time"
 
@@ -314,9 +315,18 @@ func TestInitConfig_WithEnvironmentVariables(t *testing.T) {
 func TestInitConfig_WithExistingGlobalConfig(t *testing.T) {
 	// Set up temp directory and create config file
 	dir := t.TempDir()
-	oldHome := os.Getenv("HOME")
-	os.Setenv("HOME", dir)
-	defer os.Setenv("HOME", oldHome)
+	env := "HOME"
+
+	switch runtime.GOOS {
+	case "windows":
+		env = "USERPROFILE"
+	case "plan9":
+		env = "home"
+	}
+
+	oldHome := os.Getenv(env)
+	os.Setenv(env, dir)
+	defer os.Setenv(env, oldHome)
 
 	// Create a valid global config
 	config := ConfigV2_t{
