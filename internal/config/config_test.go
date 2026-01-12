@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -297,6 +298,10 @@ func TestInitConfig_WithEnvironmentVariables(t *testing.T) {
 
 	red := InitConfig()
 
+	if red == nil {
+		t.Fatal("InitConfig returned nil")
+	}
+
 	// Verify environment variables are loaded into config
 	if red.Config.Editor != "vim" {
 		t.Errorf("Expected Editor 'vim', got '%s'", red.Config.Editor)
@@ -331,14 +336,20 @@ func TestInitConfig_WithExistingGlobalConfig(t *testing.T) {
 		Pager:         "more",
 	}
 
-	// Save config to file
-	os.Mkdir(dir+"/.red", 0755)
+	// Save config to file using filepath.Join and check errors
+	redDir := filepath.Join(dir, ".red")
+	err := os.Mkdir(redDir, 0755)
+	if err != nil && !os.IsExist(err) {
+		t.Fatalf("Failed to create .red dir: %v", err)
+	}
 	configData, _ := json.Marshal(config)
-	os.WriteFile(dir+"/.red/config.json", configData, 0644)
+	err = os.WriteFile(filepath.Join(redDir, "config.json"), configData, 0644)
+	if err != nil {
+		t.Fatalf("Failed to write config: %v", err)
+	}
 
 	red := InitConfig()
 
-	// Verify config is loaded
 	if red.Server == nil {
 		t.Fatal("Expected Server to be set")
 	}
@@ -356,7 +367,10 @@ func TestInitConfig_WithLocalConfigOverride(t *testing.T) {
 	oldHome := os.Getenv("HOME")
 	oldCwd, _ := os.Getwd()
 	os.Setenv("HOME", dir)
-	os.Chdir(dir)
+	err := os.Chdir(dir)
+	if err != nil {
+		t.Fatalf("Failed to chdir: %v", err)
+	}
 	defer func() {
 		os.Setenv("HOME", oldHome)
 		os.Chdir(oldCwd)
@@ -388,16 +402,33 @@ func TestInitConfig_WithLocalConfigOverride(t *testing.T) {
 		Editor:    "local-editor",
 	}
 
-	// Save configs
-	os.Mkdir(dir+"/.red", 0755)
+	// Save configs using filepath.Join for cross-platform compatibility
+	redDir := filepath.Join(dir, ".red")
+	err = os.Mkdir(redDir, 0755)
+	if err != nil && !os.IsExist(err) {
+		t.Fatalf("Failed to create global .red dir: %v", err)
+	}
 	globalData, _ := json.Marshal(globalConfig)
-	os.WriteFile(dir+"/.red/config.json", globalData, 0644)
+	err = os.WriteFile(filepath.Join(redDir, "config.json"), globalData, 0644)
+	if err != nil {
+		t.Fatalf("Failed to write global config: %v", err)
+	}
 
-	os.Mkdir(".red", 0755)
+	err = os.Mkdir(".red", 0755)
+	if err != nil && !os.IsExist(err) {
+		t.Fatalf("Failed to create local .red dir: %v", err)
+	}
 	localData, _ := json.Marshal(localConfig)
-	os.WriteFile(".red/config.json", localData, 0644)
+	err = os.WriteFile(filepath.Join(".red", "config.json"), localData, 0644)
+	if err != nil {
+		t.Fatalf("Failed to write local config: %v", err)
+	}
 
 	red := InitConfig()
+
+	if red.Server == nil {
+		t.Fatal("Expected Server to be set, got nil")
+	}
 
 	// Verify local config overrides global config
 	if red.Server.Server != "https://local.example.com" {

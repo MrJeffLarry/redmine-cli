@@ -25,8 +25,12 @@ SRC_TARGET=./cmd/red/
 BIN_NAME=red-cli
 BIN_FOLDER=build/
 
-GIT_COMMIT ?= $(shell { git stash create; git rev-parse HEAD; } | grep -Exm1 '[[:xdigit:]]{40}')
-VERSION ?= $(shell git symbolic-ref -q --short HEAD || git describe --tags --exact-match)
+
+# Get commit hash (fallback to 'unknown' if not available)
+GIT_COMMIT ?= $(shell { git stash create; git rev-parse HEAD; } | grep -Exm1 '[[:xdigit:]]{40}' || echo "unknown")
+# Get version from branch or tag, fallback to 'dev' if not available
+VERSION_TMP := $(shell git symbolic-ref -q --short HEAD 2>/dev/null || git describe --tags --exact-match 2>/dev/null || echo "dev")
+VERSION ?= $(VERSION_TMP)
 
 BIN_TARGET=$(BIN_FOLDER)$(BIN_NAME)-$(VERSION)$(EXE)
 DOC_TARGET=$(BIN_FOLDER)$(DOC_BIN_NAME)-$(VERSION)$(EXE)
