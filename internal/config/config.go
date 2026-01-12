@@ -11,7 +11,6 @@ import (
 
 	"github.com/MrJeffLarry/redmine-cli/internal/terminal"
 	"github.com/briandowns/spinner"
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 )
 
@@ -133,7 +132,7 @@ func configGlobalPath() (string, error) {
 	sep := string(os.PathSeparator)
 
 	// Find home directory.
-	home, err := homedir.Dir()
+	home, err := os.UserHomeDir()
 	if err != nil {
 		return "", errors.New("Can't find home directory")
 	}
@@ -328,6 +327,19 @@ func (r *Red_t) RemoveServer(id int, name string) error {
 	return nil
 }
 
+func (r *Red_t) RemoveCurrentServer() error {
+	id := r.Config.DefaultServer
+	r.Config.Servers = append(r.Config.Servers[:id], r.Config.Servers[id+1:]...)
+	if len(r.Config.Servers) == 0 {
+		r.Config.DefaultServer = 0
+		r.Server = nil
+	} else {
+		r.Config.DefaultServer = 0
+		r.Server = &r.Config.Servers[0]
+	}
+	return nil
+}
+
 func (r *Red_t) SetDefaultServer(id int) error {
 	if id < 0 || id >= len(r.Config.Servers) {
 		return errors.New("Redmine Server ID does not exist")
@@ -335,6 +347,10 @@ func (r *Red_t) SetDefaultServer(id int) error {
 	r.Config.DefaultServer = id
 	r.Server = &r.Config.Servers[id]
 	return nil
+}
+
+func (r *Red_t) GetServers() []Server_t {
+	return r.Config.Servers
 }
 
 func (r *Red_t) SetProject(id string) error {
@@ -360,19 +376,6 @@ func (r *Red_t) SetPager(v string) error {
 func (r *Red_t) ClearAll() error {
 	r.Config = ConfigV2_t{}
 	r.LocalConfig = ConfigLocal_t{}
-	return nil
-}
-
-func (r *Red_t) RemoveCurrentServer() error {
-	id := r.Config.DefaultServer
-	r.Config.Servers = append(r.Config.Servers[:id], r.Config.Servers[id+1:]...)
-	if len(r.Config.Servers) == 0 {
-		r.Config.DefaultServer = 0
-		r.Server = nil
-	} else {
-		r.Config.DefaultServer = 0
-		r.Server = &r.Config.Servers[0]
-	}
 	return nil
 }
 
@@ -417,7 +420,6 @@ func InitConfig() *Red_t {
 
 	c, err := loadGlobalConfig()
 	if err != nil {
-		fmt.Println(err)
 		return red
 	}
 	red.Config = c
@@ -430,7 +432,6 @@ func InitConfig() *Red_t {
 
 	red.LocalConfig, err = loadLocalConfig()
 	if err != nil {
-		fmt.Println(err)
 		return red
 	}
 
