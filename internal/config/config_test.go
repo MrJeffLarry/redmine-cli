@@ -463,10 +463,17 @@ func TestInitConfig_MigrateV1ToV2(t *testing.T) {
 		Pager:     "v1-pager",
 	}
 
-	// Save v1 config
-	os.Mkdir(dir+"/.red", 0755)
+	// Save v1 config using filepath.Join for cross-platform compatibility
+	redDir := filepath.Join(dir, ".red")
+	err := os.Mkdir(redDir, 0755)
+	if err != nil && !os.IsExist(err) {
+		t.Fatalf("Failed to create .red dir: %v", err)
+	}
 	v1Data, _ := json.Marshal(v1Config)
-	os.WriteFile(dir+"/.red/config.json", v1Data, 0644)
+	err = os.WriteFile(filepath.Join(redDir, "config.json"), v1Data, 0644)
+	if err != nil {
+		t.Fatalf("Failed to write v1 config: %v", err)
+	}
 
 	red := InitConfig()
 
@@ -477,8 +484,11 @@ func TestInitConfig_MigrateV1ToV2(t *testing.T) {
 	if len(red.Config.Servers) != 1 {
 		t.Errorf("Expected 1 server after migration, got %d", len(red.Config.Servers))
 	}
-	if red.Config.Servers[0].Name != "default" {
+	if len(red.Config.Servers) > 0 && red.Config.Servers[0].Name != "default" {
 		t.Errorf("Expected migrated server name 'default', got '%s'", red.Config.Servers[0].Name)
+	}
+	if red.Server == nil {
+		t.Fatal("Expected Server to be set, got nil")
 	}
 	if red.Server.Server != "https://v1.example.com" {
 		t.Errorf("Expected migrated server URL, got '%s'", red.Server.Server)

@@ -409,53 +409,89 @@ func InitConfig() *Red_t {
 
 	server := &Server_t{}
 
-	// Load from environment variables
+	// Load from environment variables (but apply after config file load for Editor/Pager)
 	server.Server = exEnv(RED_CONFIG_REDMINE_URL, "")
 	server.ApiKey = exEnv(RED_CONFIG_REDMINE_API_KEY, "")
 	server.Project = exEnv(RED_CONFIG_REDMINE_PROJECT, "")
 	server.ProjectID, _ = strconv.Atoi(exEnv(RED_CONFIG_REDMINE_PROJECT_ID, ""))
 	server.UserID, _ = strconv.Atoi(exEnv(RED_CONFIG_REDMINE_USER_ID, ""))
-	red.Config.Editor = exEnv(RED_CONFIG_EDITOR, "")
-	red.Config.Pager = exEnv(RED_CONFIG_PAGER, "")
 
+	// Load global config
 	c, err := loadGlobalConfig()
-	if err != nil {
-		return red
+	if err == nil {
+		red.Config = c
 	}
-	red.Config = c
 
-	// If no servers configured, return empty config
-	if len(red.Config.Servers) == 0 {
-		return red
-	}
-	red.Server = &red.Config.Servers[red.Config.DefaultServer]
-
+	// Load local config (may override global)
 	red.LocalConfig, err = loadLocalConfig()
-	if err != nil {
-		return red
+
+	// If no servers in global config, but local config exists, create a default server from local config
+	if len(red.Config.Servers) == 0 {
+		if len(red.LocalConfig.Server) > 0 || len(red.LocalConfig.ApiKey) > 0 || len(red.LocalConfig.Project) > 0 || red.LocalConfig.ProjectID > 0 || red.LocalConfig.UserID > 0 {
+			// Create a default server from local config
+			localServer := Server_t{
+				Name:      "local",
+				Server:    red.LocalConfig.Server,
+				ApiKey:    red.LocalConfig.ApiKey,
+				Project:   red.LocalConfig.Project,
+				ProjectID: red.LocalConfig.ProjectID,
+				UserID:    red.LocalConfig.UserID,
+			}
+			red.Config.Servers = []Server_t{localServer}
+			red.Config.DefaultServer = 0
+			red.Server = &red.Config.Servers[0]
+		} else if server.Server != "" || server.ApiKey != "" || server.Project != "" || server.ProjectID != 0 || server.UserID != 0 {
+			// No config file, but env vars for server fields are set
+			envServer := Server_t{
+				Name:      "env",
+				Server:    server.Server,
+				ApiKey:    server.ApiKey,
+				Project:   server.Project,
+				ProjectID: server.ProjectID,
+				UserID:    server.UserID,
+			}
+			red.Config.Servers = []Server_t{envServer}
+			red.Config.DefaultServer = 0
+			red.Server = &red.Config.Servers[0]
+		} else {
+			// No config found at all
+			return red
+		}
+	} else {
+		red.Server = &red.Config.Servers[red.Config.DefaultServer]
 	}
 
-	// Override with local config
-	if len(red.LocalConfig.Server) > 0 {
-		red.Server.Server = red.LocalConfig.Server
-	}
-	if len(red.LocalConfig.ApiKey) > 0 {
-		red.Server.ApiKey = red.LocalConfig.ApiKey
-	}
-	if len(red.LocalConfig.Project) > 0 {
-		red.Server.Project = red.LocalConfig.Project
-	}
-	if red.LocalConfig.ProjectID > 0 {
-		red.Server.ProjectID = red.LocalConfig.ProjectID
-	}
-	if red.LocalConfig.UserID > 0 {
-		red.Server.UserID = red.LocalConfig.UserID
+	// Override with local config (if both global and local present)
+	if red.Server != nil {
+		if len(red.LocalConfig.Server) > 0 {
+			red.Server.Server = red.LocalConfig.Server
+		}
+		if len(red.LocalConfig.ApiKey) > 0 {
+			red.Server.ApiKey = red.LocalConfig.ApiKey
+		}
+		if len(red.LocalConfig.Project) > 0 {
+			red.Server.Project = red.LocalConfig.Project
+		}
+		if red.LocalConfig.ProjectID > 0 {
+			red.Server.ProjectID = red.LocalConfig.ProjectID
+		}
+		if red.LocalConfig.UserID > 0 {
+			red.Server.UserID = red.LocalConfig.UserID
+		}
 	}
 	if len(red.LocalConfig.Editor) > 0 {
 		red.Config.Editor = red.LocalConfig.Editor
 	}
 	if len(red.LocalConfig.Pager) > 0 {
 		red.Config.Pager = red.LocalConfig.Pager
+	}
+
+	// Environment variables for Editor and Pager always take final precedence
+	if v := exEnv(RED_CONFIG_EDITOR, ""); v != "" {
+		red.Config.Editor = v
+	}
+	if v := exEnv(RED_CONFIG_PAGER, ""); v != "" {
+		red.Config.Pager = v
 	}
 
 	return red
