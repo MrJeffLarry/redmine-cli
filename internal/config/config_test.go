@@ -11,6 +11,18 @@ import (
 	"github.com/briandowns/spinner"
 )
 
+func homeEnv() string {
+	env := "HOME"
+
+	switch runtime.GOOS {
+	case "windows":
+		env = "USERPROFILE"
+	case "plan9":
+		env = "home"
+	}
+	return env
+}
+
 func TestMultiInstanceSetup(t *testing.T) {
 	// Build a Red_t directly and use current API (Servers slice)
 	r := &Red_t{}
@@ -315,15 +327,7 @@ func TestInitConfig_WithEnvironmentVariables(t *testing.T) {
 func TestInitConfig_WithExistingGlobalConfig(t *testing.T) {
 	// Set up temp directory and create config file
 	dir := t.TempDir()
-	env := "HOME"
-
-	switch runtime.GOOS {
-	case "windows":
-		env = "USERPROFILE"
-	case "plan9":
-		env = "home"
-	}
-
+	env := homeEnv()
 	oldHome := os.Getenv(env)
 	os.Setenv(env, dir)
 	defer os.Setenv(env, oldHome)
@@ -374,15 +378,17 @@ func TestInitConfig_WithExistingGlobalConfig(t *testing.T) {
 func TestInitConfig_WithLocalConfigOverride(t *testing.T) {
 	// Set up temp directory
 	dir := t.TempDir()
-	oldHome := os.Getenv("HOME")
+	env := homeEnv()
+	oldHome := os.Getenv(env)
+	os.Setenv(env, dir)
+
 	oldCwd, _ := os.Getwd()
-	os.Setenv("HOME", dir)
 	err := os.Chdir(dir)
 	if err != nil {
 		t.Fatalf("Failed to chdir: %v", err)
 	}
 	defer func() {
-		os.Setenv("HOME", oldHome)
+		os.Setenv(env, oldHome)
 		os.Chdir(oldCwd)
 	}()
 
@@ -458,9 +464,10 @@ func TestInitConfig_WithLocalConfigOverride(t *testing.T) {
 func TestInitConfig_MigrateV1ToV2(t *testing.T) {
 	// Set up temp directory
 	dir := t.TempDir()
-	oldHome := os.Getenv("HOME")
-	os.Setenv("HOME", dir)
-	defer os.Setenv("HOME", oldHome)
+	env := homeEnv()
+	oldHome := os.Getenv(env)
+	os.Setenv(env, dir)
+	defer os.Setenv(env, oldHome)
 
 	// Create a v1 config (no version field)
 	v1Config := ConfigV1_t{
