@@ -1,22 +1,22 @@
 # Documentation
-[**Home**](../README.md) | [**Index**](index.md) | red-cli project
+[**Home**](../README.md) | [**Index**](index.md) | red-cli auth list
 
-## red-cli project
+## red-cli auth list
 
-project
+display list of authenticated Redmine servers
 
 ### Synopsis
 
-Project
+Display list of authenticated Redmine servers
 
 ```
-red-cli project [flags]
+red-cli auth list [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for project
+  -h, --help   help for list
 ```
 
 ### Options inherited from parent commands
@@ -29,6 +29,5 @@ red-cli project [flags]
 
 ### SEE ALSO
 
-* [red-cli](./red-cli.md)	 - Redmine CLI
-* [red-cli project list](./red-cli_project_list.md)	 - List projects
+* [red-cli auth](./red-cli_auth.md)	 - auth to Redmine
 

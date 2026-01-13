@@ -58,14 +58,20 @@ func CmdInit(Version, GitCommit, BuildTime string) *config.Red_t {
 		r.All, _ = cmd.Flags().GetBool(config.ALL_FLAG)
 
 		// Get RID flag if provided
-		if rid, _ := cmd.Flags().GetString(config.RID_FLAG); rid != "" {
+		if rid, err := cmd.Flags().GetString(config.RID_FLAG); rid != "" && err == nil {
 			id, err := strconv.Atoi(rid)
-			if err != nil {
-				return errors.New("Redmine Instance ID must be a number")
-			}
-			err = r.SetDefaultServer(id)
-			if err != nil {
-				return err
+			if err == nil {
+				// if RID is an integer, set by ID
+				err = r.SetDefaultServerById(id)
+				if err != nil {
+					return err
+				}
+			} else {
+				// else set by name
+				err = r.SetDefaultServerByName(rid)
+				if err != nil {
+					return err
+				}
 			}
 		}
 
@@ -83,7 +89,7 @@ func CmdInit(Version, GitCommit, BuildTime string) *config.Red_t {
 
 	r.Cmd.PersistentFlags().BoolP(config.DEBUG_FLAG, config.DEBUG_FLAG_S, false, "Show debug info and raw response")
 	r.Cmd.PersistentFlags().Bool(config.ALL_FLAG, false, "Ignore project-id")
-	r.Cmd.PersistentFlags().String(config.RID_FLAG, "", "Redmine instance ID (for multi-instance support)")
+	r.Cmd.PersistentFlags().String(config.RID_FLAG, "", "Redmine server name or ID")
 
 	r.Cmd.AddCommand(issue.NewCmdIssue(r))
 	r.Cmd.AddCommand(project.NewCmdProject(r))

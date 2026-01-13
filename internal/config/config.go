@@ -317,9 +317,19 @@ func (r *Red_t) AddServer(name, server, apiKey, project string, projectID, userI
 	return nil
 }
 
-func (r *Red_t) RemoveServer(id int, name string) error {
+func (r *Red_t) RemoveServerById(id int) error {
+	for i, _ := range r.Config.Servers {
+		if i == id {
+			r.Config.Servers = append(r.Config.Servers[:i], r.Config.Servers[i+1:]...)
+			return nil
+		}
+	}
+	return nil
+}
+
+func (r *Red_t) RemoveServerByName(name string) error {
 	for i, server := range r.Config.Servers {
-		if server.Name == name || i == id {
+		if server.Name == name {
 			r.Config.Servers = append(r.Config.Servers[:i], r.Config.Servers[i+1:]...)
 			return nil
 		}
@@ -340,12 +350,30 @@ func (r *Red_t) RemoveCurrentServer() error {
 	return nil
 }
 
-func (r *Red_t) SetDefaultServer(id int) error {
-	if id < 0 || id >= len(r.Config.Servers) {
+func (r *Red_t) SetDefaultServerByName(rid string) error {
+	for i, server := range r.Config.Servers {
+		if server.Name == rid {
+			if r.Debug {
+				fmt.Printf("Setting default server to ID %d Name %s\n", i, server.Name)
+			}
+			r.Config.DefaultServer = i
+			r.Server = &r.Config.Servers[i]
+			return nil
+		}
+	}
+	fmt.Printf("Redmine Server Name %s does not exist\n", rid)
+	return errors.New("Redmine Server Name does not exist")
+}
+
+func (r *Red_t) SetDefaultServerById(rid int) error {
+	if rid < 0 || rid >= len(r.Config.Servers) {
 		return errors.New("Redmine Server ID does not exist")
 	}
-	r.Config.DefaultServer = id
-	r.Server = &r.Config.Servers[id]
+	if r.Debug {
+		fmt.Printf("Setting default server to ID %d Name %s\n", rid, r.Config.Servers[rid].Name)
+	}
+	r.Config.DefaultServer = rid
+	r.Server = &r.Config.Servers[rid]
 	return nil
 }
 

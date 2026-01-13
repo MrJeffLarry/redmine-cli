@@ -209,12 +209,12 @@ func TestRemoveServerByNameAndID(t *testing.T) {
 	r := &Red_t{}
 	r.AddServer("one", "url1", "key1", "p1", 1, 1)
 	r.AddServer("two", "url2", "key2", "p2", 2, 2)
-	err := r.RemoveServer(0, "")
+	err := r.RemoveServerById(0)
 	if err != nil {
 		t.Errorf("RemoveServer by ID failed: %v", err)
 	}
 	r.AddServer("three", "url3", "key3", "p3", 3, 3)
-	err = r.RemoveServer(-1, "three")
+	err = r.RemoveServerByName("three")
 	if err != nil {
 		t.Errorf("RemoveServer by name failed: %v", err)
 	}
@@ -233,7 +233,7 @@ func TestSwitchDefaultServer(t *testing.T) {
 	r := &Red_t{}
 	r.AddServer("one", "url1", "key1", "p1", 1, 1)
 	r.AddServer("two", "url2", "key2", "p2", 2, 2)
-	err := r.SetDefaultServer(0)
+	err := r.SetDefaultServerById(0)
 	if err != nil {
 		t.Errorf("SwitchDefaultServer failed: %v", err)
 	}
@@ -241,7 +241,7 @@ func TestSwitchDefaultServer(t *testing.T) {
 		t.Errorf("Expected DefaultServer to be 0, got %d", r.Config.DefaultServer)
 	}
 
-	err = r.SetDefaultServer(1)
+	err = r.SetDefaultServerById(1)
 	if err != nil {
 		t.Errorf("SwitchDefaultServer failed: %v", err)
 	}
@@ -250,7 +250,7 @@ func TestSwitchDefaultServer(t *testing.T) {
 		t.Errorf("Expected DefaultServer to reset to 0 after removal, got %d", r.Config.DefaultServer)
 	}
 	r.RemoveCurrentServer()
-	err = r.SetDefaultServer(0)
+	err = r.SetDefaultServerById(0)
 	if err == nil {
 		t.Error("Expected error when setting default server on empty config")
 	}

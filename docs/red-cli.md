@@ -16,9 +16,10 @@ red-cli <command> <subcommand> [flags]
 ### Options
 
 ```
-      --all     Ignore project-id
-  -d, --debug   Show debug info and raw response
-  -h, --help    help for red-cli
+      --all          Ignore project-id
+  -d, --debug        Show debug info and raw response
+  -h, --help         help for red-cli
+      --rid string   Redmine instance ID (for multi-instance support)
 ```
 
 ### SEE ALSO

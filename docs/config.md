@@ -24,8 +24,6 @@ The value of project-id will then override the corresponding value in the global
 
 ### Complete config list options
 
-#### Single Instance Mode (Legacy)
-
 ```json
 {
     "server": "https://redmine.example.com",
@@ -37,48 +35,24 @@ The value of project-id will then override the corresponding value in the global
 }
 ```
 
-#### Multi-Instance Mode
-
-For managing multiple Redmine instances, use the following structure:
-
-```json
-{
-    "instances": {
-        "1": {
-            "server": "https://redmine1.example.com",
-            "api-key": "apikey1",
-            "user-id": 1,
-            "project-id": 23,
-            "editor": "",
-            "pager": ""
-        },
-        "2": {
-            "server": "https://redmine2.example.com",
-            "api-key": "apikey2",
-            "user-id": 5,
-            "project-id": 42,
-            "editor": "",
-            "pager": ""
-        }
-    },
-    "default-instance": "1"
-}
-```
-
 ### Multi-Instance Support
 
 Red-cli supports managing multiple Redmine instances simultaneously using the `--rid` flag. This allows you to work with different Redmine servers without having to logout and login repeatedly.
 
 #### Login to Multiple Instances
 
-To login to a specific instance, use the `--rid` flag:
+To login to multiple Redmine instances, use the `red-cli auth login` command and you will be promted to enter the name of the instance, this name will be used as the Redmine Instance ID (RID) for future commands.
+
+#### Use Multiple Instances
+
+To use multiple Redmine instances, you need to specify a unique Redmine instance ID (RID) for each instance when using the cli. This ID can be the id of the instance or name you choose when authenticated.
 
 ```bash
-# Login to instance 1
-red-cli auth login --rid 1
+# Use to instance 1
+red-cli issue list --rid 1
 
 # Login to instance 2
-red-cli auth login --rid 2
+red-cli issue list --rid server2
 ```
 
 #### Using Commands with Different Instances
@@ -96,30 +70,16 @@ red-cli issue create --rid 2
 red-cli project list --rid 1
 ```
 
-#### Default Instance
-
-When you login with `--rid` for the first time, that instance becomes the default. If you don't specify `--rid` in subsequent commands, the default instance will be used.
-
-To use a different instance without specifying `--rid` every time, login to that instance again to make it the default.
-
 #### Logout from Specific Instance
 
 To logout from a specific instance:
 
 ```bash
-# Logout from instance 2
-red-cli auth logout --rid 2
+# will be promted to choose server to logout
+red-cli auth logout
 ```
 
-This will remove only the credentials for instance 2, leaving other instances intact.
-
-#### Backward Compatibility
-
-Red-cli maintains full backward compatibility. If you don't use the `--rid` flag, it works exactly as before, storing a single set of credentials in the traditional format. This means:
-
-- Existing users don't need to change anything
-- Single-instance usage works without any changes
-- You can start using multi-instance support whenever needed by simply adding the `--rid` flag
+This will remove only the credentials for choosed server, leaving other instances intact.
 
 ### Editor
 

@@ -25,7 +25,7 @@ func cmdAuthSwitch(r *config.Red_t) *cobra.Command {
 
 			name, serverID := r.Term.ChooseString("Select server to switch to", names)
 
-			r.SetDefaultServer(serverID)
+			r.SetDefaultServerById(serverID)
 
 			if err := r.Save(); err != nil {
 				print.Error("Could not save configuration: %s", err.Error())

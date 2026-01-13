@@ -22,8 +22,9 @@ red-cli config global editor set [id] [flags]
 ### Options inherited from parent commands
 
 ```
-      --all     Ignore project-id
-  -d, --debug   Show debug info and raw response
+      --all          Ignore project-id
+  -d, --debug        Show debug info and raw response
+      --rid string   Redmine instance ID (for multi-instance support)
 ```
 
 ### SEE ALSO

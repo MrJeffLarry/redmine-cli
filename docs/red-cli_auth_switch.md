@@ -1,22 +1,22 @@
 # Documentation
-[**Home**](../README.md) | [**Index**](index.md) | red-cli auth login
+[**Home**](../README.md) | [**Index**](index.md) | red-cli auth switch
 
-## red-cli auth login
+## red-cli auth switch
 
-login to Redmine
+switch current authenticated Redmine server
 
 ### Synopsis
 
-Authenticate to Redmine server
+Switch the current authenticated Redmine server by name
 
 ```
-red-cli auth login [flags]
+red-cli auth switch [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help   help for login
+  -h, --help   help for switch
 ```
 
 ### Options inherited from parent commands
