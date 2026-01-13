@@ -20,6 +20,8 @@ func NewCmdAuth(r *config.Red_t) *cobra.Command {
 
 	cmd.AddCommand(cmdAuthLogin(r))
 	cmd.AddCommand(cmdAuthLogout(r))
+	cmd.AddCommand(cmdAuthList(r))
+	cmd.AddCommand(cmdAuthSwitch(r))
 
 	return cmd
 }

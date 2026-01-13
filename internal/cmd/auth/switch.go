@@ -6,11 +6,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func cmdAuthLogout(r *config.Red_t) *cobra.Command {
+func cmdAuthSwitch(r *config.Red_t) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "logout",
-		Short: "logout from Redmine",
-		Long:  "Rest and logout from Redmine server",
+		Use:   "switch",
+		Short: "switch current authenticated Redmine server",
+		Long:  "Switch the current authenticated Redmine server by name",
 		Run: func(cmd *cobra.Command, args []string) {
 			servers := r.GetServers()
 			if servers == nil {
@@ -25,7 +25,7 @@ func cmdAuthLogout(r *config.Red_t) *cobra.Command {
 
 			name, serverID := r.Term.ChooseString("Select server to switch to", names)
 
-			r.RemoveServerById(serverID)
+			r.SetDefaultServerById(serverID)
 
 			if err := r.Save(); err != nil {
 				print.Error("Could not save configuration: %s", err.Error())

@@ -3,6 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/auth"
@@ -56,6 +57,24 @@ func CmdInit(Version, GitCommit, BuildTime string) *config.Red_t {
 		r.Debug, _ = cmd.Flags().GetBool(config.DEBUG_FLAG)
 		r.All, _ = cmd.Flags().GetBool(config.ALL_FLAG)
 
+		// Get RID flag if provided
+		if rid, err := cmd.Flags().GetString(config.RID_FLAG); rid != "" && err == nil {
+			id, err := strconv.Atoi(rid)
+			if err == nil {
+				// if RID is an integer, set by ID
+				err = r.SetDefaultServerById(id)
+				if err != nil {
+					return err
+				}
+			} else {
+				// else set by name
+				err = r.SetDefaultServerByName(rid)
+				if err != nil {
+					return err
+				}
+			}
+		}
+
 		// require that the user is authenticated before running most commands
 		if IsAuthCmd(cmd) && r.IsConfigBad() {
 			fmt.Println("Redmine CLI (red-cli) v" + Version)
@@ -70,6 +89,7 @@ func CmdInit(Version, GitCommit, BuildTime string) *config.Red_t {
 
 	r.Cmd.PersistentFlags().BoolP(config.DEBUG_FLAG, config.DEBUG_FLAG_S, false, "Show debug info and raw response")
 	r.Cmd.PersistentFlags().Bool(config.ALL_FLAG, false, "Ignore project-id")
+	r.Cmd.PersistentFlags().String(config.RID_FLAG, "", "Redmine server name or ID")
 
 	r.Cmd.AddCommand(issue.NewCmdIssue(r))
 	r.Cmd.AddCommand(project.NewCmdProject(r))

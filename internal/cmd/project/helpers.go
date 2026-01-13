@@ -80,15 +80,15 @@ func GetAssigns(r *config.Red_t, projectID int) ([]util.IdName, error) {
 		return idNames, errors.New("Could not parse and read response from server")
 	}
 
-	if r.Config.UserID > 0 {
+	if r.Server.UserID > 0 {
 		idNames = append(idNames, util.IdName{
-			ID:   r.Config.UserID,
+			ID:   r.Server.UserID,
 			Name: "Me",
 		})
 	}
 
 	for _, v := range payload.Memberships {
-		if v.User.ID <= 0 || v.User.ID == r.Config.UserID { // Skip group or me
+		if v.User.ID <= 0 || v.User.ID == r.Server.UserID { // Skip group or me
 			continue
 		}
 

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -10,9 +11,7 @@ import (
 
 	"github.com/MrJeffLarry/redmine-cli/internal/terminal"
 	"github.com/briandowns/spinner"
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 const (
@@ -25,6 +24,9 @@ const (
 	RED_CONFIG_PAGER              = "RED_CONFIG_PAGER"
 	RED_CONFIG_ISSUE_VIEW_JOURNAL = "RED_CONFIG_ISSUE_VIEW_JOURNAL"
 
+	CONFIG_SERVERS            = "servers"
+	CONFIG_SERVER_ID          = "id"
+	CONFIG_SERVER_NAME        = "name"
 	CONFIG_REDMINE_URL        = "server"
 	CONFIG_REDMINE_API_KEY    = "api-key"
 	CONFIG_REDMINE_PROJECT    = "project"
@@ -41,32 +43,64 @@ const (
 	DEBUG_FLAG_S = "d"
 
 	ALL_FLAG = "all"
+	RID_FLAG = "rid"
 )
 
 type ConfigIssue_t struct {
 	ViewJournalAlways bool `json:"view-journal"`
 }
 
-type Config_t struct {
+type Server_t struct {
+	Name      string `json:"name"`
+	Server    string `json:"server"`
+	ApiKey    string `json:"api-key"`
+	Project   string `json:"project"`
+	ProjectID int    `json:"project-id"`
+	UserID    int    `json:"user-id"`
+}
+
+type ConfigLocal_t struct {
 	Server    string        `json:"server"`
-	ApiKey    string        `mapstructure:"api-key"`
+	ApiKey    string        `json:"api-key"`
 	Project   string        `json:"project"`
-	ProjectID int           `mapstructure:"project-id"`
-	UserID    int           `mapstructure:"user-id"`
+	ProjectID int           `json:"project-id"`
+	UserID    int           `json:"user-id"`
 	Editor    string        `json:"editor"`
 	Pager     string        `json:"pager"`
 	Issue     ConfigIssue_t `json:"issue"`
 }
 
+type ConfigV1_t struct {
+	Server    string        `json:"server"`
+	ApiKey    string        `json:"api-key"`
+	Project   string        `json:"project"`
+	ProjectID int           `json:"project-id"`
+	UserID    int           `json:"user-id"`
+	Editor    string        `json:"editor"`
+	Pager     string        `json:"pager"`
+	Issue     ConfigIssue_t `json:"issue"`
+}
+
+type ConfigV2_t struct {
+	Version       string        `json:"version"`
+	Servers       []Server_t    `json:"servers"`
+	DefaultServer int           `json:"default-server"`
+	Editor        string        `json:"editor"`
+	Pager         string        `json:"pager"`
+	Issue         ConfigIssue_t `json:"issue"`
+}
+
 type Red_t struct {
-	Spinner *spinner.Spinner
-	Client  *http.Client
-	Debug   bool     `json:"debug"`
-	All     bool     `json:"all"`
-	Config  Config_t `json:"config"`
-	Cmd     *cobra.Command
-	Term    *terminal.Terminal
-	Test    bool
+	Spinner     *spinner.Spinner
+	Client      *http.Client
+	Debug       bool          `json:"debug"`
+	All         bool          `json:"all"`
+	Config      ConfigV2_t    `json:"config"`
+	LocalConfig ConfigLocal_t `json:"local-config"`
+	Server      *Server_t     `json:"server"`
+	Cmd         *cobra.Command
+	Term        *terminal.Terminal
+	Test        bool
 }
 
 func exEnv(name string, defValue string) string {
@@ -75,54 +109,6 @@ func exEnv(name string, defValue string) string {
 	} else {
 		return defValue
 	}
-}
-
-func (r *Red_t) IsConfigBad() bool {
-	if len(r.Config.Server) <= 0 {
-		return true
-	}
-	if len(r.Config.ApiKey) <= 0 {
-		return true
-	}
-	return false
-}
-
-func (r *Red_t) SetServer(server string) {
-	r.Config.Server = server
-}
-
-func (r *Red_t) SetApiKey(apiKey string) {
-	r.Config.ApiKey = apiKey
-}
-
-func (r *Red_t) SetProject(id string) {
-	r.Config.Project = id
-}
-
-func (r *Red_t) SetProjectID(id int) {
-	r.Config.ProjectID = id
-}
-
-func (r *Red_t) SetUserID(id int) {
-	r.Config.UserID = id
-}
-
-func (r *Red_t) SetEditor(v string) {
-	r.Config.Editor = v
-}
-
-func (r *Red_t) SetPager(v string) {
-	r.Config.Pager = v
-}
-
-func (r *Red_t) ClearAll() {
-	r.Config.Server = ""
-	r.Config.ApiKey = ""
-	r.Config.UserID = 0
-	r.Config.Project = ""
-	r.Config.ProjectID = 0
-	r.Config.Editor = ""
-	r.Config.Pager = ""
 }
 
 func createFolderPath(path string) error {
@@ -142,34 +128,11 @@ func createFolderPath(path string) error {
 	return nil
 }
 
-func ConfigLocalPath() (string, error) {
-	var configPath string
-	var pwd string
-	var err error
-
-	sep := string(os.PathSeparator)
-
-	if pwd, err = os.Getwd(); err != nil {
-		return configPath, err
-	}
-
-	configPath = pwd + sep + CONFIG_FOLDER
-
-	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		if err := createFolderPath(configPath); err != nil {
-			return "", err
-		}
-		return configPath + sep, nil
-	}
-
-	return configPath + sep, nil
-}
-
-func ConfigPath() (string, error) {
+func configGlobalPath() (string, error) {
 	sep := string(os.PathSeparator)
 
 	// Find home directory.
-	home, err := homedir.Dir()
+	home, err := os.UserHomeDir()
 	if err != nil {
 		return "", errors.New("Can't find home directory")
 	}
@@ -178,7 +141,139 @@ func ConfigPath() (string, error) {
 		return "", err
 	}
 
-	return home + sep + CONFIG_FOLDER + sep, nil
+	return home + sep + CONFIG_FOLDER + sep + CONFIG_FILE, nil
+}
+
+func configLocalPath() (string, error) {
+	var path string
+	var pwd string
+	var err error
+
+	sep := string(os.PathSeparator)
+
+	if pwd, err = os.Getwd(); err != nil {
+		return path, err
+	}
+
+	path = pwd + sep + CONFIG_FOLDER
+
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		if err := createFolderPath(path); err != nil {
+			return "", err
+		}
+	}
+
+	return path + sep + CONFIG_FILE, nil
+}
+
+func loadGlobalConfig() (ConfigV2_t, error) {
+	var config ConfigV2_t
+
+	filePath, err := configGlobalPath()
+	if err != nil {
+		return config, err
+	}
+
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return config, errors.New("can't read config file")
+	}
+
+	if err := json.Unmarshal(data, &config); err != nil {
+		return config, errors.New("can't unmarshal config file")
+	}
+
+	if config.Version == "2.0" {
+		return config, nil
+	}
+
+	config_v1 := ConfigV1_t{}
+
+	if err := json.Unmarshal(data, &config_v1); err != nil {
+		return config, errors.New("can't unmarshal config file")
+	}
+
+	// Migrate v1 to v2
+	config.Version = "2.0"
+	config.Servers = []Server_t{}
+	config.Servers = append(config.Servers, Server_t{
+		Name:      "default",
+		Server:    config_v1.Server,
+		ApiKey:    config_v1.ApiKey,
+		Project:   config_v1.Project,
+		ProjectID: config_v1.ProjectID,
+		UserID:    config_v1.UserID,
+	})
+	config.DefaultServer = 0
+	config.Editor = config_v1.Editor
+	config.Pager = config_v1.Pager
+
+	err = saveGlobalConfig(config)
+	if err != nil {
+		fmt.Println(err)
+		return config, nil
+	}
+
+	return config, nil
+}
+
+func saveGlobalConfig(config ConfigV2_t) error {
+
+	filePath, err := configGlobalPath()
+	if err != nil {
+		return err
+	}
+
+	body, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile(filePath, body, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func loadLocalConfig() (ConfigLocal_t, error) {
+	var config ConfigLocal_t
+	var err error
+
+	filePath, err := configLocalPath()
+	if err != nil {
+		return config, err
+	}
+
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return config, errors.New("can't read config file")
+	}
+
+	if err := json.Unmarshal(data, &config); err == nil {
+		return config, nil
+	}
+
+	return config, nil
+}
+
+func saveLocalConfig(config ConfigLocal_t) error {
+
+	filePath, err := configLocalPath()
+	if err != nil {
+		return err
+	}
+
+	body, err := json.Marshal(config)
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile(filePath, body, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func CreateTmpFile(body string) (string, error) {
@@ -196,162 +291,235 @@ func CreateTmpFile(body string) (string, error) {
 	return f.Name(), nil
 }
 
-func saveLocal(r *Red_t, name string, value interface{}) error {
-	var err error
-	var configPath string
-
-	if configPath, err = ConfigLocalPath(); err != nil {
-		return err
+func (r *Red_t) IsConfigBad() bool {
+	// Old or empty config file
+	if r.Config.Version == "" {
+		return true
 	}
+	if len(r.Config.Servers) == 0 {
+		return true
+	}
+	return false
+}
 
-	viper.Reset()
-	viper.SetConfigFile(configPath + CONFIG_FILE)
-	viper.SetConfigType("json")
+func (r *Red_t) AddServer(name, server, apiKey, project string, projectID, userID int) error {
+	r.Config.Servers = append(r.Config.Servers, Server_t{
+		Name:      name,
+		Server:    server,
+		ApiKey:    apiKey,
+		Project:   project,
+		ProjectID: projectID,
+		UserID:    userID,
+	})
+	// Set newly added server as default/active server
+	r.Config.DefaultServer = len(r.Config.Servers) - 1
+	r.Server = &r.Config.Servers[r.Config.DefaultServer]
+	return nil
+}
 
-	viper.ReadInConfig() // ignore if we can or not read we will try write in any way
-
-	viper.Set(name, value)
-
-	if err := viper.WriteConfig(); err != nil {
-		fmt.Println(err)
-		if err := viper.SafeWriteConfig(); err != nil {
-			return err
+func (r *Red_t) RemoveServerById(id int) error {
+	for i, _ := range r.Config.Servers {
+		if i == id {
+			r.Config.Servers = append(r.Config.Servers[:i], r.Config.Servers[i+1:]...)
+			return nil
 		}
 	}
 	return nil
 }
 
-func (r *Red_t) Save() error {
-	var homePath string
-	var err error
-
-	if homePath, err = ConfigPath(); err != nil {
-		return err
+func (r *Red_t) RemoveServerByName(name string) error {
+	for i, server := range r.Config.Servers {
+		if server.Name == name {
+			r.Config.Servers = append(r.Config.Servers[:i], r.Config.Servers[i+1:]...)
+			return nil
+		}
 	}
+	return nil
+}
 
-	filePath := homePath + CONFIG_FILE
+func (r *Red_t) RemoveCurrentServer() error {
+	id := r.Config.DefaultServer
+	r.Config.Servers = append(r.Config.Servers[:id], r.Config.Servers[id+1:]...)
+	if len(r.Config.Servers) == 0 {
+		r.Config.DefaultServer = 0
+		r.Server = nil
+	} else {
+		r.Config.DefaultServer = 0
+		r.Server = &r.Config.Servers[0]
+	}
+	return nil
+}
 
-	viper.SetConfigFile(filePath)
-	viper.SetConfigType("json")
+func (r *Red_t) SetDefaultServerByName(rid string) error {
+	for i, server := range r.Config.Servers {
+		if server.Name == rid {
+			if r.Debug {
+				fmt.Printf("Setting default server to ID %d Name %s\n", i, server.Name)
+			}
+			r.Config.DefaultServer = i
+			r.Server = &r.Config.Servers[i]
+			return nil
+		}
+	}
+	fmt.Printf("Redmine Server Name %s does not exist\n", rid)
+	return errors.New("Redmine Server Name does not exist")
+}
 
-	viper.Set(CONFIG_REDMINE_URL, r.Config.Server)
-	viper.Set(CONFIG_REDMINE_API_KEY, r.Config.ApiKey)
-	viper.Set(CONFIG_REDMINE_PROJECT, r.Config.Project)
-	viper.Set(CONFIG_REDMINE_PROJECT_ID, r.Config.ProjectID)
-	viper.Set(CONFIG_REDMINE_USER_ID, r.Config.UserID)
-	viper.Set(CONFIG_EDITOR, r.Config.Editor)
-	viper.Set(CONFIG_PAGER, r.Config.Pager)
+func (r *Red_t) SetDefaultServerById(rid int) error {
+	if rid < 0 || rid >= len(r.Config.Servers) {
+		return errors.New("Redmine Server ID does not exist")
+	}
+	if r.Debug {
+		fmt.Printf("Setting default server to ID %d Name %s\n", rid, r.Config.Servers[rid].Name)
+	}
+	r.Config.DefaultServer = rid
+	r.Server = &r.Config.Servers[rid]
+	return nil
+}
+
+func (r *Red_t) GetServers() []Server_t {
+	return r.Config.Servers
+}
+
+func (r *Red_t) SetProject(id string) error {
+	r.Config.Servers[r.Config.DefaultServer].Project = id
+	return nil
+}
+
+func (r *Red_t) SetProjectID(id int) error {
+	r.Config.Servers[r.Config.DefaultServer].ProjectID = id
+	return nil
+}
+
+func (r *Red_t) SetEditor(v string) error {
+	r.Config.Editor = v
+	return nil
+}
+
+func (r *Red_t) SetPager(v string) error {
+	r.Config.Pager = v
+	return nil
+}
+
+func (r *Red_t) ClearAll() error {
+	r.Config = ConfigV2_t{}
+	r.LocalConfig = ConfigLocal_t{}
+	return nil
+}
+
+func (r *Red_t) Save() error {
+	var err error
 
 	if r.Test {
 		return nil
 	}
 
-	if err := viper.WriteConfig(); err != nil {
-		if err := viper.SafeWriteConfig(); err != nil {
-			return err
-		}
+	err = saveGlobalConfig(r.Config)
+	if err != nil {
+		return err
 	}
+
 	return nil
 }
 
 func (r *Red_t) SaveLocalProject(projectID int) error {
-	return saveLocal(r, CONFIG_REDMINE_PROJECT_ID, projectID)
-}
-
-func (r *Red_t) LoadConfig() error {
-	sep := string(os.PathSeparator)
-
-	home, err := homedir.Dir()
-	if err != nil {
-		return errors.New("can't find home directory")
-	}
-
-	filePath := home + sep + CONFIG_FOLDER + sep + CONFIG_FILE
-
-	if _, err := os.Stat(filePath); os.IsNotExist(err) {
-		return nil
-	}
-
-	viper.SetConfigFile(filePath)
-	viper.SetConfigType("json")
-
-	if err := viper.ReadInConfig(); err != nil {
-		return err
-	}
-
-	if err := viper.Unmarshal(&r.Config); err != nil {
-		return errors.New("can't unmarshal config file")
-	}
-
-	return nil
-}
-
-func (r *Red_t) localConfig() error {
-	var pwd string
-	var err error
-	var configPath string
-
-	sep := string(os.PathSeparator)
-
-	if pwd, err = os.Getwd(); err != nil {
-		return errors.New("can't find current directory")
-	}
-
-	configPath = pwd + sep + CONFIG_FOLDER + sep + CONFIG_FILE
-
-	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		return nil
-	}
-
-	viper.SetConfigFile(configPath)
-	viper.SetConfigType("json")
-
-	if err = viper.ReadInConfig(); err != nil {
-		return errors.New("can't read config file in local")
-	}
-
-	var c Config_t
-	if err := viper.Unmarshal(&c); err != nil {
-		return errors.New("can't unmarshal config file")
-	}
-
-	if len(c.Server) > 0 {
-		r.Config.Server = c.Server
-	}
-	if len(c.ApiKey) > 0 {
-		r.Config.ApiKey = c.ApiKey
-	}
-	if len(c.Project) > 0 {
-		r.Config.Project = c.Project
-	}
-	if c.ProjectID > 0 {
-		r.Config.ProjectID = c.ProjectID
-	}
-	if c.UserID > 0 {
-		r.Config.UserID = c.UserID
-	}
-	return nil
+	r.LocalConfig.ProjectID = projectID
+	err := saveLocalConfig(r.LocalConfig)
+	return err
 }
 
 func InitConfig() *Red_t {
 	red := &Red_t{}
+	var err error
 
 	red.Client = &http.Client{}
 	red.Spinner = spinner.New(spinner.CharSets[11], 100*time.Millisecond)
 
-	red.Config.Server = exEnv(RED_CONFIG_REDMINE_URL, "")
-	red.Config.ApiKey = exEnv(RED_CONFIG_REDMINE_API_KEY, "")
-	red.Config.Project = exEnv(RED_CONFIG_REDMINE_PROJECT, "")
-	red.Config.ProjectID, _ = strconv.Atoi(exEnv(RED_CONFIG_REDMINE_PROJECT_ID, ""))
-	red.Config.UserID, _ = strconv.Atoi(exEnv(RED_CONFIG_REDMINE_USER_ID, ""))
-	red.Config.Editor = exEnv(RED_CONFIG_EDITOR, "")
-	red.Config.Pager = exEnv(RED_CONFIG_PAGER, "")
+	server := &Server_t{}
 
-	if err := red.LoadConfig(); err != nil {
-		fmt.Println(err)
+	// Load from environment variables (but apply after config file load for Editor/Pager)
+	server.Server = exEnv(RED_CONFIG_REDMINE_URL, "")
+	server.ApiKey = exEnv(RED_CONFIG_REDMINE_API_KEY, "")
+	server.Project = exEnv(RED_CONFIG_REDMINE_PROJECT, "")
+	server.ProjectID, _ = strconv.Atoi(exEnv(RED_CONFIG_REDMINE_PROJECT_ID, ""))
+	server.UserID, _ = strconv.Atoi(exEnv(RED_CONFIG_REDMINE_USER_ID, ""))
+
+	// Load global config
+	c, err := loadGlobalConfig()
+	if err == nil {
+		red.Config = c
 	}
-	if err := red.localConfig(); err != nil {
-		fmt.Println(err)
+
+	// Load local config (may override global)
+	red.LocalConfig, err = loadLocalConfig()
+
+	// If no servers in global config, but local config exists, create a default server from local config
+	if len(red.Config.Servers) == 0 {
+		if len(red.LocalConfig.Server) > 0 || len(red.LocalConfig.ApiKey) > 0 || len(red.LocalConfig.Project) > 0 || red.LocalConfig.ProjectID > 0 || red.LocalConfig.UserID > 0 {
+			// Create a default server from local config
+			localServer := Server_t{
+				Name:      "local",
+				Server:    red.LocalConfig.Server,
+				ApiKey:    red.LocalConfig.ApiKey,
+				Project:   red.LocalConfig.Project,
+				ProjectID: red.LocalConfig.ProjectID,
+				UserID:    red.LocalConfig.UserID,
+			}
+			red.Config.Servers = []Server_t{localServer}
+			red.Config.DefaultServer = 0
+			red.Server = &red.Config.Servers[0]
+		} else if server.Server != "" || server.ApiKey != "" || server.Project != "" || server.ProjectID != 0 || server.UserID != 0 {
+			// No config file, but env vars for server fields are set
+			envServer := Server_t{
+				Name:      "env",
+				Server:    server.Server,
+				ApiKey:    server.ApiKey,
+				Project:   server.Project,
+				ProjectID: server.ProjectID,
+				UserID:    server.UserID,
+			}
+			red.Config.Servers = []Server_t{envServer}
+			red.Config.DefaultServer = 0
+			red.Server = &red.Config.Servers[0]
+		} else {
+			// No config found at all
+			return red
+		}
+	} else {
+		red.Server = &red.Config.Servers[red.Config.DefaultServer]
+	}
+
+	// Override with local config (if both global and local present)
+	if red.Server != nil {
+		if len(red.LocalConfig.Server) > 0 {
+			red.Server.Server = red.LocalConfig.Server
+		}
+		if len(red.LocalConfig.ApiKey) > 0 {
+			red.Server.ApiKey = red.LocalConfig.ApiKey
+		}
+		if len(red.LocalConfig.Project) > 0 {
+			red.Server.Project = red.LocalConfig.Project
+		}
+		if red.LocalConfig.ProjectID > 0 {
+			red.Server.ProjectID = red.LocalConfig.ProjectID
+		}
+		if red.LocalConfig.UserID > 0 {
+			red.Server.UserID = red.LocalConfig.UserID
+		}
+	}
+	if len(red.LocalConfig.Editor) > 0 {
+		red.Config.Editor = red.LocalConfig.Editor
+	}
+	if len(red.LocalConfig.Pager) > 0 {
+		red.Config.Pager = red.LocalConfig.Pager
+	}
+
+	// Environment variables for Editor and Pager always take final precedence
+	if v := exEnv(RED_CONFIG_EDITOR, ""); v != "" {
+		red.Config.Editor = v
+	}
+	if v := exEnv(RED_CONFIG_PAGER, ""); v != "" {
+		red.Config.Pager = v
 	}
 
 	return red

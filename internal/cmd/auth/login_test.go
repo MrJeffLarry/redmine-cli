@@ -74,11 +74,11 @@ func TestAuthLoginApiKeyNoServer(t *testing.T) {
 		w.Write([]byte(`"bad":parse"}`))
 	})
 
-	if loginApiKey(tc.R, &cobra.Command{}, tc.S.URL, tc.U.User.ApiKey) {
+	if loginApiKey(tc.R, &cobra.Command{}, "test", tc.S.URL, tc.U.User.ApiKey) {
 		t.Error("Wanted no server but got success")
 	}
 
-	if tc.U.User.ApiKey == tc.R.Config.ApiKey {
+	if tc.R.Server != nil && tc.U.User.ApiKey == tc.R.Server.ApiKey {
 		t.Error("Wanted no ApiKey but got match")
 	}
 }
@@ -89,11 +89,11 @@ func TestAuthLoginApiKeyBadServer(t *testing.T) {
 	tc := common(t)
 	defer tc.S.Close()
 
-	if loginApiKey(tc.R, &cobra.Command{}, "", tc.U.User.ApiKey) {
+	if loginApiKey(tc.R, &cobra.Command{}, "name", "", tc.U.User.ApiKey) {
 		t.Error("Wanted bad server but got success")
 	}
 
-	if tc.U.User.ApiKey == tc.R.Config.ApiKey {
+	if tc.R.Server != nil && tc.U.User.ApiKey == tc.R.Server.ApiKey {
 		t.Error("Wanted bad ApiKey but got match")
 	}
 }
@@ -111,11 +111,11 @@ func TestAuthLoginApiKeyBadCred(t *testing.T) {
 		w.Write([]byte(`{"error":"Invalid credentials"}`))
 	})
 
-	if loginApiKey(tc.R, &cobra.Command{}, tc.S.URL, tc.U.User.ApiKey) {
+	if loginApiKey(tc.R, &cobra.Command{}, "name", tc.S.URL, tc.U.User.ApiKey) {
 		t.Error("Wanted bad login but got success")
 	}
 
-	if tc.U.User.ApiKey == tc.R.Config.ApiKey {
+	if tc.R.Server != nil && tc.U.User.ApiKey == tc.R.Server.ApiKey {
 		t.Error("Wanted bad ApiKey but got match")
 	}
 }
@@ -148,13 +148,58 @@ func TestAuthLoginApiKeyOk(t *testing.T) {
 		w.Write(body)
 	})
 
-	loginApiKey(tc.R, &cobra.Command{}, tc.S.URL, tc.U.User.ApiKey)
+	loginApiKey(tc.R, &cobra.Command{}, "name", tc.S.URL, tc.U.User.ApiKey)
 
-	if tc.U.User.ApiKey != tc.R.Config.ApiKey {
-		t.Errorf("Wanted ApiKey[%s] got[%s]", tc.U.User.ApiKey, tc.R.Config.ApiKey)
+	if tc.U.User.ApiKey != tc.R.Server.ApiKey {
+		t.Errorf("Wanted ApiKey[%s] got[%s]", tc.U.User.ApiKey, tc.R.Server.ApiKey)
 	}
 
-	if tc.S.URL != tc.R.Config.Server {
-		t.Errorf("Wanted Server[%s] got[%s]", tc.S.URL, tc.R.Config.Server)
+	if tc.S.URL != tc.R.Server.Server {
+		t.Errorf("Wanted Server[%s] got[%s]", tc.S.URL, tc.R.Server.Server)
+	}
+}
+
+func TestAuthLoginApiKeyWithRID(t *testing.T) {
+	r := config.InitConfig()
+	defer r.Save()
+	tc := common(t)
+	defer tc.S.Close()
+
+	tc.M.HandleFunc("/users/current.json", func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+
+		if r.Method != "GET" {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			t.Errorf("Wanted Method[GET] got[%s]", r.Method)
+			return
+		}
+
+		if r.Header.Get("X-Redmine-API-Key") != tc.U.User.ApiKey {
+			w.WriteHeader(http.StatusUnauthorized)
+			t.Errorf("Wanted X-Redmine-API-Key[%s] got[%s]", tc.U.User.ApiKey, r.Header.Get("X-Redmine-API-Key"))
+			return
+		}
+
+		body, err := json.Marshal(tc.U)
+		if err != nil {
+			t.Errorf("Wanted err[<nil>] got[%s]", err.Error())
+		}
+		w.Write(body)
+	})
+
+	// Create a command with RID flag
+	cmd := &cobra.Command{}
+	cmd.Flags().String(config.RID_FLAG, "", "Redmine instance ID")
+	cmd.Flags().Set(config.RID_FLAG, "2")
+
+	loginApiKey(tc.R, cmd, "name", tc.S.URL, tc.U.User.ApiKey)
+
+	// Verify config is correct
+	if tc.U.User.ApiKey != tc.R.Server.ApiKey {
+		t.Errorf("Wanted ApiKey[%s] got[%s]", tc.U.User.ApiKey, tc.R.Server.ApiKey)
+	}
+
+	if tc.S.URL != tc.R.Server.Server {
+		t.Errorf("Wanted Server[%s] got[%s]", tc.S.URL, tc.R.Server.Server)
 	}
 }

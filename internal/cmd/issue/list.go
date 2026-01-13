@@ -39,7 +39,7 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 	projectID := 0
 
 	if !r.All {
-		projectID = r.Config.ProjectID
+		projectID = r.Server.ProjectID
 	}
 
 	if dispProject, _ = cmd.Flags().GetBool(FLAG_DISPLAY_PROJECT); dispProject {
@@ -75,7 +75,7 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 
 	if issue_urls, _ := cmd.Flags().GetBool(FLAG_ISSUE_URLS); issue_urls {
 		for _, issue := range issues.Issues {
-			print.Info(r.Config.Server+"/issues/%d\n", issue.ID)
+			print.Info(r.Server.Server+"/issues/%d\n", issue.ID)
 		}
 		return
 	}
@@ -131,7 +131,7 @@ func cmdIssueList(r *config.Red_t) *cobra.Command {
 		Short: "List all issues",
 		Long:  "List all issues and ignores project ID",
 		Run: func(cmd *cobra.Command, args []string) {
-			r.Config.ProjectID = 0 // ignore ID if we want too see all
+			r.Server.ProjectID = 0 // ignore ID if we want too see all
 			displayListGET(r, cmd, "/issues.json?")
 		},
 	})

@@ -30,6 +30,7 @@ red-cli project list all [flags]
   -o, --offset int      skip this number of objects
   -p, --page int        List 25 objects per page (uses limit and offset)
   -q, --query string    Query for projects with name
+      --rid string      Redmine instance ID (for multi-instance support)
   -s, --sort string     Sort field
       --status_id int   Filter on status ID
       --target_id int   Filter on target version ID

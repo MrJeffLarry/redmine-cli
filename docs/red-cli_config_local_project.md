@@ -18,8 +18,9 @@ set or get a local project under ~/.red/config.json
 ### Options inherited from parent commands
 
 ```
-      --all     Ignore project-id
-  -d, --debug   Show debug info and raw response
+      --all          Ignore project-id
+  -d, --debug        Show debug info and raw response
+      --rid string   Redmine instance ID (for multi-instance support)
 ```
 
 ### SEE ALSO
