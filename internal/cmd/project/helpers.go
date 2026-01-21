@@ -88,13 +88,21 @@ func GetAssigns(r *config.Red_t, projectID int) ([]util.IdName, error) {
 	}
 
 	for _, v := range payload.Memberships {
-		if v.User.ID <= 0 || v.User.ID == r.Server.UserID { // Skip group or me
+		if v.User.ID == r.Server.UserID || (v.Group.ID == 0 && v.User.ID == 0) { // skip me or invalid entries
 			continue
 		}
 
+		id := v.User.ID
+		name := v.User.Name
+
+		if v.Group.ID > 0 {
+			id = v.Group.ID
+			name = v.Group.Name + " (Group)"
+		}
+
 		idNames = append(idNames, util.IdName{
-			ID:   v.User.ID,
-			Name: v.User.Name,
+			ID:   id,
+			Name: name,
 		})
 	}
 
