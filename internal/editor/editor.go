@@ -51,19 +51,19 @@ func StartPage(exec, body string) {
 	}
 
 	if path, err = config.CreateTmpFile(body); err != nil {
-		print.Error(err.Error())
+		print.Error("%s", err.Error())
 		return
 	}
 
 	args = append(args, path)
 
 	if err = createFile(view, args, body); err != nil {
-		print.Error(err.Error())
+		print.Error("%s", err.Error())
 		return
 	}
 
 	if err = os.Remove(path); err != nil {
-		print.Error(err.Error())
+		print.Error("%s", err.Error())
 	}
 }
 
@@ -76,12 +76,12 @@ func createFile(editor string, arg []string, body string) error {
 	cmd.Stderr = os.Stderr
 
 	if err = cmd.Start(); err != nil {
-		print.Error(err.Error())
+		print.Error("%s", err.Error())
 		return err
 	}
 
 	if err = cmd.Wait(); err != nil {
-		print.Error(err.Error())
+		print.Error("%s", err.Error())
 		return err
 	}
 	return nil
@@ -93,22 +93,22 @@ func editor(editor, body string) string {
 	var err error
 
 	if path, err = config.CreateTmpFile(body); err != nil {
-		print.Error(err.Error())
+		print.Error("%s", err.Error())
 		return ""
 	}
 
 	if err = createFile(editor, []string{path}, body); err != nil {
-		print.Error(err.Error())
+		print.Error("%s", err.Error())
 		return ""
 	}
 
 	if data, err = os.ReadFile(path); err != nil {
-		print.Error(err.Error())
+		print.Error("%s", err.Error())
 		return ""
 	}
 
 	if err = os.Remove(path); err != nil {
-		print.Error(err.Error())
+		print.Error("%s", err.Error())
 	}
 	return string(data)
 }
