@@ -238,7 +238,7 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 	print.Debug(r, "%d %s", status, string(body))
 
 	if err := api.StatusCode(status); err != nil {
-		print.Error(err.Error())
+		print.Error("%s", err.Error())
 		return
 	}
 
@@ -274,7 +274,7 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 			subject, err := r.Term.PromptString("Subject", viewIssue.Issue.Subject)
 
 			if err != nil {
-				print.Error(err.Error())
+				print.Error("%s", err.Error())
 			} else {
 				issue.Issue.Subject = subject
 				viewIssue.Issue.Subject = subject
@@ -283,7 +283,7 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 			idName, err := cmdIssueEditIssueStatus(r, viewIssue.Issue.AllowedStatuses)
 
 			if err != nil {
-				print.Error(err.Error())
+				print.Error("%s", err.Error())
 			} else {
 				issue.Issue.StatusID = idName.ID
 				viewIssue.Issue.Status = idName
@@ -292,7 +292,7 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 			idName, err := cmdIssueEditIssuePriority(r)
 
 			if err != nil {
-				print.Error(err.Error())
+				print.Error("%s", err.Error())
 			} else {
 				issue.Issue.PriorityID = idName.ID
 				viewIssue.Issue.Priority = idName
@@ -301,7 +301,7 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 			idName, err := cmdIssueEditIssueTracker(r, viewIssue.Issue.Project.ID)
 
 			if err != nil {
-				print.Error(err.Error())
+				print.Error("%s", err.Error())
 			} else {
 				issue.Issue.TrackerID = idName.ID
 				viewIssue.Issue.Tracker = idName
@@ -311,13 +311,13 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 			viewIssue.Issue.Description = issue.Issue.Description
 		case FIELD_NOTE:
 			if err = cmdIssueEditIssueNote(r, &issue); err != nil {
-				print.Error(err.Error())
+				print.Error("%s", err.Error())
 			}
 		case FIELD_ASSIGN:
 			idName, err := cmdIssueEditIssueAssign(r, viewIssue.Issue.Project.ID)
 
 			if err != nil {
-				print.Error(err.Error())
+				print.Error("%s", err.Error())
 			} else {
 				issue.Issue.AssignedToID = idName.ID
 				viewIssue.Issue.AssignedTo = idName
@@ -326,7 +326,7 @@ func cmdIssueEditIssue(r *config.Red_t, cmd *cobra.Command, id, path string) {
 			idName, err := cmdIssueEditIssueTargetVersion(r, viewIssue.Issue.Project.ID)
 
 			if err != nil {
-				print.Error(err.Error())
+				print.Error("%s", err.Error())
 			} else {
 				issue.Issue.FixedVersionID = idName.ID
 				viewIssue.Issue.FixedVersion = idName

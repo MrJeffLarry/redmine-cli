@@ -24,7 +24,7 @@ func loginApiKey(r *config.Red_t, cmd *cobra.Command, name, server, apikey strin
 	print.Debug(r, "%d %s", status, string(res))
 
 	if err = api.StatusCode(status); err != nil {
-		print.Error(err.Error())
+		print.Error("%s", err.Error())
 		return false
 	}
 
@@ -37,7 +37,7 @@ func loginApiKey(r *config.Red_t, cmd *cobra.Command, name, server, apikey strin
 	r.AddServer(name, server, user.User.ApiKey, "", 0, user.User.ID)
 
 	if err = r.Save(); err != nil {
-		print.Error(err.Error())
+		print.Error("%s", err.Error())
 		return false
 	}
 
@@ -67,7 +67,7 @@ func loginPassword(r *config.Red_t, cmd *cobra.Command, name, server, username s
 		}
 
 		if password, err = r.Term.PromptPassword("Password", ""); err != nil {
-			print.Error(err.Error())
+			print.Error("%s", err.Error())
 			continue
 		}
 
@@ -81,7 +81,7 @@ func loginPassword(r *config.Red_t, cmd *cobra.Command, name, server, username s
 
 		if err = api.StatusCode(status); err != nil {
 			print.Info("If Two-factor authentication is enabled, this login method will not work as it is not supported, please use Apikey instead, you will find the Apikey (Api access key) at /my/account\n")
-			print.Error(err.Error())
+			print.Error("%s", err.Error())
 			continue
 		}
 
@@ -96,7 +96,7 @@ func loginPassword(r *config.Red_t, cmd *cobra.Command, name, server, username s
 	r.AddServer(name, server, user.User.ApiKey, "", 0, user.User.ID)
 
 	if err = r.Save(); err != nil {
-		print.Error(err.Error())
+		print.Error("%s", err.Error())
 		return
 	}
 
@@ -110,7 +110,7 @@ func displayLogin(r *config.Red_t, cmd *cobra.Command) {
 	var apikey string
 	var err error
 
-	print.Info(text.FgGreen.Sprint("Welcome to Red an Redmine CLI\n") +
+	print.Info("%s", text.FgGreen.Sprint("Welcome to Red an Redmine CLI\n") +
 		"Before login make sure you have enabled `Enable REST web service`\nfind it in Administration -> Settings -> API or use url /settings?tab=api\nYou find ApiKey (API access key) from /my/account\n\n")
 
 	if alias, err = r.Term.PromptStringRequire("Redmine server alias (Used for multi redmine server support)", ""); err != nil {
