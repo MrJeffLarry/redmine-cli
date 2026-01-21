@@ -1,0 +1,19 @@
+services:
+
+  redmine4:
+    image: redmine:4
+    restart: unless-stopped
+    ports:
+      - 8004:3000
+
+  redmine5:
+    image: redmine:5
+    restart: unless-stopped
+    ports:
+      - 8005:3000
+
+  redmine6:
+    image: redmine:6
+    restart: unless-stopped
+    ports:
+      - 8006:3000
