@@ -167,7 +167,7 @@ func cmdIssueList(r *config.Red_t) *cobra.Command {
 
 	cmd.PersistentFlags().Bool(FLAG_DISPLAY_PROJECT, false, "Display project column")
 	cmd.PersistentFlags().Bool(FLAG_ISSUE_URLS, false, "Show issue urls only")
-	cmd.PersistentFlags().StringP(FLAG_QUERY, FLAG_QUERY_SHORT, "", "Query for issues with subject")
+	cmd.PersistentFlags().StringP(FLAG_QUERY, FLAG_QUERY_SHORT, "", "Fuzzy search for issues by subject (supports typos)")
 
 	util.AddFlags(cmd)
 

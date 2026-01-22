@@ -112,7 +112,7 @@ func cmdProjectList(r *config.Red_t) *cobra.Command {
 		},
 	})
 
-	cmd.PersistentFlags().StringP(FLAG_QUERY, FLAG_QUERY_SHORT, "", "Query for projects with name")
+	cmd.PersistentFlags().StringP(FLAG_QUERY, FLAG_QUERY_SHORT, "", "Fuzzy search for projects by name (supports typos)")
 
 	util.AddFlags(cmd)
 
