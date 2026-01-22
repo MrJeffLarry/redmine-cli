@@ -9,6 +9,7 @@ import (
 	"github.com/MrJeffLarry/redmine-cli/internal/editor"
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
 	"github.com/MrJeffLarry/redmine-cli/internal/util"
+	"github.com/sahilm/fuzzy"
 	"github.com/spf13/cobra"
 )
 
@@ -27,9 +28,8 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 
 	path += util.ParseFlags(cmd, 0, []string{"id", "name"})
 
-	if query, _ := cmd.Flags().GetString(FLAG_QUERY); query != "" {
-		path += "name=~" + query + "&"
-	}
+	// Get query string for potential fuzzy matching
+	query, _ := cmd.Flags().GetString(FLAG_QUERY)
 
 	print.Debug(r, path)
 
@@ -49,6 +49,25 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 		print.Debug(r, err.Error())
 		print.Error("StatusCode %d, %s", status, "Could not parse and read response from server")
 		return
+	}
+
+	// Apply fuzzy search if query is provided
+	if query != "" {
+		var names []string
+		for _, project := range projects.Projects {
+			names = append(names, project.Name)
+		}
+		
+		matches := fuzzy.Find(query, names)
+		
+		// Create a new filtered projects list
+		var filteredProjects []project
+		for _, match := range matches {
+			filteredProjects = append(filteredProjects, projects.Projects[match.Index])
+		}
+		
+		projects.Projects = filteredProjects
+		projects.TotalCount = len(filteredProjects)
 	}
 
 	l := print.NewList(head...)
