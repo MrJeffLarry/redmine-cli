@@ -9,6 +9,7 @@ require (
 	github.com/Netflix/go-expect v0.0.0-20220104043353-73e0943537d2
 	github.com/briandowns/spinner v1.23.2
 	github.com/jedib0t/go-pretty v4.3.0+incompatible
+	github.com/sahilm/fuzzy v0.1.1
 	github.com/spf13/cobra v1.10.2
 	golang.org/x/term v0.39.0
 )
@@ -25,6 +26,7 @@ require (
 	github.com/google/uuid v1.4.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
+	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
@@ -34,7 +36,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/sahilm/fuzzy v0.1.1 // indirect
 	github.com/spf13/pflag v1.0.9 // indirect
 	github.com/stretchr/testify v1.9.0 // indirect
 	go.mongodb.org/mongo-driver v1.12.1 // indirect
