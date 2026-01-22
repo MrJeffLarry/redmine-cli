@@ -59,7 +59,7 @@ func cmdIssueNoteRun(r *config.Red_t, cmd *cobra.Command, args []string) {
 	print.Debug(r, "%d %s", status, string(res))
 
 	if err := api.StatusCode(status); err != nil {
-		print.Error(err.Error())
+		print.Error("%s", err.Error())
 		return
 	}
 

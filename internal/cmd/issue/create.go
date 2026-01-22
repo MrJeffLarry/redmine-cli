@@ -82,7 +82,7 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 	issue.Issue.ProjectID = projectID
 
 	if idNames, err = project.GetTrackers(r, projectID); err != nil {
-		print.Error(err.Error())
+		print.Error("%s", err.Error())
 		return
 	}
 
@@ -111,7 +111,7 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 			}
 		case FIELD_PRIORITY:
 			if idNames, err = global.GetPriorities(r); err != nil {
-				print.Error(err.Error())
+				print.Error("%s", err.Error())
 			}
 
 			id, _ := r.Term.Choose("Priority", idNames)
@@ -121,7 +121,7 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 			}
 		case FIELD_TARGET_VERSION:
 			if idNames, err = project.GetVersions(r, projectID); err != nil {
-				print.Error(err.Error())
+				print.Error("%s", err.Error())
 			}
 
 			id, _ := r.Term.Choose("Version", idNames)
@@ -136,7 +136,7 @@ func displayCreateIssue(r *config.Red_t, cmd *cobra.Command, path string) {
 			}
 		case FIELD_ASSIGN:
 			if idNames, err = project.GetAssigns(r, projectID); err != nil {
-				print.Error(err.Error())
+				print.Error("%s", err.Error())
 			}
 
 			id, _ := r.Term.Choose("Assign", idNames)
