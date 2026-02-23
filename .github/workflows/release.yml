@@ -45,7 +45,7 @@ jobs:
           gpg_private_key: ${{ secrets.APT_SECRET_KEY }}
 
       - name: Release
-        uses: goreleaser/goreleaser-action@v6
+        uses: goreleaser/goreleaser-action@v7
         with:
           version: latest
           args: release --clean --config .goreleaser.yaml
