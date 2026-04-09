@@ -19,7 +19,7 @@ red-cli <command> <subcommand> [flags]
       --all          Ignore project-id
   -d, --debug        Show debug info and raw response
   -h, --help         help for red-cli
-      --rid string   Redmine instance ID (for multi-instance support)
+      --rid string   Redmine server name or ID
 ```
 
 ### SEE ALSO
@@ -28,6 +28,7 @@ red-cli <command> <subcommand> [flags]
 * [red-cli completion](./red-cli_completion.md)	 - Generate shell completion script
 * [red-cli config](./red-cli_config.md)	 - get or set config
 * [red-cli issue](./red-cli_issue.md)	 - issue
+* [red-cli mcp](./red-cli_mcp.md)	 - Start an MCP server
 * [red-cli project](./red-cli_project.md)	 - project
 * [red-cli user](./red-cli_user.md)	 - Get users info
 
