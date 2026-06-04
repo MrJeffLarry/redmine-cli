@@ -26,7 +26,7 @@ red-cli issue edit [id] [flags]
 ```
       --all          Ignore project-id
   -d, --debug        Show debug info and raw response
-      --rid string   Redmine instance ID (for multi-instance support)
+      --rid string   Redmine server name or ID
 ```
 
 ### SEE ALSO

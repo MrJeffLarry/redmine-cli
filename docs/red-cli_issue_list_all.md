@@ -31,8 +31,8 @@ red-cli issue list all [flags]
   -o, --offset int      skip this number of objects
   -p, --page int        List 25 objects per page (uses limit and offset)
       --project         Display project column
-  -q, --query string    Query for issues with subject
-      --rid string      Redmine instance ID (for multi-instance support)
+  -q, --query string    Fuzzy search for issues by subject (supports typos)
+      --rid string      Redmine server name or ID
   -s, --sort string     Sort field
       --status_id int   Filter on status ID
       --target_id int   Filter on target version ID
