@@ -1,6 +1,6 @@
 module github.com/MrJeffLarry/redmine-cli
 
-go 1.25.0
+go 1.26.0
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.7
@@ -8,7 +8,7 @@ require (
 	github.com/briandowns/spinner v1.23.2
 	github.com/jedib0t/go-pretty v4.3.0+incompatible
 	github.com/spf13/cobra v1.10.2
-	golang.org/x/term v0.42.0
+	golang.org/x/term v0.46.0
 )
 
 require (
@@ -36,6 +36,6 @@ require (
 	github.com/stretchr/testify v1.9.0 // indirect
 	go.mongodb.org/mongo-driver v1.12.1 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/sys v0.43.0 // indirect
+	golang.org/x/sys v0.48.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 )
