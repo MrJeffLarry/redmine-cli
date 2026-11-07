@@ -53,28 +53,24 @@ func runMCPServer(r *config.Red_t, version string) error {
 	// Disable spinner output so it doesn't interfere with the JSON-RPC stdio channel
 	r.Spinner = spinner.New(spinner.CharSets[11], 100, spinner.WithWriter(io.Discard))
 
+	return mcpserver.ServeStdio(newServer(r, version))
+}
+
+func newServer(r *config.Red_t, version string) *mcpserver.MCPServer {
 	s := mcpserver.NewMCPServer(
 		"redmine-mcp",
 		version,
 		mcpserver.WithToolCapabilities(false),
 	)
 
-	// Issue tools
 	s.AddTool(toolListIssues(), handleListIssues(r))
 	s.AddTool(toolGetIssue(), handleGetIssue(r))
 	s.AddTool(toolCreateIssue(), handleCreateIssue(r))
 	s.AddTool(toolUpdateIssue(), handleUpdateIssue(r))
 	s.AddTool(toolAddNote(), handleAddNote(r))
-
-	// Project tools
 	s.AddTool(toolListProjects(), handleListProjects(r))
-
-	// User tools
 	s.AddTool(toolGetCurrentUser(), handleGetCurrentUser(r))
-
-	fmt.Fprintf(io.Discard, "Starting Redmine MCP server v%s\n", version)
-
-	return mcpserver.ServeStdio(s)
+	return s
 }
 
 func toolListIssues() mcpgo.Tool {
@@ -230,6 +226,9 @@ func handleToolError(format string, args ...interface{}) (*mcpgo.CallToolResult,
 func handleAPIResult(body []byte, status int, err error) (*mcpgo.CallToolResult, error) {
 	if err != nil {
 		return mcpgo.NewToolResultError(fmt.Sprintf("API error (HTTP %d): %s", status, err.Error())), nil
+	}
+	if status < 200 || status > 299 {
+		return mcpgo.NewToolResultError(fmt.Sprintf("API error (HTTP %d): %s", status, string(body))), nil
 	}
 	return mcpgo.NewToolResultText(string(body)), nil
 }

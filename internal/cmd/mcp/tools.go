@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/url"
+	"strconv"
 
 	"github.com/MrJeffLarry/redmine-cli/internal/api"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
@@ -13,33 +15,24 @@ import (
 
 func handleListIssues(r *config.Red_t) mcpserver.ToolHandlerFunc {
 	return func(ctx context.Context, req mcpgo.CallToolRequest) (*mcpgo.CallToolResult, error) {
-		path := "/issues.json?"
+		q := url.Values{}
 
 		if projectID := req.GetInt("project_id", 0); projectID > 0 {
-			path += fmt.Sprintf("project_id=%d&", projectID)
+			q.Set("project_id", strconv.Itoa(projectID))
 		}
-
-		statusID := req.GetString("status_id", "open")
-		path += "status_id=" + statusID + "&"
-
-		limit := req.GetInt("limit", 25)
-		if limit > 100 {
-			limit = 100
-		}
-		path += fmt.Sprintf("limit=%d&", limit)
-
+		q.Set("status_id", req.GetString("status_id", "open"))
+		q.Set("limit", strconv.Itoa(clampLimit(req.GetInt("limit", 25))))
 		if offset := req.GetInt("offset", 0); offset > 0 {
-			path += fmt.Sprintf("offset=%d&", offset)
+			q.Set("offset", strconv.Itoa(offset))
 		}
-
 		if subject := req.GetString("subject", ""); subject != "" {
-			path += "subject=~" + subject + "&"
+			q.Set("subject", "~"+subject)
 		}
-
 		if assignedTo := req.GetString("assigned_to_id", ""); assignedTo != "" {
-			path += "assigned_to_id=" + assignedTo + "&"
+			q.Set("assigned_to_id", assignedTo)
 		}
 
+		path := "/issues.json?" + q.Encode()
 		body, status, err := api.ClientGET(r, path)
 		return handleAPIResult(body, status, err)
 	}
@@ -218,11 +211,11 @@ func handleAddNote(r *config.Red_t) mcpserver.ToolHandlerFunc {
 
 func handleListProjects(r *config.Red_t) mcpserver.ToolHandlerFunc {
 	return func(ctx context.Context, req mcpgo.CallToolRequest) (*mcpgo.CallToolResult, error) {
-		limit := req.GetInt("limit", 25)
-		if limit > 100 {
-			limit = 100
-		}
+		limit := clampLimit(req.GetInt("limit", 25))
 		offset := req.GetInt("offset", 0)
+		if offset < 0 {
+			offset = 0
+		}
 
 		path := fmt.Sprintf("/projects.json?limit=%d&offset=%d", limit, offset)
 		body, status, err := api.ClientGET(r, path)
@@ -235,4 +228,15 @@ func handleGetCurrentUser(r *config.Red_t) mcpserver.ToolHandlerFunc {
 		body, status, err := api.ClientGET(r, "/users/current.json")
 		return handleAPIResult(body, status, err)
 	}
+}
+
+// clampLimit keeps the page size within Redmine's accepted range (1-100).
+func clampLimit(limit int) int {
+	if limit < 1 {
+		return 25
+	}
+	if limit > 100 {
+		return 100
+	}
+	return limit
 }
