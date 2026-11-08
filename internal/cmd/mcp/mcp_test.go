@@ -214,6 +214,20 @@ func TestUpdateIssue(t *testing.T) {
 	}
 }
 
+func TestUpdateIssueEmptyDescription(t *testing.T) {
+	r, rec := setup(t, 204, ``)
+	res := call(t, r, "update_issue", map[string]interface{}{"id": 3, "description": ""})
+	if res.IsError {
+		t.Fatal(text(t, res))
+	}
+	if rec.method != http.MethodPut {
+		t.Fatalf("method = %q, want PUT", rec.method)
+	}
+	if description, ok := rec.body["issue"]["description"]; !ok || description != "" {
+		t.Errorf("description = %v, want an explicitly empty description", description)
+	}
+}
+
 func TestUpdateIssueNoFields(t *testing.T) {
 	r, rec := setup(t, 204, ``)
 	if !call(t, r, "update_issue", map[string]interface{}{"id": 3}).IsError {

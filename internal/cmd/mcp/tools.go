@@ -124,8 +124,8 @@ func handleUpdateIssue(r *config.Red_t) mcpserver.ToolHandlerFunc {
 		if subject := req.GetString("subject", ""); subject != "" {
 			issue["subject"] = subject
 		}
-		if desc := req.GetString("description", ""); desc != "" {
-			issue["description"] = desc
+		if _, ok := req.GetArguments()["description"]; ok {
+			issue["description"] = req.GetString("description", "")
 		}
 		if statusID := req.GetInt("status_id", 0); statusID > 0 {
 			issue["status_id"] = statusID

@@ -56,6 +56,9 @@ func CmdInit(Version, GitCommit, BuildTime string) *config.Red_t {
 	r.Cmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
 		// Debug flag check for more info
 		r.Debug, _ = cmd.Flags().GetBool(config.DEBUG_FLAG)
+		if cmd.Name() == "mcp" {
+			r.Debug = false
+		}
 		r.All, _ = cmd.Flags().GetBool(config.ALL_FLAG)
 
 		// Get RID flag if provided
