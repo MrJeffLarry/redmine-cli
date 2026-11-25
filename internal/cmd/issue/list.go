@@ -9,6 +9,7 @@ import (
 	"github.com/MrJeffLarry/redmine-cli/internal/editor"
 	"github.com/MrJeffLarry/redmine-cli/internal/print"
 	"github.com/MrJeffLarry/redmine-cli/internal/util"
+	"github.com/sahilm/fuzzy"
 	"github.com/spf13/cobra"
 )
 
@@ -47,9 +48,8 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 		sort = append(sort, "project")
 	}
 
-	if query, _ := cmd.Flags().GetString(FLAG_QUERY); query != "" {
-		path += "subject=~" + query + "&"
-	}
+	// Get query string for potential fuzzy matching
+	query, _ := cmd.Flags().GetString(FLAG_QUERY)
 
 	path += util.ParseFlags(cmd, projectID, sort)
 
@@ -71,6 +71,25 @@ func displayListGET(r *config.Red_t, cmd *cobra.Command, path string) {
 		print.Debug(r, err.Error())
 		print.Error("StatusCode %d, %s", status, "Could not parse and read response from server")
 		return
+	}
+
+	// Apply fuzzy search if query is provided
+	if query != "" {
+		var subjects []string
+		for _, issue := range issues.Issues {
+			subjects = append(subjects, issue.Subject)
+		}
+		
+		matches := fuzzy.Find(query, subjects)
+		
+		// Create a new filtered issues list
+		var filteredIssues []issue
+		for _, match := range matches {
+			filteredIssues = append(filteredIssues, issues.Issues[match.Index])
+		}
+		
+		issues.Issues = filteredIssues
+		issues.TotalCount = len(filteredIssues)
 	}
 
 	if issue_urls, _ := cmd.Flags().GetBool(FLAG_ISSUE_URLS); issue_urls {
@@ -148,7 +167,7 @@ func cmdIssueList(r *config.Red_t) *cobra.Command {
 
 	cmd.PersistentFlags().Bool(FLAG_DISPLAY_PROJECT, false, "Display project column")
 	cmd.PersistentFlags().Bool(FLAG_ISSUE_URLS, false, "Show issue urls only")
-	cmd.PersistentFlags().StringP(FLAG_QUERY, FLAG_QUERY_SHORT, "", "Query for issues with subject")
+	cmd.PersistentFlags().StringP(FLAG_QUERY, FLAG_QUERY_SHORT, "", "Fuzzy search for issues by subject (supports typos)")
 
 	util.AddFlags(cmd)
 

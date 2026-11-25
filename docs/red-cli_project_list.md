@@ -22,7 +22,7 @@ red-cli project list [flags]
   -l, --limit int       Limit number of objects per page (default 25)
   -o, --offset int      skip this number of objects
   -p, --page int        List 25 objects per page (uses limit and offset)
-  -q, --query string    Query for projects with name
+  -q, --query string    Fuzzy search for projects by name (supports typos)
   -s, --sort string     Sort field
       --status_id int   Filter on status ID
       --target_id int   Filter on target version ID
@@ -33,7 +33,7 @@ red-cli project list [flags]
 ```
       --all          Ignore project-id
   -d, --debug        Show debug info and raw response
-      --rid string   Redmine instance ID (for multi-instance support)
+      --rid string   Redmine server name or ID
 ```
 
 ### SEE ALSO
