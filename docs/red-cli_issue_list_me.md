@@ -32,7 +32,7 @@ red-cli issue list me [flags]
   -p, --page int        List 25 objects per page (uses limit and offset)
       --project         Display project column
   -q, --query string    Query for issues with subject
-      --rid string      Redmine instance ID (for multi-instance support)
+      --rid string      Redmine server name or ID
   -s, --sort string     Sort field
       --status_id int   Filter on status ID
       --target_id int   Filter on target version ID
