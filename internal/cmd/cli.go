@@ -9,6 +9,7 @@ import (
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/auth"
 	cmdConfig "github.com/MrJeffLarry/redmine-cli/internal/cmd/config"
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/issue"
+	"github.com/MrJeffLarry/redmine-cli/internal/cmd/mcp"
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/project"
 	"github.com/MrJeffLarry/redmine-cli/internal/cmd/user"
 	"github.com/MrJeffLarry/redmine-cli/internal/config"
@@ -55,6 +56,9 @@ func CmdInit(Version, GitCommit, BuildTime string) *config.Red_t {
 	r.Cmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
 		// Debug flag check for more info
 		r.Debug, _ = cmd.Flags().GetBool(config.DEBUG_FLAG)
+		if cmd.Name() == "mcp" {
+			r.Debug = false
+		}
 		r.All, _ = cmd.Flags().GetBool(config.ALL_FLAG)
 
 		// Get RID flag if provided
@@ -97,6 +101,7 @@ func CmdInit(Version, GitCommit, BuildTime string) *config.Red_t {
 	r.Cmd.AddCommand(auth.NewCmdAuth(r))
 	r.Cmd.AddCommand(cmdConfig.NewCmdConfig(r))
 	r.Cmd.AddCommand(cmdCompletion(r))
+	r.Cmd.AddCommand(mcp.NewCmdMCP(r, version))
 
 	return r
 }
