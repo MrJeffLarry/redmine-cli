@@ -62,4 +62,3 @@ red-cli mcp
 ### SEE ALSO
 
 * [red-cli](./red-cli.md)	 - Redmine CLI
-
